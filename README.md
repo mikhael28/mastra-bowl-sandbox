@@ -1,6 +1,6 @@
 # Mastra Bowl Sandbox
 
-A comprehensive showcase of [Mastra's](https://mastra.ai/) agent framework capabilities. This sandbox demonstrates how to build autonomous agents with tools, workflows, evals, memory, browser automation, email, content moderation, MCP servers, and more.
+A sandbox showcase of [Mastra's](https://mastra.ai/) agent framework capabilities, battle-tested with the new Studio & Server. This sandbox demonstrates how to build autonomous agents with tools, workflows, evals, memory, browser automation, email, content moderation, MCP servers, and more.
 
 ## Getting Started
 
@@ -96,7 +96,3 @@ Each agent highlights different Mastra patterns:
 - [Mastra Documentation](https://mastra.ai/docs/)
 - [Agents](https://mastra.ai/docs/agents/overview) · [Tools](https://mastra.ai/docs/agents/using-tools) · [Workflows](https://mastra.ai/docs/workflows/overview) · [Evals](https://mastra.ai/docs/evals/overview) · [Observability](https://mastra.ai/docs/observability/overview)
 - [Mastra Course](https://mastra.ai/course) · [YouTube](https://youtube.com/@mastra-ai) · [Discord](https://discord.gg/BTYqqHKUrf)
-
-## Deploy on Mastra Cloud
-
-[Mastra Cloud](https://cloud.mastra.ai/) gives you a serverless agent environment with atomic deployments, monitoring, evals, and tracing. See the [deployment guide](https://mastra.ai/docs/deployment/overview) for details.
