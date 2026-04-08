@@ -22,6 +22,7 @@
     "@mastra/core": "^1.23.0",
     "@mastra/duckdb": "^1.1.1",
     "@mastra/e2b": "^0.1.2",
+    "@mastra/editor": "^0.7.15",
     "@mastra/evals": "^1.2.1",
     "@mastra/libsql": "^1.8.0",
     "@mastra/loggers": "^1.1.0",

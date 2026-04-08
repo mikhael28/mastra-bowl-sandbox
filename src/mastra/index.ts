@@ -6,6 +6,7 @@ import { DuckDBStore } from "@mastra/duckdb";
 import { ObservabilityStorageClickhouseVNext } from '@mastra/clickhouse';
 import { MastraCompositeStore } from '@mastra/core/storage';
 import { Observability, DefaultExporter, CloudExporter, SensitiveDataFilter } from '@mastra/observability';
+import { MastraEditor } from '@mastra/editor'
 
 // Agents
 import { weatherAgent } from './agents/weather-agent';
@@ -29,13 +30,15 @@ import { basedScorer } from './scorers/based-scorer';
 
 // MCP
 import { docsMcpServer } from './mcp/docs-server';
+import { ComposioToolProvider } from '@mastra/editor/composio';
+import { ArcadeToolProvider } from '@mastra/editor/arcade';
 
 const observabilityStorage = process.env.CLICKHOUSE_URL
   ? new ObservabilityStorageClickhouseVNext({
       url: process.env.CLICKHOUSE_URL,
       username: process.env.CLICKHOUSE_USERNAME ?? 'default',
       password: process.env.CLICKHOUSE_PASSWORD ?? '',
-      retention: { spans: 30, logs: 14, metrics: 90 },
+      retention: { logs: 14, metrics: 90 },
     })
   : await new DuckDBStore().getStore('observability');
 
@@ -74,6 +77,16 @@ export const mastra = new Mastra({
   logger: new PinoLogger({
     name: 'Mastra',
     level: 'info',
+  }),
+  editor: new MastraEditor({
+    toolProviders: {
+      composio: new ComposioToolProvider({
+        apiKey: process.env.COMPOSIO_API_KEY!,
+      }),
+      arcade: new ArcadeToolProvider({
+        apiKey: process.env.ARCADE_API_KEY!,
+      }),
+    },
   }),
   observability: new Observability({
     configs: {
