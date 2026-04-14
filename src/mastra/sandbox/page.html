@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sandbox</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface1: #111111;
+      --surface2: #1a1a1a;
+      --surface3: #252525;
+      --border: #2a2a2a;
+      --text1: #fafafa;
+      --text2: #a1a1a1;
+      --text3: #737373;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text1);
+      height: 100vh;
+      overflow: auto;
+    }
+
+    #sandbox-root {
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    /* ── Your styles below ─────────────────────────────────── */
+
+
+  </style>
+</head>
+<body>
+  <div id="sandbox-root">
+
+    <!-- ── Your HTML below ─────────────────────────────────── -->
+
+    <div style="max-width:36rem; margin:4rem auto; text-align:center;">
+      <h1 style="font-size:1.5rem; font-weight:600; margin-bottom:0.75rem;">
+        Sandbox
+      </h1>
+      <p style="color:var(--text3); line-height:1.6; margin-bottom:2rem;">
+        This is your blank canvas. Edit
+        <code style="font-family:var(--font-mono); background:var(--surface2); padding:0.15em 0.4em; border-radius:4px; font-size:0.9em;">
+          src/mastra/sandbox/page.html
+        </code>
+        and re-run the patch script to see your changes.
+      </p>
+
+      <div id="demo" style="
+        background:var(--surface1);
+        border:1px solid var(--border);
+        border-radius:8px;
+        padding:2rem;
+        text-align:left;
+      ">
+        <p style="color:var(--text2); font-size:0.875rem;">
+          Write any HTML, CSS, and JavaScript here. This page runs inside an
+          iframe within Mastra Studio, so you have full control.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Your JavaScript below ───────────────────────────────
+
+    console.log('[Sandbox] page loaded');
+  </script>
+</body>
+</html>

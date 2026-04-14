@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "mastra dev",
+    "dev": "node scripts/patch-studio.mjs && mastra dev",
     "build": "mastra build",
-    "start": "mastra start"
+    "start": "mastra start",
+    "patch-studio": "node scripts/patch-studio.mjs",
+    "unpatch-studio": "node scripts/patch-studio.mjs --undo",
+    "postinstall": "node scripts/patch-studio.mjs"
   },
   "keywords": [],
   "author": "",
