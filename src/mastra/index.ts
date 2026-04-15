@@ -17,11 +17,16 @@ import { editorAgent } from './agents/editor-agent';
 import { publisherAgent } from './agents/publisher-agent';
 import { newsAgent } from './agents/news-agent';
 import { openclawAgent } from './agents/openclaw-agent';
+import { intentClarifierAgent } from './agents/intent-clarifier-agent';
+import { researchPlannerAgent } from './agents/research-planner-agent';
+import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-agent';
+import { answererAgent } from './agents/answerer-agent';
 
 // Workflows
 import { weatherWorkflow } from './workflows/weather-workflow';
 import { blogPostWorkflow } from './workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
+import { deepSearch } from './workflows/deep-search-workflow';
 
 // Scorers
 import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
@@ -43,7 +48,7 @@ const observabilityStorage = process.env.CLICKHOUSE_URL
   : await new DuckDBStore().getStore('observability');
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, blogPostWorkflow, techTouchdownWorkflow },
+  workflows: { weatherWorkflow, blogPostWorkflow, techTouchdownWorkflow, deepSearch },
   agents: {
     weatherAgent,
     chefAgent,
@@ -53,6 +58,10 @@ export const mastra = new Mastra({
     publisherAgent,
     newsAgent,
     openclawAgent,
+    intentClarifierAgent,
+    researchPlannerAgent,
+    searchResultEvaluatorAgent,
+    answererAgent,
   },
   scorers: {
     toolCallAppropriatenessScorer,
