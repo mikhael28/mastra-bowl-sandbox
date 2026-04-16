@@ -21,12 +21,16 @@ import { intentClarifierAgent } from './agents/intent-clarifier-agent';
 import { researchPlannerAgent } from './agents/research-planner-agent';
 import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-agent';
 import { answererAgent } from './agents/answerer-agent';
+import { legalQueryPlannerAgent } from './agents/legal-query-planner-agent';
+import { legalResultEvaluatorAgent } from './agents/legal-result-evaluator-agent';
+import { getPineconeStore } from './tools/legal';
 
 // Workflows
 import { weatherWorkflow } from './workflows/weather-workflow';
 import { blogPostWorkflow } from './workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
 import { deepSearch } from './workflows/deep-search-workflow';
+import { legalRag } from './workflows/legal-rag-workflow';
 
 // Scorers
 import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
@@ -48,7 +52,7 @@ const observabilityStorage = process.env.CLICKHOUSE_URL
   : await new DuckDBStore().getStore('observability');
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, blogPostWorkflow, techTouchdownWorkflow, deepSearch },
+  workflows: { weatherWorkflow, blogPostWorkflow, techTouchdownWorkflow, deepSearch, legalRag },
   agents: {
     weatherAgent,
     chefAgent,
@@ -62,6 +66,8 @@ export const mastra = new Mastra({
     researchPlannerAgent,
     searchResultEvaluatorAgent,
     answererAgent,
+    legalQueryPlannerAgent,
+    legalResultEvaluatorAgent,
   },
   scorers: {
     toolCallAppropriatenessScorer,
@@ -72,6 +78,9 @@ export const mastra = new Mastra({
   },
   mcpServers: {
     docsMcpServer,
+  },
+  vectors: {
+    'legal-pinecone': getPineconeStore(),
   },
   storage: new MastraCompositeStore({
     id: 'composite-storage',

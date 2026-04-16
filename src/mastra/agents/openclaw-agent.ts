@@ -17,6 +17,16 @@ import {
   replyToEmail,
   listThreads,
 } from '../tools/agentmail';
+import {
+  ingestDocumentTool,
+  batchIngestTool,
+  createCaseTool,
+  listCasesTool,
+  describeCaseTool,
+  deleteCaseDocumentsTool,
+  agenticRagTool,
+  legalCaseSearchTool,
+} from '../tools/legal';
 
 // Detect environment: use E2B when deployed (production without MASTRA_DEV flag), local otherwise
 const isDeployed = process.env.NODE_ENV === 'production' && process.env.MASTRA_DEV !== 'true';
@@ -103,6 +113,32 @@ You have your own email inboxes via AgentMail. You can send, receive, read, and 
 - Ask clarifying questions when requirements are ambiguous
 - Proactively suggest next steps after completing a task
 
+## Agentic RAG for Legal Cases
+You have full document management and search capabilities for legal cases:
+
+### Case Management
+- \`legal-create-case\`: Create a new case (each case is an isolated Pinecone namespace)
+- \`legal-list-cases\`: List all cases and their document counts
+- \`legal-describe-case\`: Get stats on a specific case
+
+### Document Ingestion
+- \`legal-ingest-document\`: Ingest a single document (PDF, DOCX, XLSX, CSV, Markdown, TXT, JPG, PNG) into a case. The tool parses the file, chunks it, generates embeddings, and stores vectors in Pinecone with metadata (documentName, documentType, partyNames, pageNumber, etc.)
+- \`legal-batch-ingest\`: Ingest multiple documents at once into a case
+
+### Search
+- \`legal-case-search\`: Quick one-shot semantic search within a case. Use for simple lookups.
+- \`legal-agentic-search\`: **Iterative agentic RAG** — use this for complex legal queries. It plans multiple search queries, searches the case vector store, evaluates whether results are specific enough, refines and re-searches (up to 3 iterations), then reads the FULL TEXT of the best candidate document to give a precise, well-cited answer. Supports filtering by party name or document type.
+
+### Workflow
+When invoked through the \`legal-rag\` workflow, the search process includes a human-in-the-loop step where clarifying questions are asked before searching.
+
+### Usage Guidelines
+- Always create a case first before ingesting documents
+- When ingesting, provide documentType and partyNames for better search filtering later
+- For straightforward lookups, use \`legal-case-search\`
+- For complex questions requiring precision (e.g., "What did Smith say about X?"), use \`legal-agentic-search\`
+- The agentic search reads the full document text for its best candidate, so answers include exact citations
+
 ## Workspace Organization
 - Use clear folder structures: /drafts, /research, /content, /business
 - Name files descriptively with dates when relevant
@@ -133,6 +169,15 @@ You have your own email inboxes via AgentMail. You can send, receive, read, and 
     getMessage,
     replyToEmail,
     listThreads,
+    // Agentic RAG for legal cases
+    ingestDocumentTool,
+    batchIngestTool,
+    createCaseTool,
+    listCasesTool,
+    describeCaseTool,
+    deleteCaseDocumentsTool,
+    agenticRagTool,
+    legalCaseSearchTool,
   },
 
   browser,
