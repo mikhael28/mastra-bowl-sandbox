@@ -9,23 +9,27 @@ import { Observability, DefaultExporter, CloudExporter, SensitiveDataFilter } fr
 import { MastraEditor } from '@mastra/editor'
 
 // Agents
-import { weatherAgent } from './agents/weather-agent';
-import { chefAgent } from './agents/chef-agent';
 import { mathAgent } from './agents/math-agent';
 import { copywriterAgent } from './agents/copywriter-agent';
 import { editorAgent } from './agents/editor-agent';
 import { publisherAgent } from './agents/publisher-agent';
 import { newsAgent } from './agents/news-agent';
 import { openclawAgent } from './agents/openclaw-agent';
+import { intentClarifierAgent } from './agents/intent-clarifier-agent';
+import { researchPlannerAgent } from './agents/research-planner-agent';
+import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-agent';
+import { answererAgent } from './agents/answerer-agent';
+import { legalQueryPlannerAgent } from './agents/legal-query-planner-agent';
+import { legalResultEvaluatorAgent } from './agents/legal-result-evaluator-agent';
+import { getPineconeStore } from './tools/legal';
 
 // Workflows
-import { weatherWorkflow } from './workflows/weather-workflow';
 import { blogPostWorkflow } from './workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
+import { deepSearch } from './workflows/deep-search-workflow';
+import { legalRag } from './workflows/legal-rag-workflow';
 
 // Scorers
-import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
-import { glutenCheckerScorer } from './scorers/gluten-scorer';
 import { basedScorer } from './scorers/based-scorer';
 
 // MCP
@@ -43,26 +47,29 @@ const observabilityStorage = process.env.CLICKHOUSE_URL
   : await new DuckDBStore().getStore('observability');
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, blogPostWorkflow, techTouchdownWorkflow },
+  workflows: { blogPostWorkflow, techTouchdownWorkflow, deepSearch, legalRag },
   agents: {
-    weatherAgent,
-    chefAgent,
     mathAgent,
     copywriterAgent,
     editorAgent,
     publisherAgent,
     newsAgent,
     openclawAgent,
+    intentClarifierAgent,
+    researchPlannerAgent,
+    searchResultEvaluatorAgent,
+    answererAgent,
+    legalQueryPlannerAgent,
+    legalResultEvaluatorAgent,
   },
   scorers: {
-    toolCallAppropriatenessScorer,
-    completenessScorer,
-    translationScorer,
-    glutenCheckerScorer,
     basedScorer,
   },
   mcpServers: {
     docsMcpServer,
+  },
+  vectors: {
+    'legal-pinecone': getPineconeStore(),
   },
   storage: new MastraCompositeStore({
     id: 'composite-storage',

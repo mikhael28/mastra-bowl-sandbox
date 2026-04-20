@@ -32,8 +32,13 @@
     "@mastra/mcp": "^1.4.2",
     "@mastra/memory": "^1.15.0",
     "@mastra/observability": "^1.8.0",
+    "@mastra/pinecone": "^1.0.1",
+    "@mastra/rag": "^2.2.0",
     "@mastra/stagehand": "^0.1.0",
     "agentmail": "^0.4.18",
+    "mammoth": "^1.12.0",
+    "pdf-parse": "^2.4.5",
+    "xlsx": "^0.18.5",
     "zod": "^4.3.6"
   },
   "devDependencies": {

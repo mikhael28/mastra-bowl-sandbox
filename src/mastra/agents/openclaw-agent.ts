@@ -7,6 +7,7 @@ import { StagehandBrowser } from '@mastra/stagehand';
 import { readDocsTool } from '../mcp/docs-server';
 import { tavilySearch } from '../tools/tavily-search';
 import { exaSearch } from '../tools/exa-search';
+import { deepResearchTool } from '../tools/deep-research-tool';
 import {
   createInbox,
   listInboxes,
@@ -16,6 +17,16 @@ import {
   replyToEmail,
   listThreads,
 } from '../tools/agentmail';
+import {
+  ingestDocumentTool,
+  batchIngestTool,
+  createCaseTool,
+  listCasesTool,
+  describeCaseTool,
+  deleteCaseDocumentsTool,
+  agenticRagTool,
+  legalCaseSearchTool,
+} from '../tools/legal';
 
 // Detect environment: use E2B when deployed (production without MASTRA_DEV flag), local otherwise
 const isDeployed = process.env.NODE_ENV === 'production' && process.env.MASTRA_DEV !== 'true';
@@ -66,6 +77,7 @@ export const openclawAgent = new Agent({
 - **Web Research**: You have powerful search and browsing capabilities:
   - Use \`tavily-search\` for fast web searches with topic filtering (general/news) and time range controls.
   - Use \`exa-search\` for semantic search that finds high-quality, relevant content with category filtering.
+  - Use \`deep-research\` for nontrivial research questions where a single search is not enough. It iteratively plans queries, searches Exa, self-evaluates coverage, and loops until the topic is well covered. The tool AUTOMATICALLY creates \`workspace/research/<session>/\` and saves \`query.md\`, every source under \`sources/\`, \`answer.md\`, \`answer.html\`, and a \`README.md\` index — you do NOT need to save anything yourself or call another tool to persist the output. After it returns, tell the user the session folder and path to \`answer.md\`, and offer to open or extend the artifacts. If the user asks for a PDF: first try \`pandoc answer.md -o answer.pdf\` inside the session directory; if pandoc is missing, fall back to opening \`answer.html\` in a browser and printing to PDF, or generate a PDF with a Node tool like \`npx md-to-pdf answer.md\`. Prefer \`deep-research\` over manual multi-step searching whenever the user asks for a report, comparison, buying guide, market scan, or "deep dive". Pass any clarifying context you've already gathered as \`clarifiedIntent\` so it doesn't duplicate your work.
   - Use your browser tools (stagehand_navigate, stagehand_act, stagehand_extract, stagehand_observe) to visit websites, interact with pages, and extract detailed information that search alone can't provide.
 - **Workspace Operations**: You have full read/write/execute access to your workspace. Use it to draft documents, run scripts, organize files, and manage projects.
 
@@ -101,6 +113,32 @@ You have your own email inboxes via AgentMail. You can send, receive, read, and 
 - Ask clarifying questions when requirements are ambiguous
 - Proactively suggest next steps after completing a task
 
+## Agentic RAG for Legal Cases
+You have full document management and search capabilities for legal cases:
+
+### Case Management
+- \`legal-create-case\`: Create a new case (each case is an isolated Pinecone namespace)
+- \`legal-list-cases\`: List all cases and their document counts
+- \`legal-describe-case\`: Get stats on a specific case
+
+### Document Ingestion
+- \`legal-ingest-document\`: Ingest a single document (PDF, DOCX, XLSX, CSV, Markdown, TXT, JPG, PNG) into a case. The tool parses the file, chunks it, generates embeddings, and stores vectors in Pinecone with metadata (documentName, documentType, partyNames, pageNumber, etc.)
+- \`legal-batch-ingest\`: Ingest multiple documents at once into a case
+
+### Search
+- \`legal-case-search\`: Quick one-shot semantic search within a case. Use for simple lookups.
+- \`legal-agentic-search\`: **Iterative agentic RAG** — use this for complex legal queries. It plans multiple search queries, searches the case vector store, evaluates whether results are specific enough, refines and re-searches (up to 3 iterations), then reads the FULL TEXT of the best candidate document to give a precise, well-cited answer. Supports filtering by party name or document type.
+
+### Workflow
+When invoked through the \`legal-rag\` workflow, the search process includes a human-in-the-loop step where clarifying questions are asked before searching.
+
+### Usage Guidelines
+- Always create a case first before ingesting documents
+- When ingesting, provide documentType and partyNames for better search filtering later
+- For straightforward lookups, use \`legal-case-search\`
+- For complex questions requiring precision (e.g., "What did Smith say about X?"), use \`legal-agentic-search\`
+- The agentic search reads the full document text for its best candidate, so answers include exact citations
+
 ## Workspace Organization
 - Use clear folder structures: /drafts, /research, /content, /business
 - Name files descriptively with dates when relevant
@@ -123,6 +161,7 @@ You have your own email inboxes via AgentMail. You can send, receive, read, and 
     readDocsTool,
     tavilySearch,
     exaSearch,
+    deepResearchTool,
     createInbox,
     listInboxes,
     sendEmail,
@@ -130,6 +169,15 @@ You have your own email inboxes via AgentMail. You can send, receive, read, and 
     getMessage,
     replyToEmail,
     listThreads,
+    // Agentic RAG for legal cases
+    ingestDocumentTool,
+    batchIngestTool,
+    createCaseTool,
+    listCasesTool,
+    describeCaseTool,
+    deleteCaseDocumentsTool,
+    agenticRagTool,
+    legalCaseSearchTool,
   },
 
   browser,
