@@ -9,8 +9,6 @@ import { Observability, DefaultExporter, CloudExporter, SensitiveDataFilter } fr
 import { MastraEditor } from '@mastra/editor'
 
 // Agents
-import { weatherAgent } from './agents/weather-agent';
-import { chefAgent } from './agents/chef-agent';
 import { mathAgent } from './agents/math-agent';
 import { copywriterAgent } from './agents/copywriter-agent';
 import { editorAgent } from './agents/editor-agent';
@@ -26,15 +24,12 @@ import { legalResultEvaluatorAgent } from './agents/legal-result-evaluator-agent
 import { getPineconeStore } from './tools/legal';
 
 // Workflows
-import { weatherWorkflow } from './workflows/weather-workflow';
 import { blogPostWorkflow } from './workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
 import { deepSearch } from './workflows/deep-search-workflow';
 import { legalRag } from './workflows/legal-rag-workflow';
 
 // Scorers
-import { toolCallAppropriatenessScorer, completenessScorer, translationScorer } from './scorers/weather-scorer';
-import { glutenCheckerScorer } from './scorers/gluten-scorer';
 import { basedScorer } from './scorers/based-scorer';
 
 // MCP
@@ -52,10 +47,8 @@ const observabilityStorage = process.env.CLICKHOUSE_URL
   : await new DuckDBStore().getStore('observability');
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, blogPostWorkflow, techTouchdownWorkflow, deepSearch, legalRag },
+  workflows: { blogPostWorkflow, techTouchdownWorkflow, deepSearch, legalRag },
   agents: {
-    weatherAgent,
-    chefAgent,
     mathAgent,
     copywriterAgent,
     editorAgent,
@@ -70,10 +63,6 @@ export const mastra = new Mastra({
     legalResultEvaluatorAgent,
   },
   scorers: {
-    toolCallAppropriatenessScorer,
-    completenessScorer,
-    translationScorer,
-    glutenCheckerScorer,
     basedScorer,
   },
   mcpServers: {
