@@ -1,5 +1,9 @@
 import { Agent } from '@mastra/core/agent';
-import { Workspace, LocalFilesystem, LocalSandbox } from '@mastra/core/workspace';
+import {
+  Workspace,
+  LocalFilesystem,
+  LocalSandbox,
+} from '@mastra/core/workspace';
 import { E2BSandbox } from '@mastra/e2b';
 import { createTelegramAdapter } from '@chat-adapter/telegram';
 import { Memory } from '@mastra/memory';
@@ -52,6 +56,7 @@ const workspace = new Workspace({
   },
   bm25: true,
   autoIndexPaths: ['.'],
+  skills: ['.agents/skills'],
 });
 
 // BrowserBase: use cloud when credentials are available, otherwise local
