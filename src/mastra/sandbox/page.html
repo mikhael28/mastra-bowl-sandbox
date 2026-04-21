@@ -360,6 +360,161 @@
       color: var(--text3);
       min-height: 1em;
     }
+
+    /* ── Live conversation tab ──────────────────────── */
+    .live-page {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      gap: 1rem;
+    }
+    .live-controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 0.8125rem;
+      color: var(--text2);
+    }
+    .live-controls select {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text1);
+      border-radius: 6px;
+      padding: 0.4rem 0.65rem;
+      cursor: pointer;
+    }
+    .live-panel {
+      background: var(--surface1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+    .live-toggle {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text1);
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .live-toggle:hover { border-color: var(--border-active); }
+    .live-toggle.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      animation: livePulse 2s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(99,102,241,0); }
+    }
+    .live-state {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--text2);
+    }
+    .live-state .dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: var(--text3);
+      transition: background 0.15s;
+    }
+    .live-state[data-state="listening"] .dot { background: var(--green); }
+    .live-state[data-state="recording"] .dot { background: var(--amber); animation: liveBlink 0.9s infinite; }
+    .live-state[data-state="transcribing"] .dot { background: var(--amber); }
+    .live-state[data-state="thinking"] .dot { background: var(--accent); }
+    .live-state[data-state="speaking"] .dot { background: var(--accent-hover); animation: liveBlink 0.9s infinite; }
+    @keyframes liveBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    .live-meter {
+      width: 100%;
+      height: 4px;
+      background: var(--surface3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .live-meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--green), var(--amber), #dc2626);
+      transition: width 0.05s linear;
+    }
+    .live-tuning {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--text3);
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+    }
+    .live-tuning label { display: inline-flex; gap: 0.4rem; align-items: center; }
+    .live-tuning input[type="range"] { accent-color: var(--accent); width: 7rem; }
+    .live-transcript {
+      flex: 1;
+      min-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface1);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .live-transcript::-webkit-scrollbar { width: 6px; }
+    .live-transcript::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+    .live-transcript-empty {
+      color: var(--text3);
+      font-size: 0.8125rem;
+      text-align: center;
+      margin: auto;
+    }
+    .live-line {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+    .live-line .who {
+      font-weight: 600;
+      flex-shrink: 0;
+      width: 3.2rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-top: 0.15rem;
+    }
+    .live-line.user .who { color: var(--accent-hover); }
+    .live-line.agent .who { color: var(--green); }
+    .live-line .what {
+      color: var(--text1);
+      white-space: pre-wrap;
+      word-break: break-word;
+      flex: 1;
+    }
   </style>
 </head>
 <body>
@@ -368,6 +523,7 @@
   <div class="tab-bar" id="tab-bar">
     <button class="tab-btn active" data-tab="legal">Agentic RAG for Legal Cases</button>
     <button class="tab-btn" data-tab="voice-chat">Voice Chat</button>
+    <button class="tab-btn" data-tab="live">Live Conversation</button>
     <!-- Add more tabs here:
     <button class="tab-btn" data-tab="my-other-tab">Other Tab</button>
     -->
@@ -677,6 +833,60 @@ src/mastra/workflows/
   </div>
 
   <!-- ═══════════════════════════════════════════════════
+       TAB: Live Conversation
+       ═══════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tab-live">
+    <div class="live-page">
+      <div>
+        <h1>Live Conversation</h1>
+        <p class="subtitle">Always-on mic. Speak naturally — pauses end your turn, the agent replies out loud, and you can interrupt any time.</p>
+      </div>
+
+      <div class="live-controls">
+        <label>
+          Agent:
+          <select id="live-agent-select">
+            <option value="voiceAgent">voiceAgent</option>
+            <option value="hybridVoiceAgent">hybridVoiceAgent</option>
+          </select>
+        </label>
+        <label>
+          Voice:
+          <select id="live-speaker-select" disabled>
+            <option value="">Loading…</option>
+          </select>
+        </label>
+        <button type="button" id="live-clear">Clear transcript</button>
+      </div>
+
+      <div class="live-panel">
+        <button type="button" class="live-toggle" id="live-toggle" title="Start conversation">🎙</button>
+        <div class="live-state" id="live-state" data-state="idle">
+          <span class="dot"></span>
+          <span class="label">Idle</span>
+        </div>
+        <div class="live-meter"><div class="live-meter-fill" id="live-meter"></div></div>
+        <div class="live-tuning">
+          <label>Speech threshold
+            <input type="range" id="live-threshold" min="0.3" max="0.85" step="0.05" value="0.5">
+            <span id="live-threshold-val">0.50</span>
+          </label>
+          <label>End-of-turn pause
+            <input type="range" id="live-silence" min="300" max="2000" step="100" value="700">
+            <span id="live-silence-val">700ms</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="live-transcript" id="live-transcript">
+        <div class="live-transcript-empty">Tap the mic to start a live conversation.</div>
+      </div>
+
+      <audio id="live-tts" style="display:none"></audio>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
        ADD MORE TABS HERE — copy the pattern above:
        <div class="tab-content" id="tab-{name}">
          <div class="page"> ... </div>
@@ -966,6 +1176,347 @@ src/mastra/workflows/
       });
 
       agentSel.addEventListener('change', loadSpeakers);
+      loadSpeakers();
+    })();
+
+    // ── Live Conversation ───────────────────────────
+    (function initLiveConversation() {
+      var API_BASE = '/api';
+      var VAD_BASE = 'https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.24/dist/';
+      var ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/';
+      var FRAME_MS = 96; // vad-web default frame = 1536 samples @ 16kHz
+
+      var toggleBtn = document.getElementById('live-toggle');
+      var stateEl = document.getElementById('live-state');
+      var stateLabel = stateEl.querySelector('.label');
+      var meter = document.getElementById('live-meter');
+      var transcript = document.getElementById('live-transcript');
+      var agentSel = document.getElementById('live-agent-select');
+      var speakerSel = document.getElementById('live-speaker-select');
+      var clearBtn = document.getElementById('live-clear');
+      var thresholdInput = document.getElementById('live-threshold');
+      var thresholdVal = document.getElementById('live-threshold-val');
+      var silenceInput = document.getElementById('live-silence');
+      var silenceVal = document.getElementById('live-silence-val');
+      var ttsEl = document.getElementById('live-tts');
+
+      var state = 'idle'; // idle | listening | recording | transcribing | thinking | speaking
+      var vadInstance = null;
+      var vadLoadPromise = null;
+      var history = [];
+      var currentTtsUrl = null;
+      var generation = 0;
+
+      function setState(next) {
+        state = next;
+        stateEl.dataset.state = next;
+        var labels = { idle: 'Idle', listening: 'Listening', recording: 'Recording', transcribing: 'Transcribing', thinking: 'Thinking', speaking: 'Speaking' };
+        stateLabel.textContent = labels[next] || next;
+      }
+
+      function addLine(who, what) {
+        var empty = transcript.querySelector('.live-transcript-empty');
+        if (empty) empty.remove();
+        var line = document.createElement('div');
+        line.className = 'live-line ' + who;
+        var whoEl = document.createElement('div');
+        whoEl.className = 'who';
+        whoEl.textContent = who === 'user' ? 'You' : 'Agent';
+        var whatEl = document.createElement('div');
+        whatEl.className = 'what';
+        whatEl.textContent = what;
+        line.appendChild(whoEl);
+        line.appendChild(whatEl);
+        transcript.appendChild(line);
+        transcript.scrollTop = transcript.scrollHeight;
+      }
+
+      function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = src;
+          s.onload = function () { resolve(); };
+          s.onerror = function () { reject(new Error('failed to load ' + src)); };
+          document.head.appendChild(s);
+        });
+      }
+
+      function ensureVadLoaded() {
+        if (window.vad) return Promise.resolve();
+        if (!vadLoadPromise) {
+          // ort must be global before the vad bundle evaluates
+          vadLoadPromise = loadScript(ORT_BASE + 'ort.js').then(function () {
+            return loadScript(VAD_BASE + 'bundle.min.js');
+          });
+        }
+        return vadLoadPromise;
+      }
+
+      async function loadSpeakers() {
+        var agentId = agentSel.value;
+        speakerSel.disabled = true;
+        speakerSel.innerHTML = '<option value="">Loading…</option>';
+        try {
+          var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/speakers', { credentials: 'include' });
+          if (!res.ok) throw new Error('speakers failed');
+          var speakers = await res.json();
+          if (!Array.isArray(speakers) || speakers.length === 0) {
+            speakerSel.innerHTML = '<option value="">(agent default)</option>';
+            return;
+          }
+          speakerSel.innerHTML = '<option value="">(agent default)</option>' + speakers.map(function (s) {
+            var id = s.voiceId;
+            var label = s.name || s.displayName || s.voice_name || id;
+            var suffix = s.labels && s.labels.accent ? ' · ' + s.labels.accent : '';
+            return '<option value="' + id + '">' + label + suffix + '</option>';
+          }).join('');
+          speakerSel.disabled = false;
+        } catch (err) {
+          speakerSel.innerHTML = '<option value="">(agent default)</option>';
+          console.warn('[Live] speakers:', err);
+        }
+      }
+
+      async function startSession() {
+        stateLabel.textContent = 'Loading VAD…';
+        try {
+          await ensureVadLoaded();
+        } catch (err) {
+          addLine('agent', '(could not load VAD: ' + err.message + ')');
+          setState('idle');
+          return;
+        }
+
+        var threshold = parseFloat(thresholdInput.value);
+        var silenceMs = parseInt(silenceInput.value, 10);
+        var redemption = Math.max(3, Math.round(silenceMs / FRAME_MS));
+
+        try {
+          vadInstance = await window.vad.MicVAD.new({
+            baseAssetPath: VAD_BASE,
+            onnxWASMBasePath: ORT_BASE,
+            positiveSpeechThreshold: threshold,
+            negativeSpeechThreshold: Math.max(0.1, threshold - 0.15),
+            redemptionFrames: redemption,
+            minSpeechFrames: 3,
+            preSpeechPadFrames: 1,
+            onSpeechStart: handleSpeechStart,
+            onSpeechEnd: handleSpeechEnd,
+            onVADMisfire: function () {
+              if (state === 'recording') setState('listening');
+            },
+            onFrameProcessed: function (probs) {
+              if (state === 'idle') return;
+              meter.style.width = Math.min(100, probs.isSpeech * 100) + '%';
+            },
+          });
+        } catch (err) {
+          addLine('agent', '(could not initialize VAD: ' + err.message + ')');
+          setState('idle');
+          return;
+        }
+
+        vadInstance.start();
+        toggleBtn.classList.add('active');
+        toggleBtn.title = 'Stop conversation';
+        setState('listening');
+      }
+
+      function stopSession() {
+        generation++;
+        setState('idle');
+        if (vadInstance) {
+          try { vadInstance.pause(); } catch (e) {}
+          try { vadInstance.destroy(); } catch (e) {}
+          vadInstance = null;
+        }
+        if (!ttsEl.paused) ttsEl.pause();
+        ttsEl.removeAttribute('src');
+        if (currentTtsUrl) { URL.revokeObjectURL(currentTtsUrl); currentTtsUrl = null; }
+        meter.style.width = '0%';
+        toggleBtn.classList.remove('active');
+        toggleBtn.title = 'Start conversation';
+      }
+
+      function handleSpeechStart() {
+        if (state === 'idle') return;
+        if (state === 'speaking') {
+          if (!ttsEl.paused) ttsEl.pause(); // barge-in
+          setState('recording');
+        } else if (state === 'listening') {
+          setState('recording');
+        }
+        // In transcribing/thinking we stay put and discard on speech end.
+      }
+
+      async function handleSpeechEnd(audio) {
+        var gen = generation;
+        if (state !== 'recording') return; // drop stray utterances while busy
+        if (!audio || audio.length === 0) { setState('listening'); return; }
+
+        setState('transcribing');
+        var blob = encodeWAV(audio, 16000);
+        var text = '';
+        try {
+          text = await transcribe(blob);
+        } catch (err) {
+          console.warn('[Live] transcribe:', err);
+          if (gen === generation && state !== 'idle') setState('listening');
+          return;
+        }
+        if (gen !== generation) return;
+        if (!text) { setState('listening'); return; }
+        addLine('user', text);
+        history.push({ role: 'user', content: text });
+
+        setState('thinking');
+        var reply = '';
+        try {
+          reply = await generate();
+        } catch (err) {
+          console.warn('[Live] generate:', err);
+          if (gen === generation && state !== 'idle') setState('listening');
+          return;
+        }
+        if (gen !== generation) return;
+        if (!reply) { setState('listening'); return; }
+        addLine('agent', reply);
+        history.push({ role: 'assistant', content: reply });
+
+        setState('speaking');
+        try {
+          await speak(reply);
+        } catch (err) {
+          console.warn('[Live] speak:', err);
+        }
+        if (gen === generation && state === 'speaking') setState('listening');
+      }
+
+      function encodeWAV(samples, sampleRate) {
+        var bytesPerSample = 2;
+        var buffer = new ArrayBuffer(44 + samples.length * bytesPerSample);
+        var view = new DataView(buffer);
+        writeString(view, 0, 'RIFF');
+        view.setUint32(4, 36 + samples.length * bytesPerSample, true);
+        writeString(view, 8, 'WAVE');
+        writeString(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);       // PCM chunk size
+        view.setUint16(20, 1, true);        // format = PCM
+        view.setUint16(22, 1, true);        // mono
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * bytesPerSample, true);
+        view.setUint16(32, bytesPerSample, true);
+        view.setUint16(34, 16, true);       // bits/sample
+        writeString(view, 36, 'data');
+        view.setUint32(40, samples.length * bytesPerSample, true);
+        var offset = 44;
+        for (var i = 0; i < samples.length; i++, offset += 2) {
+          var s = Math.max(-1, Math.min(1, samples[i]));
+          view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        }
+        return new Blob([buffer], { type: 'audio/wav' });
+      }
+
+      function writeString(view, offset, str) {
+        for (var i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      }
+
+      async function transcribe(blob) {
+        var agentId = agentSel.value;
+        var fd = new FormData();
+        fd.append('audio', blob, 'recording.wav');
+        fd.append('options', JSON.stringify({ filetype: 'wav' }));
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/listen', {
+          method: 'POST',
+          credentials: 'include',
+          body: fd,
+        });
+        if (!res.ok) throw new Error('listen failed (' + res.status + ')');
+        var data = await res.json();
+        return ((data && data.text) || '').trim();
+      }
+
+      async function generate() {
+        var agentId = agentSel.value;
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ messages: history }),
+        });
+        if (!res.ok) throw new Error('generate failed (' + res.status + ')');
+        var data = await res.json();
+        var text = data && (data.text || (data.response && data.response.text)) || '';
+        if (!text && data && Array.isArray(data.content)) {
+          text = data.content.map(function (c) { return c.text || ''; }).join('');
+        }
+        return text;
+      }
+
+      async function speak(text) {
+        var agentId = agentSel.value;
+        var speakerId = speakerSel.value || undefined;
+        var body = speakerId ? { text: text, speakerId: speakerId } : { text: text };
+        var res = await fetch('/voice-speak/' + encodeURIComponent(agentId), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error('speak failed (' + res.status + ')');
+        var blob = await res.blob();
+        if (currentTtsUrl) URL.revokeObjectURL(currentTtsUrl);
+        currentTtsUrl = URL.createObjectURL(blob);
+        ttsEl.src = currentTtsUrl;
+        return new Promise(function (resolve) {
+          var done = false;
+          function finish() { if (done) return; done = true; resolve(); }
+          ttsEl.onended = finish;
+          ttsEl.onpause = finish;
+          ttsEl.onerror = finish;
+          ttsEl.play().catch(finish);
+        });
+      }
+
+      function applyTuning() {
+        if (!vadInstance) return;
+        // vad-web exposes the internal frame processor; nudge live if present.
+        var threshold = parseFloat(thresholdInput.value);
+        var silenceMs = parseInt(silenceInput.value, 10);
+        var redemption = Math.max(3, Math.round(silenceMs / FRAME_MS));
+        try {
+          var opts = vadInstance.options || (vadInstance.frameProcessor && vadInstance.frameProcessor.options);
+          if (opts) {
+            opts.positiveSpeechThreshold = threshold;
+            opts.negativeSpeechThreshold = Math.max(0.1, threshold - 0.15);
+            opts.redemptionFrames = redemption;
+          }
+        } catch (e) {}
+      }
+
+      toggleBtn.addEventListener('click', function () {
+        if (state === 'idle') startSession();
+        else stopSession();
+      });
+
+      clearBtn.addEventListener('click', function () {
+        history = [];
+        transcript.innerHTML = '<div class="live-transcript-empty">Tap the mic to start a live conversation.</div>';
+      });
+
+      thresholdInput.addEventListener('input', function () {
+        thresholdVal.textContent = parseFloat(thresholdInput.value).toFixed(2);
+        applyTuning();
+      });
+      silenceInput.addEventListener('input', function () {
+        silenceVal.textContent = silenceInput.value + 'ms';
+        applyTuning();
+      });
+
+      agentSel.addEventListener('change', function () {
+        history = [];
+        loadSpeakers();
+      });
       loadSpeakers();
     })();
   </script>
