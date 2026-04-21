@@ -192,6 +192,174 @@
       color: var(--text2);
     }
     .callout strong { color: var(--accent-hover); }
+
+    /* ── Voice chat tab ─────────────────────────────── */
+    .chat-page {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      gap: 1rem;
+    }
+    .chat-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-size: 0.8125rem;
+      color: var(--text2);
+    }
+    .chat-controls select,
+    .chat-controls button {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text1);
+      border-radius: 6px;
+      padding: 0.4rem 0.65rem;
+    }
+    .chat-controls select { cursor: pointer; }
+    .chat-controls button { cursor: pointer; }
+    .chat-controls button:hover { border-color: var(--border-active); }
+    .chat-controls label.inline-toggle {
+      display: inline-flex;
+      gap: 0.35rem;
+      align-items: center;
+      cursor: pointer;
+    }
+    .chat-controls input[type="checkbox"] { accent-color: var(--accent); }
+
+    .chat-log {
+      flex: 1;
+      min-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface1);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .chat-log::-webkit-scrollbar { width: 6px; }
+    .chat-log::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+    .chat-empty {
+      color: var(--text3);
+      font-size: 0.8125rem;
+      text-align: center;
+      margin: auto;
+    }
+    .chat-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 85%;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .chat-msg .role {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text3);
+      margin-bottom: 0.2rem;
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--accent-dim);
+      color: var(--text1);
+    }
+    .chat-msg.agent {
+      align-self: flex-start;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text1);
+    }
+    .chat-msg.system {
+      align-self: center;
+      background: transparent;
+      color: var(--text3);
+      font-size: 0.75rem;
+      font-style: italic;
+    }
+    .chat-msg button.replay {
+      align-self: flex-start;
+      margin-top: 0.4rem;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text3);
+      font-size: 0.7rem;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      cursor: pointer;
+    }
+    .chat-msg button.replay:hover { color: var(--text1); border-color: var(--border-active); }
+
+    .chat-input-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-end;
+    }
+    .chat-input-row textarea {
+      flex: 1;
+      resize: none;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      background: var(--surface1);
+      color: var(--text1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      line-height: 1.5;
+      min-height: 2.5rem;
+      max-height: 10rem;
+    }
+    .chat-input-row textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .chat-input-row button {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 0 0.9rem;
+      height: 2.5rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text1);
+    }
+    .chat-input-row button:hover { border-color: var(--border-active); }
+    .chat-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .chat-input-row #send-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .chat-input-row #send-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .chat-input-row #mic-btn.recording {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
+      animation: pulse 1.1s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.45); }
+      50% { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+    }
+    .chat-status {
+      font-size: 0.75rem;
+      color: var(--text3);
+      min-height: 1em;
+    }
   </style>
 </head>
 <body>
@@ -199,6 +367,7 @@
   <!-- ── Tab Bar ──────────────────────────────────────── -->
   <div class="tab-bar" id="tab-bar">
     <button class="tab-btn active" data-tab="legal">Agentic RAG for Legal Cases</button>
+    <button class="tab-btn" data-tab="voice-chat">Voice Chat</button>
     <!-- Add more tabs here:
     <button class="tab-btn" data-tab="my-other-tab">Other Tab</button>
     -->
@@ -461,6 +630,53 @@ src/mastra/workflows/
   </div>
 
   <!-- ═══════════════════════════════════════════════════
+       TAB: Voice Chat
+       ═══════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tab-voice-chat">
+    <div class="chat-page">
+      <div>
+        <h1>Voice Chat</h1>
+        <p class="subtitle">Chat with the ElevenLabs-powered voice agents. Type or hold the mic to speak — replies are spoken back.</p>
+      </div>
+
+      <div class="chat-controls">
+        <label>
+          Agent:
+          <select id="agent-select">
+            <option value="voiceAgent">voiceAgent (ElevenLabs TTS + STT)</option>
+            <option value="hybridVoiceAgent">hybridVoiceAgent (Whisper STT + ElevenLabs TTS)</option>
+          </select>
+        </label>
+        <label>
+          Voice:
+          <select id="speaker-select" disabled>
+            <option value="">Loading…</option>
+          </select>
+        </label>
+        <label class="inline-toggle">
+          <input type="checkbox" id="auto-speak" checked>
+          Speak replies
+        </label>
+        <button type="button" id="clear-chat">Clear</button>
+      </div>
+
+      <div class="chat-log" id="chat-log">
+        <div class="chat-empty">No messages yet. Say hello.</div>
+      </div>
+
+      <div class="chat-status" id="chat-status"></div>
+
+      <form class="chat-input-row" id="chat-form">
+        <textarea id="chat-input" rows="1" placeholder="Type a message, or hold the mic to speak…"></textarea>
+        <button type="button" id="mic-btn" title="Hold to record">🎤</button>
+        <button type="submit" id="send-btn">Send</button>
+      </form>
+
+      <audio id="tts-audio" controls style="width: 100%; margin-top: 0.5rem;"></audio>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
        ADD MORE TABS HERE — copy the pattern above:
        <div class="tab-content" id="tab-{name}">
          <div class="page"> ... </div>
@@ -487,6 +703,271 @@ src/mastra/workflows/
     });
 
     console.log('[Sandbox] page loaded');
+
+    // ── Voice Chat ──────────────────────────────────
+    (function initVoiceChat() {
+      var API_BASE = '/api';
+      var chatLog = document.getElementById('chat-log');
+      var form = document.getElementById('chat-form');
+      var input = document.getElementById('chat-input');
+      var sendBtn = document.getElementById('send-btn');
+      var micBtn = document.getElementById('mic-btn');
+      var agentSel = document.getElementById('agent-select');
+      var speakerSel = document.getElementById('speaker-select');
+      var autoSpeak = document.getElementById('auto-speak');
+      var clearBtn = document.getElementById('clear-chat');
+      var status = document.getElementById('chat-status');
+      var ttsAudio = document.getElementById('tts-audio');
+
+      var history = []; // { role: 'user'|'assistant', content: string }[]
+      var recorder = null;
+      var recordChunks = [];
+      var recordStream = null;
+
+      function setStatus(msg) { status.textContent = msg || ''; }
+
+      function currentAgentId() { return agentSel.value; }
+      function currentSpeakerId() { return speakerSel.value || undefined; }
+
+      async function loadSpeakers() {
+        var agentId = currentAgentId();
+        speakerSel.disabled = true;
+        speakerSel.innerHTML = '<option value="">Loading…</option>';
+        try {
+          var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/speakers', {
+            credentials: 'include',
+          });
+          if (!res.ok) throw new Error('speakers failed (' + res.status + ')');
+          var speakers = await res.json();
+          if (!Array.isArray(speakers) || speakers.length === 0) {
+            speakerSel.innerHTML = '<option value="">(agent default)</option>';
+            speakerSel.disabled = true;
+            return;
+          }
+          speakerSel.innerHTML = '<option value="">(agent default)</option>' + speakers.map(function (s) {
+            var id = s.voiceId;
+            var label = s.name || s.displayName || s.voice_name || id;
+            var suffix = s.labels && s.labels.accent ? ' · ' + s.labels.accent : '';
+            return '<option value="' + id + '">' + label + suffix + '</option>';
+          }).join('');
+          speakerSel.disabled = false;
+        } catch (err) {
+          speakerSel.innerHTML = '<option value="">(agent default)</option>';
+          speakerSel.disabled = true;
+          console.warn('[VoiceChat] could not load speakers:', err);
+        }
+      }
+
+      function clearEmpty() {
+        var empty = chatLog.querySelector('.chat-empty');
+        if (empty) empty.remove();
+      }
+
+      function renderMsg(role, text, opts) {
+        clearEmpty();
+        var div = document.createElement('div');
+        div.className = 'chat-msg ' + role;
+        var rolePill = document.createElement('div');
+        rolePill.className = 'role';
+        rolePill.textContent = role === 'user' ? 'You' : role === 'agent' ? 'Agent' : 'System';
+        div.appendChild(rolePill);
+        var body = document.createElement('div');
+        body.textContent = text;
+        div.appendChild(body);
+        if (opts && opts.withReplay) {
+          var btn = document.createElement('button');
+          btn.className = 'replay';
+          btn.type = 'button';
+          btn.textContent = '▶ Play';
+          btn.addEventListener('click', function () { speak(text).catch(logError); });
+          div.appendChild(btn);
+        }
+        chatLog.appendChild(div);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return div;
+      }
+
+      function logError(err) {
+        console.error('[VoiceChat]', err);
+        setStatus('Error: ' + (err && err.message ? err.message : String(err)));
+      }
+
+      async function generate(agentId, userText) {
+        history.push({ role: 'user', content: userText });
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ messages: history }),
+        });
+        if (!res.ok) {
+          var errText = await res.text().catch(function () { return ''; });
+          throw new Error('generate failed (' + res.status + '): ' + errText);
+        }
+        var data = await res.json();
+        // v5 generate returns { text, ... }; legacy paths sometimes nest under .response
+        var text = data && (data.text || (data.response && data.response.text)) || '';
+        if (!text && data && Array.isArray(data.content)) {
+          text = data.content.map(function (c) { return c.text || ''; }).join('');
+        }
+        history.push({ role: 'assistant', content: text });
+        return text;
+      }
+
+      async function speak(text) {
+        var agentId = currentAgentId();
+        var speakerId = currentSpeakerId();
+        setStatus('Speaking…');
+        var body = speakerId ? { text: text, speakerId: speakerId } : { text: text };
+        var res = await fetch('/voice-speak/' + encodeURIComponent(agentId), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          var errText = await res.text().catch(function () { return ''; });
+          throw new Error('speak failed (' + res.status + '): ' + errText);
+        }
+        var blob = await res.blob();
+        var url = URL.createObjectURL(blob);
+        ttsAudio.src = url;
+        try {
+          await ttsAudio.play();
+          setStatus('');
+        } catch (err) {
+          console.warn('[VoiceChat] autoplay blocked:', err);
+          setStatus('Audio ready — click the player to play (autoplay blocked).');
+        }
+      }
+
+      async function transcribe(audioBlob) {
+        var agentId = currentAgentId();
+        var fd = new FormData();
+        // Infer extension from mime type
+        var mime = audioBlob.type || 'audio/webm';
+        var ext = mime.indexOf('webm') !== -1 ? 'webm'
+                : mime.indexOf('mp4') !== -1 ? 'mp4'
+                : mime.indexOf('ogg') !== -1 ? 'ogg'
+                : 'webm';
+        fd.append('audio', audioBlob, 'recording.' + ext);
+        fd.append('options', JSON.stringify({ filetype: ext }));
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/listen', {
+          method: 'POST',
+          credentials: 'include',
+          body: fd,
+        });
+        if (!res.ok) {
+          var errText = await res.text().catch(function () { return ''; });
+          throw new Error('listen failed (' + res.status + '): ' + errText);
+        }
+        var data = await res.json();
+        return (data && data.text) || '';
+      }
+
+      async function handleUserMessage(userText) {
+        if (!userText) return;
+        renderMsg('user', userText);
+        input.value = '';
+        autosize();
+        sendBtn.disabled = true;
+        micBtn.disabled = true;
+        setStatus('Thinking…');
+        try {
+          var reply = await generate(currentAgentId(), userText);
+          var msgEl = renderMsg('agent', reply || '(no response)', { withReplay: true });
+          if (autoSpeak.checked && reply) {
+            try { await speak(reply); } catch (e) { logError(e); }
+          } else {
+            setStatus('');
+          }
+        } catch (err) {
+          logError(err);
+        } finally {
+          sendBtn.disabled = false;
+          micBtn.disabled = false;
+        }
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        handleUserMessage(input.value.trim());
+      });
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleUserMessage(input.value.trim());
+        }
+      });
+
+      function autosize() {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+      }
+      input.addEventListener('input', autosize);
+
+      clearBtn.addEventListener('click', function () {
+        history = [];
+        chatLog.innerHTML = '<div class="chat-empty">No messages yet. Say hello.</div>';
+        setStatus('');
+      });
+
+      // ── Recording ─────────────────────────────────
+      async function startRecording() {
+        if (recorder) return;
+        if (!navigator.mediaDevices || !window.MediaRecorder) {
+          setStatus('Recording not supported in this browser.');
+          return;
+        }
+        try {
+          recordStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (err) {
+          logError(err);
+          return;
+        }
+        recordChunks = [];
+        var mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+        recorder = mime ? new MediaRecorder(recordStream, { mimeType: mime }) : new MediaRecorder(recordStream);
+        recorder.addEventListener('dataavailable', function (e) {
+          if (e.data && e.data.size > 0) recordChunks.push(e.data);
+        });
+        recorder.addEventListener('stop', async function () {
+          var blob = new Blob(recordChunks, { type: recorder.mimeType || 'audio/webm' });
+          if (recordStream) {
+            recordStream.getTracks().forEach(function (t) { t.stop(); });
+            recordStream = null;
+          }
+          recorder = null;
+          micBtn.classList.remove('recording');
+          if (blob.size === 0) { setStatus(''); return; }
+          setStatus('Transcribing…');
+          try {
+            var text = await transcribe(blob);
+            if (text) { await handleUserMessage(text); }
+            else { setStatus('No speech detected.'); }
+          } catch (err) {
+            logError(err);
+          }
+        });
+        recorder.start();
+        micBtn.classList.add('recording');
+        setStatus('Recording… release to send.');
+      }
+
+      function stopRecording() {
+        if (recorder && recorder.state !== 'inactive') recorder.stop();
+      }
+
+      micBtn.addEventListener('mousedown', startRecording);
+      micBtn.addEventListener('touchstart', function (e) { e.preventDefault(); startRecording(); });
+      ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(function (ev) {
+        micBtn.addEventListener(ev, stopRecording);
+      });
+
+      agentSel.addEventListener('change', loadSpeakers);
+      loadSpeakers();
+    })();
   </script>
 </body>
 </html>

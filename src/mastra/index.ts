@@ -18,6 +18,8 @@ import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-age
 import { answererAgent } from './agents/answerer-agent';
 import { legalQueryPlannerAgent } from './agents/legal-query-planner-agent';
 import { legalResultEvaluatorAgent } from './agents/legal-result-evaluator-agent';
+import { voiceAgent } from './agents/voice-agent';
+import { hybridVoiceAgent } from './agents/hybrid-voice-agent';
 import { getPineconeStore } from './tools/legal';
 
 // Workflows
@@ -25,6 +27,9 @@ import { blogPostWorkflow } from './workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
 import { deepSearch } from './workflows/deep-search-workflow';
 import { legalRag } from './workflows/legal-rag-workflow';
+
+// Custom routes
+import { voiceSpeakRoute } from './routes/voice-speak-route';
 
 // Scorers
 import { basedScorer } from './scorers/based-scorer';
@@ -49,6 +54,8 @@ export const mastra = new Mastra({
     answererAgent,
     legalQueryPlannerAgent,
     legalResultEvaluatorAgent,
+    voiceAgent,
+    hybridVoiceAgent,
   },
   scorers: {
     basedScorer,
@@ -60,6 +67,9 @@ export const mastra = new Mastra({
     'legal-pinecone': getPineconeStore(),
   },
   storage,
+  server: {
+    apiRoutes: [voiceSpeakRoute],
+  },
   logger: new PinoLogger({
     name: 'Mastra',
     level: 'info',
