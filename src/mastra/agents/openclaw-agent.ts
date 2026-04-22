@@ -31,6 +31,7 @@ import {
   agenticRagTool,
   legalCaseSearchTool,
 } from '../tools/legal';
+import { todoAdd, todoList, todoComplete } from '../tools/todo-tools';
 
 // Detect environment: use E2B when deployed (production without MASTRA_DEV flag), local otherwise
 const isDeployed = process.env.NODE_ENV === 'production' && process.env.MASTRA_DEV !== 'true';
@@ -144,6 +145,13 @@ When invoked through the \`legal-rag\` workflow, the search process includes a h
 - For complex questions requiring precision (e.g., "What did Smith say about X?"), use \`legal-agentic-search\`
 - The agentic search reads the full document text for its best candidate, so answers include exact citations
 
+## Todo List
+You manage a persistent todo list stored at \`workspace/todo.json\`. Use it to track ongoing work, user requests, and follow-ups across sessions.
+- \`todo-add\`: Add a new todo item.
+- \`todo-list\`: List todos (filter by \`all\`, \`pending\`, or \`completed\`).
+- \`todo-complete\`: Mark a todo complete by its id.
+When the user asks to remember, track, or follow up on something, add it as a todo. Review pending todos at the start of a session when relevant.
+
 ## Workspace Organization
 - Use clear folder structures: /drafts, /research, /content, /business
 - Name files descriptively with dates when relevant
@@ -183,6 +191,10 @@ When invoked through the \`legal-rag\` workflow, the search process includes a h
     deleteCaseDocumentsTool,
     agenticRagTool,
     legalCaseSearchTool,
+    // Workspace todo list
+    todoAdd,
+    todoList,
+    todoComplete,
   },
 
   browser,
