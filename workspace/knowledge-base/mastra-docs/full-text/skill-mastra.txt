@@ -1,0 +1,19 @@
+# Skill: mastra
+
+Comprehensive Mastra AI framework guide. Teaches how to find current documentation, verify API signatures, and build agents and workflows. Covers documentation lookup strategies (embedded docs, remote docs), core concepts (agents vs workflows, tools, memory, RAG), TypeScript requirements, and common patterns. Use this skill for all Mastra development to ensure you're using current APIs from the installed version or latest documentation.
+
+## Full metadata
+```json
+{
+  "name": "mastra",
+  "description": "Comprehensive Mastra AI framework guide. Teaches how to find current documentation, verify API signatures, and build agents and workflows. Covers documentation lookup strategies (embedded docs, remote docs), core concepts (agents vs workflows, tools, memory, RAG), TypeScript requirements, and common patterns. Use this skill for all Mastra development to ensure you're using current APIs from the installed version or latest documentation.",
+  "files": [
+    "SKILL.md",
+    "references/migration-guide.md",
+    "references/embedded-docs.md",
+    "references/remote-docs.md",
+    "references/common-errors.md",
+    "references/create-mastra.md"
+  ]
+}
+```

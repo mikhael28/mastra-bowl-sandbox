@@ -1,0 +1,139 @@
+%PDF-1.4
+%����
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 5485 >>
+stream
+BT
+/F1 12 Tf
+14 TL
+50 740 Td
+(Michael ‘Misha’ Litchev | Senior Software Engineer) Tj
+T*
+(\(650\) 868-7480 | mikhael@hey.com | github.com/mikhael28) Tj
+T*
+(Expatria \(expatriaonline.com\) – Seattle, WA) Tj
+T*
+(Software Engineer, Full-Stack 12/2024 - 1/2026) Tj
+T*
+(▪ Architected, designed & programmed an offline-first, data-dense platform for global immigration) Tj
+T*
+(▪ Integrated headless, ‘always-on’ agentic co-pilot to guide the user through complex, multi-step processes) Tj
+T*
+(▪ Orchestrated automated, agentic workflows with OpenAI, Claude, N8N, Gemini, Linear & Cursor APIs) Tj
+T*
+(▪ Implemented Manifest V3 Chrome Extension including an embedded, local Gemini Nano LLM model) Tj
+T*
+(▪ Deployed Node.js microservices to handle logic related to Stripe-based subscription & one-off payments) Tj
+T*
+(▪ Persisted user & application data using Postgres, caching local user data with IndexedDB) Tj
+T*
+(▪ Charted interactive, animated world, continent & national maps with TopoJSON & GeoJSON) Tj
+T*
+(▪ Designed aesthetically pleasing, consistent CSS using Tailwind, animations with Framer Motion & Three.js) Tj
+T*
+(▪ Compiled comprehensive demographic & statistical data about countries into consumable npm packages) Tj
+T*
+(▪ Led User Research sessions, leading to tangible UX improvements & workflows tailored to behavior) Tj
+T*
+(▪ Abstracted platform code into a reusable front-end boilerplate, available for purchase.) Tj
+T*
+(▪ Orchestrated CI/CD pipeline w/GitHub actions & AWS services like S3, Cloudfront, KMS, Lambda & EC2) Tj
+T*
+(▪ Optimized SEO with 2000+ statically generated pages w/ data about countries, cities & immigration docs) Tj
+T*
+(▪ Engineered web & mobile-optimized workflows, including TikTok-style navigation for tablet users.) Tj
+T*
+(▪ Programmed quality-of-life modules, incl. a command palette, onboarding module & achievements system) Tj
+T*
+(▪ Benchmarked performance metrics using Lighthouse & react-scan, tracking TTP & unnecessary re-renders) Tj
+T*
+(▪ Tested codebase via unit & snapshot testing with Jest & React Testing Library, Cypress for e2e test flow) Tj
+T*
+(▪ Logged API services & webhooks using Cloudwatch; monitored front-end issues & sessions with Sentry) Tj
+T*
+(▪ Additional functionality includes international tax calculations, blog, a step-by-step onboarding system) Tj
+T*
+(including animated gifs, animated platform tour, cost-of-living comparison tools & document storage.) Tj
+T*
+(Cedar AI \(cedarai.com\) – Seattle, WA) Tj
+T*
+(Software Engineer, Mobile & Web 10/2021 - 1/2024) Tj
+T*
+(▪ Led engineering for ARMS Mobile, a cross-platform Flutter mobile app that runs in production on iOS,) Tj
+T*
+(Android & web, onboarding over 20 railroads and over 150 industrial daily active users during my tenure.) Tj
+T*
+(▪ Designed IAM-based UI rendering & dynamic tree-based navigation, also integrating OAuth providers) Tj
+T*
+(▪ Benchmarked perf metrics in designing large, multi-indexed list views w/ multiple interaction patterns) Tj
+T*
+(▪ Implemented on-device machine learning models for optical character recognition & QR scan workflows) Tj
+T*
+(▪ Implemented offline-first storage using Hive, accounting for unstable network environments in the field) Tj
+T*
+(▪ Managed deployment workflows on all three production environments, including iOS, Android and Web) Tj
+T*
+(▪ Tested & deployed REST & Protobuf-based gRPC APIs in Python, within a Bazel monorepo environment) Tj
+T*
+(▪ Built data-dense UI in React w/Typescript, managing state with a combo of Redux, Hooks and Context.) Tj
+T*
+(▪ Built & maintained reusable components for internal component library, used across front-end codebases.) Tj
+T*
+(▪ Continuously served on-call for Sev-1 or Sev-2 incidents for the mobile application using PagerDuty.) Tj
+T*
+(▪ Traveled to five different states \(CA, AL, KY, GA, WA\) to onboard clients, build relationships & code onsite.) Tj
+T*
+(▪ Provided technical sales support to existing and prospective customers, giving demos & answering queries) Tj
+T*
+(▪ Created product marketing & onboarding resources, such as gifs, tutorial slideshows & feature docs) Tj
+T*
+(▪ Internationalized the UX into three different languages, specifically Spanish & Punjabi \(Gurmukhi script\)) Tj
+T*
+(▪ Implemented Android/iOS push notifications, error logging & session tracking via DataDog) Tj
+T*
+(▪ Added new marketing pages & content for our landing site cedarai.com for mobile, transload, intermodal.) Tj
+T*
+(Projects, MCP Servers, NPM Packages & Open Source Contributions) Tj
+T*
+(▪ ‘seattle-open-json’ is a MCP-server & standardized JSON interface for civic resources available in the Puget Sound.) Tj
+T*
+(▪ ‘yi-jing-oracle’ is an npm-packaged algorithm for the yarrow-stalk method of Chinese divination & web application.) Tj
+T*
+(▪ ‘national-metadata’ is an NPM package that contains metadata & TopoJSON for the world’s nation states & world cities) Tj
+T*
+(▪ 10x is a paper-based & online multi-player card game for software engineers to battle to see who is the true 10x developer) Tj
+T*
+(▪ I run an OpenClaw agent on my Nintendo Switch, deploy my own VPN, & self-host side-projects on my Raspberry Pi.) Tj
+T*
+(Author, ‘Journey to the East; Post-COVID China’ on Kindle || Career Break & Travel 1/2024 - 10/2024) Tj
+T*
+(A travelogue over 60 days of travel that tells the history of imperial China & an overview of modern culture, tech & more.) Tj
+ET
+
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000000317 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+5854
+%%EOF

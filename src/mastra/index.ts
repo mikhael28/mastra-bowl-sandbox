@@ -1,12 +1,9 @@
 
 import { Mastra } from '@mastra/core/mastra';
 import { PinoLogger } from '@mastra/loggers';
-import { LibSQLStore } from '@mastra/libsql';
-import { DuckDBStore } from "@mastra/duckdb";
-import { ObservabilityStorageClickhouseVNext } from '@mastra/clickhouse';
-import { MastraCompositeStore } from '@mastra/core/storage';
 import { Observability, DefaultExporter, CloudExporter, SensitiveDataFilter } from '@mastra/observability';
 import { MastraEditor } from '@mastra/editor'
+import { storage } from './storage';
 
 // Agents
 import { mathAgent } from './agents/math-agent';
@@ -19,15 +16,20 @@ import { intentClarifierAgent } from './agents/intent-clarifier-agent';
 import { researchPlannerAgent } from './agents/research-planner-agent';
 import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-agent';
 import { answererAgent } from './agents/answerer-agent';
-import { legalQueryPlannerAgent } from './agents/legal-query-planner-agent';
-import { legalResultEvaluatorAgent } from './agents/legal-result-evaluator-agent';
-import { getPineconeStore } from './tools/legal';
+import { queryPlannerAgent } from './agents/query-planner-agent';
+import { retrievalEvaluatorAgent } from './agents/retrieval-evaluator-agent';
+import { voiceAgent } from './agents/voice-agent';
+import { hybridVoiceAgent } from './agents/hybrid-voice-agent';
+import { getKnowledgeBaseStore, VECTOR_STORE_NAME } from './tools/rag';
 
 // Workflows
 import { blogPostWorkflow } from './workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
 import { deepSearch } from './workflows/deep-search-workflow';
-import { legalRag } from './workflows/legal-rag-workflow';
+import { ragWorkflow } from './workflows/rag-workflow';
+
+// Custom routes
+import { voiceSpeakRoute } from './routes/voice-speak-route';
 
 // Scorers
 import { basedScorer } from './scorers/based-scorer';
@@ -37,17 +39,8 @@ import { docsMcpServer } from './mcp/docs-server';
 import { ComposioToolProvider } from '@mastra/editor/composio';
 import { ArcadeToolProvider } from '@mastra/editor/arcade';
 
-const observabilityStorage = process.env.CLICKHOUSE_URL
-  ? new ObservabilityStorageClickhouseVNext({
-      url: process.env.CLICKHOUSE_URL,
-      username: process.env.CLICKHOUSE_USERNAME ?? 'default',
-      password: process.env.CLICKHOUSE_PASSWORD ?? '',
-      retention: { logs: 14, metrics: 90 },
-    })
-  : await new DuckDBStore().getStore('observability');
-
 export const mastra = new Mastra({
-  workflows: { blogPostWorkflow, techTouchdownWorkflow, deepSearch, legalRag },
+  workflows: { blogPostWorkflow, techTouchdownWorkflow, deepSearch, ragWorkflow },
   agents: {
     mathAgent,
     copywriterAgent,
@@ -59,8 +52,10 @@ export const mastra = new Mastra({
     researchPlannerAgent,
     searchResultEvaluatorAgent,
     answererAgent,
-    legalQueryPlannerAgent,
-    legalResultEvaluatorAgent,
+    queryPlannerAgent,
+    retrievalEvaluatorAgent,
+    voiceAgent,
+    hybridVoiceAgent,
   },
   scorers: {
     basedScorer,
@@ -69,18 +64,12 @@ export const mastra = new Mastra({
     docsMcpServer,
   },
   vectors: {
-    'legal-pinecone': getPineconeStore(),
+    [VECTOR_STORE_NAME]: getKnowledgeBaseStore(),
   },
-  storage: new MastraCompositeStore({
-    id: 'composite-storage',
-    default: new LibSQLStore({
-      id: "mastra-storage",
-      url: "file:./mastra.db",
-    }),
-    domains: {
-      observability: observabilityStorage,
-    }
-  }),
+  storage,
+  server: {
+    apiRoutes: [voiceSpeakRoute],
+  },
   logger: new PinoLogger({
     name: 'Mastra',
     level: 'info',

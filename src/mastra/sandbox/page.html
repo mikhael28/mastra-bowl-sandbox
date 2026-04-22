@@ -192,38 +192,364 @@
       color: var(--text2);
     }
     .callout strong { color: var(--accent-hover); }
+
+    /* ── Voice chat tab ─────────────────────────────── */
+    .chat-page {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      gap: 1rem;
+    }
+    .chat-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      font-size: 0.8125rem;
+      color: var(--text2);
+    }
+    .chat-controls select,
+    .chat-controls button {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text1);
+      border-radius: 6px;
+      padding: 0.4rem 0.65rem;
+    }
+    .chat-controls select { cursor: pointer; }
+    .chat-controls button { cursor: pointer; }
+    .chat-controls button:hover { border-color: var(--border-active); }
+    .chat-controls label.inline-toggle {
+      display: inline-flex;
+      gap: 0.35rem;
+      align-items: center;
+      cursor: pointer;
+    }
+    .chat-controls input[type="checkbox"] { accent-color: var(--accent); }
+
+    .chat-log {
+      flex: 1;
+      min-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface1);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .chat-log::-webkit-scrollbar { width: 6px; }
+    .chat-log::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+    .chat-empty {
+      color: var(--text3);
+      font-size: 0.8125rem;
+      text-align: center;
+      margin: auto;
+    }
+    .chat-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 85%;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .chat-msg .role {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text3);
+      margin-bottom: 0.2rem;
+    }
+    .chat-msg.user {
+      align-self: flex-end;
+      background: var(--accent-dim);
+      color: var(--text1);
+    }
+    .chat-msg.agent {
+      align-self: flex-start;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text1);
+    }
+    .chat-msg.system {
+      align-self: center;
+      background: transparent;
+      color: var(--text3);
+      font-size: 0.75rem;
+      font-style: italic;
+    }
+    .chat-msg button.replay {
+      align-self: flex-start;
+      margin-top: 0.4rem;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text3);
+      font-size: 0.7rem;
+      border-radius: 4px;
+      padding: 0.15rem 0.45rem;
+      cursor: pointer;
+    }
+    .chat-msg button.replay:hover { color: var(--text1); border-color: var(--border-active); }
+
+    .chat-input-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-end;
+    }
+    .chat-input-row textarea {
+      flex: 1;
+      resize: none;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      background: var(--surface1);
+      color: var(--text1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      line-height: 1.5;
+      min-height: 2.5rem;
+      max-height: 10rem;
+    }
+    .chat-input-row textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .chat-input-row button {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 0 0.9rem;
+      height: 2.5rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text1);
+    }
+    .chat-input-row button:hover { border-color: var(--border-active); }
+    .chat-input-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .chat-input-row #send-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .chat-input-row #send-btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .chat-input-row #mic-btn.recording {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #fff;
+      animation: pulse 1.1s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.45); }
+      50% { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+    }
+    .chat-status {
+      font-size: 0.75rem;
+      color: var(--text3);
+      min-height: 1em;
+    }
+
+    /* ── Live conversation tab ──────────────────────── */
+    .live-page {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      gap: 1rem;
+    }
+    .live-controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 0.8125rem;
+      color: var(--text2);
+    }
+    .live-controls select {
+      font-family: var(--font-sans);
+      font-size: 0.8125rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text1);
+      border-radius: 6px;
+      padding: 0.4rem 0.65rem;
+      cursor: pointer;
+    }
+    .live-panel {
+      background: var(--surface1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+    .live-toggle {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text1);
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .live-toggle:hover { border-color: var(--border-active); }
+    .live-toggle.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      animation: livePulse 2s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(99,102,241,0); }
+    }
+    .live-state {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--text2);
+    }
+    .live-state .dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: var(--text3);
+      transition: background 0.15s;
+    }
+    .live-state[data-state="listening"] .dot { background: var(--green); }
+    .live-state[data-state="recording"] .dot { background: var(--amber); animation: liveBlink 0.9s infinite; }
+    .live-state[data-state="transcribing"] .dot { background: var(--amber); }
+    .live-state[data-state="thinking"] .dot { background: var(--accent); }
+    .live-state[data-state="speaking"] .dot { background: var(--accent-hover); animation: liveBlink 0.9s infinite; }
+    @keyframes liveBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    .live-meter {
+      width: 100%;
+      height: 4px;
+      background: var(--surface3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .live-meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, var(--green), var(--amber), #dc2626);
+      transition: width 0.05s linear;
+    }
+    .live-tuning {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--text3);
+      align-items: center;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+    }
+    .live-tuning label { display: inline-flex; gap: 0.4rem; align-items: center; }
+    .live-tuning input[type="range"] { accent-color: var(--accent); width: 7rem; }
+    .live-transcript {
+      flex: 1;
+      min-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface1);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .live-transcript::-webkit-scrollbar { width: 6px; }
+    .live-transcript::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+    .live-transcript-empty {
+      color: var(--text3);
+      font-size: 0.8125rem;
+      text-align: center;
+      margin: auto;
+    }
+    .live-line {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.55;
+    }
+    .live-line .who {
+      font-weight: 600;
+      flex-shrink: 0;
+      width: 3.2rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-top: 0.15rem;
+    }
+    .live-line.user .who { color: var(--accent-hover); }
+    .live-line.agent .who { color: var(--green); }
+    .live-line .what {
+      color: var(--text1);
+      white-space: pre-wrap;
+      word-break: break-word;
+      flex: 1;
+    }
   </style>
 </head>
 <body>
 
   <!-- ── Tab Bar ──────────────────────────────────────── -->
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" data-tab="legal">Agentic RAG for Legal Cases</button>
+    <button class="tab-btn active" data-tab="rag">Agentic RAG</button>
+    <button class="tab-btn" data-tab="voice-chat">Voice Chat</button>
+    <button class="tab-btn" data-tab="live">Live Conversation</button>
     <!-- Add more tabs here:
     <button class="tab-btn" data-tab="my-other-tab">Other Tab</button>
     -->
   </div>
 
   <!-- ═══════════════════════════════════════════════════
-       TAB: Agentic RAG for Legal Cases
+       TAB: Agentic RAG (generic knowledge base)
        ═══════════════════════════════════════════════════ -->
-  <div class="tab-content active" id="tab-legal">
+  <div class="tab-content active" id="tab-rag">
     <div class="page">
 
-      <h1>Agentic RAG for Legal Cases</h1>
-      <p class="subtitle">Ingest case documents into Pinecone, then iteratively search them with precision through the OpenClaw agent.</p>
+      <h1>Agentic RAG</h1>
+      <p class="subtitle">A generic knowledge-base stack &mdash; ingest any documents into a named collection, then retrieve with a unified tool that picks between a quick search and a full agentic loop.</p>
 
       <!-- ── Overview ───────────────────────────────── -->
       <h2>Overview</h2>
       <p>
-        This skill adds <strong>document ingestion</strong>, <strong>case management</strong>, and <strong>agentic RAG search</strong> to the OpenClaw agent.
-        Each legal case is an isolated Pinecone namespace. Documents are parsed, chunked, embedded, and stored with rich metadata so the agent can iteratively
-        search, evaluate results, refine queries, and read full documents to give lawyers precise, citation-backed answers.
+        This is a reusable RAG primitive built on Mastra, Pinecone, and the OpenClaw agent. Each <strong>collection</strong> is an
+        isolated Pinecone namespace, so different bodies of knowledge (Mastra docs, a product manual, a case file) stay fully separated.
+        Documents are parsed, chunked, embedded, and stored with rich metadata. The agent retrieves through one unified tool that can
+        either do a quick single-shot search or run an iterative agentic loop with query planning, result evaluation, and full-document reads.
       </p>
 
       <div class="callout">
-        <strong>Key insight:</strong> Unlike one-shot RAG, agentic search loops up to 3 times &mdash; planning new queries, evaluating gaps, and narrowing
-        down to the exact passage before reading the full document for final context.
+        <strong>Seed data:</strong> Run <code>npm run seed:mastra-docs</code> to populate the <code>mastra-docs</code> collection with
+        the live contents of <a href="https://mastra.ai/llms.txt">mastra.ai/llms.txt</a> and the Mastra skills index &mdash; a ready-made demo for the OpenClaw agent to query.
       </div>
 
       <!-- ── Architecture ───────────────────────────── -->
@@ -231,7 +557,7 @@
 
       <div class="card">
         <div class="card-title">Data Flow</div>
-<pre><code>Documents (PDF, DOCX, XLSX, CSV, MD, TXT, JPG, PNG)
+<pre><code>Documents (PDF, DOCX, XLSX, CSV, MD, TXT, JPG, PNG) OR raw text
     |
     v
 [Document Parser] ---> Extract text (OCR for images via GPT-4o)
@@ -243,33 +569,34 @@
 [embedMany()] ---> OpenAI text-embedding-3-small (1536 dimensions)
     |
     v
-[Pinecone] ---> Index: legal-cases, Namespace: {caseId}
-    |            Metadata: documentName, documentType, partyNames,
-    |                      pageNumber, chunkIndex, sourceFilePath, fullTextPath
+[Pinecone] ---> Index: knowledge-base, Namespace: {collectionId}
+    |            Metadata: documentName, sourceType, sourceUri, tags,
+    |                      pageNumber, chunkIndex, fullTextPath, dateCreated, ...
     v
-Full extracted text saved to workspace/legal/cases/{caseId}/full-text/</code></pre>
+Full extracted text saved to workspace/knowledge-base/{collectionId}/full-text/</code></pre>
       </div>
 
       <!-- ── Tools Reference ────────────────────────── -->
       <h2>Tools Reference</h2>
 
-      <h3>Case Management</h3>
+      <h3>Collection Management</h3>
       <table>
         <thead><tr><th>Tool ID</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>legal-create-case</code></td><td>Create a new case. Validates caseId format and ensures the Pinecone index exists.</td></tr>
-          <tr><td><code>legal-list-cases</code></td><td>List all cases with vector counts (reads Pinecone index stats/namespaces).</td></tr>
-          <tr><td><code>legal-describe-case</code></td><td>Get detailed stats for a specific case.</td></tr>
-          <tr><td><code>legal-delete-case-documents</code></td><td>Delete all vectors for a specific document within a case.</td></tr>
+          <tr><td><code>kb-create-collection</code></td><td>Create a new collection. Validates the ID and ensures the Pinecone index exists.</td></tr>
+          <tr><td><code>kb-list-collections</code></td><td>List all collections with vector counts (reads Pinecone namespace stats).</td></tr>
+          <tr><td><code>kb-describe-collection</code></td><td>Get detailed stats for a specific collection.</td></tr>
+          <tr><td><code>kb-delete-document</code></td><td>Delete all vectors for a document within a collection.</td></tr>
         </tbody>
       </table>
 
-      <h3>Document Ingestion</h3>
+      <h3>Ingestion</h3>
       <table>
         <thead><tr><th>Tool ID</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>legal-ingest-document</code></td><td>Ingest a single file. Parses, chunks, embeds, and upserts to Pinecone. Supports PDF, DOCX, XLSX/XLS, CSV, MD, TXT, JPG, PNG.</td></tr>
-          <tr><td><code>legal-batch-ingest</code></td><td>Ingest multiple documents at once into a case. Processes all files in parallel.</td></tr>
+          <tr><td><code>kb-ingest-document</code></td><td>Ingest a single file. Parses, chunks, embeds, and upserts to Pinecone. Supports PDF, DOCX, XLSX/XLS, CSV, MD, TXT, JPG, PNG.</td></tr>
+          <tr><td><code>kb-ingest-text</code></td><td>Ingest raw text (e.g. a scraped page, an API response) without a file on disk.</td></tr>
+          <tr><td><code>kb-batch-ingest</code></td><td>Ingest multiple files at once into the same collection. Processes in parallel.</td></tr>
         </tbody>
       </table>
 
@@ -278,72 +605,89 @@ Full extracted text saved to workspace/legal/cases/{caseId}/full-text/</code></p
         <thead><tr><th>Tool ID</th><th>Description</th><th>When to Use</th></tr></thead>
         <tbody>
           <tr>
-            <td><code>legal-case-search</code></td>
-            <td>One-shot semantic vector search via <code>createVectorQueryTool</code>.</td>
-            <td>Simple lookups: &ldquo;find exhibit A&rdquo;, &ldquo;indemnification clause&rdquo;</td>
+            <td><code>kb-search</code></td>
+            <td>Unified retrieval. Set <code>mode</code> to <code>quick</code>, <code>deep</code>, or <code>auto</code>.</td>
+            <td>One tool covers all retrieval &mdash; let <code>auto</code> classify, or pick explicitly.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>The three modes</h3>
+      <table>
+        <thead><tr><th>Mode</th><th>Behavior</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>quick</code></td>
+            <td>Single embedding + top-K Pinecone query. Returns ranked chunks with metadata. Fast.</td>
+            <td>&ldquo;what&rsquo;s the default chunking strategy?&rdquo;, &ldquo;where is X documented?&rdquo;</td>
           </tr>
           <tr>
-            <td><code>legal-agentic-search</code></td>
-            <td>Iterative agentic RAG &mdash; plans queries, searches, evaluates, refines, reads full document.</td>
-            <td>Complex queries: &ldquo;What did Smith say about the timeline?&rdquo;</td>
+            <td><code>deep</code></td>
+            <td>Query Planner agent proposes 3&ndash;5 queries &rarr; parallel vector search &rarr; Retrieval Evaluator agent judges coverage and gaps &rarr; loop up to N times &rarr; read FULL TEXT of the best candidate &rarr; synthesize cited answer.</td>
+            <td>&ldquo;find the section where the customer describes the outage timeline&rdquo;, multi-part questions needing precise citations.</td>
+          </tr>
+          <tr>
+            <td><code>auto</code></td>
+            <td>Query Planner classifies complexity first, then picks <code>quick</code> or <code>deep</code>.</td>
+            <td>Default. Let the agent decide; override when you have a strong reason.</td>
           </tr>
         </tbody>
       </table>
 
       <!-- ── Agentic Search Flow ────────────────────── -->
-      <h2>Agentic Search Flow</h2>
-      <p>When <code>legal-agentic-search</code> is invoked:</p>
+      <h2>Deep Mode Flow</h2>
+      <p>When <code>kb-search</code> runs in deep mode:</p>
 
       <div class="card" style="margin-top: 0.75rem;">
         <div class="flow-step">
           <div class="flow-num">1</div>
           <div class="flow-text">
             <strong>Query Planning</strong>
-            <span><span class="badge badge-agent">Agent</span> Legal Query Planner agent generates 3&ndash;5 diverse search queries using legal terminology</span>
+            <span><span class="badge badge-agent">Agent</span> Query Planner generates 3&ndash;5 diverse vector-search queries using terminology the source corpus likely uses</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">2</div>
           <div class="flow-text">
             <strong>Vector Search</strong>
-            <span>Each query is embedded and searched against Pinecone (namespace = caseId), with optional party/document type filters</span>
+            <span>Each query is embedded and searched against Pinecone (namespace = collectionId), with optional <code>sourceType</code> or <code>tag</code> filters</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">3</div>
           <div class="flow-text">
             <strong>Result Evaluation</strong>
-            <span><span class="badge badge-agent">Agent</span> Legal Result Evaluator agent assesses specificity, identifies gaps (e.g. &ldquo;found references to the timeline but not specific dates&rdquo;)</span>
+            <span><span class="badge badge-agent">Agent</span> Retrieval Evaluator assesses specificity and identifies concrete gaps (e.g. &ldquo;found references to pricing but not the enterprise tier&rdquo;)</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">4</div>
           <div class="flow-text">
             <strong>Iterate or Proceed</strong>
-            <span>If gaps remain and iterations &lt; 3, loop back to step 1 with refined queries. Otherwise, proceed.</span>
+            <span>If gaps remain and iterations &lt; maxIterations, loop back to step 1 with refined queries. Otherwise, proceed.</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">5</div>
           <div class="flow-text">
             <strong>Full Document Read</strong>
-            <span>Reads the full extracted text of the top candidate document from <code>workspace/legal/cases/{caseId}/full-text/</code></span>
+            <span>Reads the full extracted text of the top candidate from <code>workspace/knowledge-base/{collectionId}/full-text/</code></span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">6</div>
           <div class="flow-text">
             <strong>Answer Synthesis</strong>
-            <span>Produces a precise, citation-backed answer referencing specific documents, page numbers, and quoted passages</span>
+            <span>Produces a precise, citation-backed answer referencing specific documents and quoted passages</span>
           </div>
         </div>
       </div>
 
       <!-- ── Workflow ───────────────────────────────── -->
-      <h2>Workflow: legal-rag</h2>
+      <h2>Workflow: rag-workflow</h2>
       <p>
         The <span class="badge badge-workflow">Workflow</span> version adds a <strong>human-in-the-loop</strong> clarification step before searching.
-        It suspends to ask the lawyer 3 clarifying questions, then runs the same iterative search loop.
+        It suspends to ask 3 clarifying questions, then runs the same iterative search loop.
       </p>
 <pre><code>clarifyQuery (suspend/resume)
     |
@@ -355,40 +699,30 @@ Full extracted text saved to workspace/legal/cases/{caseId}/full-text/</code></p
 readCandidateDocument
     |
     v
-synthesizeAnswer &rarr; { answer, caseId, candidateDocument }</code></pre>
+synthesizeAnswer &rarr; { answer, collectionId, candidateDocument }</code></pre>
 
       <!-- ── Using with OpenClaw ────────────────────── -->
       <h2>Using with OpenClaw</h2>
-      <p>All legal RAG tools are registered on the OpenClaw agent. Here&rsquo;s a typical conversation flow:</p>
+      <p>All RAG tools are registered on the OpenClaw agent. A typical flow:</p>
 
-      <h3>1. Create a case</h3>
-<pre><code>"Create a new legal case called smith-v-jones-2024 for the case Smith v. Jones"</code></pre>
-      <p>OpenClaw will call <code>legal-create-case</code> with <code>caseId: "smith-v-jones-2024"</code>.</p>
+      <h3>1. Create a collection</h3>
+<pre><code>"Create a knowledge-base collection called product-docs for our product manuals."</code></pre>
+      <p>OpenClaw calls <code>kb-create-collection</code> with <code>collectionId: "product-docs"</code>.</p>
 
       <h3>2. Ingest documents</h3>
-<pre><code>"Ingest the deposition transcript at /path/to/smith-deposition.pdf into the
-smith-v-jones-2024 case. It's a deposition, and the relevant parties are
-John Smith, Jane Jones, and Acme Corp."</code></pre>
-      <p>OpenClaw will call <code>legal-ingest-document</code> with the file path, case ID, document type, and party names.</p>
+<pre><code>"Ingest /path/to/pricing.pdf into product-docs, sourceType pdf, tags [pricing, enterprise]."</code></pre>
+      <p>OpenClaw calls <code>kb-ingest-document</code> with the file path, collection ID, sourceType, and tags.</p>
 
-      <h3>3. Batch ingest</h3>
-<pre><code>"Ingest all of these into smith-v-jones-2024:
-  - /docs/exhibit-a.pdf (exhibit, parties: Acme Corp)
-  - /docs/contract.docx (contract, parties: John Smith, Acme Corp)
-  - /docs/financials.xlsx (discovery, parties: Acme Corp)"</code></pre>
-
-      <h3>4. Search</h3>
-<pre><code>"In the smith-v-jones-2024 case, what did John Smith say about
-the timeline of the contract amendment?"</code></pre>
+      <h3>3. Ask anything</h3>
+<pre><code>"In product-docs, what are our enterprise annual pricing tiers?"</code></pre>
       <p>
-        OpenClaw recognizes this as a complex query and uses <code>legal-agentic-search</code>.
-        It will iterate through search queries, evaluate results, and read the full deposition transcript
-        before giving a precise answer with page references.
+        OpenClaw calls <code>kb-search</code> with <code>mode: "auto"</code>. The Query Planner classifies this as <code>deep</code>
+        (multi-part, needs precise numbers), runs the iterative loop, reads the full pricing doc, and returns a cited answer.
       </p>
 
-      <h3>5. Quick lookup</h3>
-<pre><code>"Find the indemnification clause in the smith-v-jones-2024 case"</code></pre>
-      <p>For simple lookups, OpenClaw will use <code>legal-case-search</code> for a fast one-shot search.</p>
+      <h3>4. Quick lookup</h3>
+<pre><code>"In mastra-docs, where is the createVectorQueryTool reference?"</code></pre>
+      <p>The planner classifies this as <code>quick</code> &mdash; one embedding search is enough.</p>
 
       <!-- ── Metadata Schema ────────────────────────── -->
       <h2>Metadata Schema</h2>
@@ -396,16 +730,16 @@ the timeline of the contract amendment?"</code></pre>
       <table>
         <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>caseId</code></td><td>string</td><td>Case identifier / Pinecone namespace</td></tr>
-          <tr><td><code>documentName</code></td><td>string</td><td>Original filename</td></tr>
-          <tr><td><code>documentType</code></td><td>string</td><td>deposition, exhibit, motion, brief, contract, correspondence, transcript, pleading, discovery, report, other</td></tr>
+          <tr><td><code>collectionId</code></td><td>string</td><td>Collection identifier / Pinecone namespace</td></tr>
+          <tr><td><code>documentName</code></td><td>string</td><td>Human-readable document name</td></tr>
+          <tr><td><code>sourceType</code></td><td>string</td><td>Free-form label (pdf, webpage, transcript, mastra-docs, ...)</td></tr>
+          <tr><td><code>sourceUri</code></td><td>string</td><td>Origin URL, file path, or identifier</td></tr>
+          <tr><td><code>tags</code></td><td>string[]</td><td>Free-form tags for metadata filtering</td></tr>
           <tr><td><code>dateCreated</code></td><td>ISO string</td><td>When the document was ingested</td></tr>
           <tr><td><code>pageNumber</code></td><td>number</td><td>Estimated page number for the chunk</td></tr>
           <tr><td><code>chunkIndex</code></td><td>number</td><td>Position within the document (0-based)</td></tr>
-          <tr><td><code>partyNames</code></td><td>string</td><td>Comma-separated names of related parties</td></tr>
-          <tr><td><code>sourceFilePath</code></td><td>string</td><td>Path to original file on disk</td></tr>
           <tr><td><code>fullTextPath</code></td><td>string</td><td>Path to full extracted text file</td></tr>
-          <tr><td><code>documentId</code></td><td>string</td><td>Unique ID: <code>{caseId}--{docName}--{timestamp}</code></td></tr>
+          <tr><td><code>documentId</code></td><td>string</td><td>Unique ID: <code>{collectionId}--{docName}--{timestamp}</code></td></tr>
           <tr><td><code>text</code></td><td>string</td><td>The chunk text content</td></tr>
         </tbody>
       </table>
@@ -422,41 +756,131 @@ the timeline of the contract amendment?"</code></pre>
           <tr><td>Markdown</td><td><code>.md</code>, <code>.markdown</code></td><td>Native text read</td></tr>
           <tr><td>Plain text</td><td><code>.txt</code></td><td>Native text read</td></tr>
           <tr><td>Images</td><td><code>.jpg</code>, <code>.jpeg</code>, <code>.png</code></td><td>GPT-4o vision API (OCR)</td></tr>
+          <tr><td>Raw text</td><td>&mdash;</td><td>Pass directly via <code>kb-ingest-text</code></td></tr>
         </tbody>
       </table>
 
-      <!-- ── Scaling Notes ──────────────────────────── -->
-      <h2>Scaling Beyond 100+ Documents</h2>
-      <div class="callout">
-        <strong>Current design:</strong> Optimized for 10&ndash;25 documents per case. For 100+ documents per case, consider these adjustments:
-      </div>
-      <ul>
-        <li><strong>Chunking strategy:</strong> Switch from <code>recursive</code> (512 tokens) to <code>semantic-markdown</code> or <code>sentence</code> for better semantic boundaries</li>
-        <li><strong>Embedding batching:</strong> The <code>embedMany</code> call handles batching automatically, but monitor rate limits with large corpora</li>
-        <li><strong>Metadata filters:</strong> Lean on <code>documentType</code> and <code>partyNames</code> filters to narrow search scope before vector similarity</li>
-        <li><strong>Re-ranking:</strong> Add Cohere or LLM-based re-ranking to the search pipeline via <code>createVectorQueryTool</code>&rsquo;s <code>reranker</code> option</li>
-        <li><strong>Parallel ingestion:</strong> Use <code>legal-batch-ingest</code> but consider queueing with concurrency limits for very large batches</li>
-        <li><strong>Full-text storage:</strong> For very large documents (&gt;50k chars), the agentic search truncates to 50k. Consider storing section-level extracts instead</li>
-      </ul>
-
       <!-- ── File Map ───────────────────────────────── -->
       <h2>File Map</h2>
-<pre><code>src/mastra/tools/legal/
+<pre><code>src/mastra/tools/rag/
   pinecone-store.ts        PineconeVector singleton, index constants
   document-parser.ts       Multi-format document text extraction
-  ingest-document-tool.ts  Single + batch document ingestion tools
-  case-tools.ts            Case CRUD tools
-  agentic-rag-tool.ts      Iterative agentic RAG search tool
-  simple-search-tool.ts    One-shot vector query tool
+  ingest-tool.ts           Document, text, and batch ingestion tools
+  collection-tools.ts      Collection CRUD tools
+  rag-tool.ts              Unified quick/deep/auto RAG search tool
   index.ts                 Re-exports
 
 src/mastra/agents/
-  legal-query-planner-agent.ts      Legal search query generation
-  legal-result-evaluator-agent.ts   Result evaluation + answer synthesis
+  query-planner-agent.ts        Complexity classifier + query generation
+  retrieval-evaluator-agent.ts  Result evaluation + answer synthesis
 
 src/mastra/workflows/
-  legal-rag-workflow.ts             Human-in-the-loop agentic RAG workflow</code></pre>
+  rag-workflow.ts          Human-in-the-loop agentic RAG workflow
 
+scripts/
+  seed-mastra-docs.ts      Populate mastra-docs from llms.txt + skills index</code></pre>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: Voice Chat
+       ═══════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tab-voice-chat">
+    <div class="chat-page">
+      <div>
+        <h1>Voice Chat</h1>
+        <p class="subtitle">Chat with the ElevenLabs-powered voice agents. Type or hold the mic to speak — replies are spoken back.</p>
+      </div>
+
+      <div class="chat-controls">
+        <label>
+          Agent:
+          <select id="agent-select">
+            <option value="voiceAgent">voiceAgent (ElevenLabs TTS + STT)</option>
+            <option value="hybridVoiceAgent">hybridVoiceAgent (Whisper STT + ElevenLabs TTS)</option>
+          </select>
+        </label>
+        <label>
+          Voice:
+          <select id="speaker-select" disabled>
+            <option value="">Loading…</option>
+          </select>
+        </label>
+        <label class="inline-toggle">
+          <input type="checkbox" id="auto-speak" checked>
+          Speak replies
+        </label>
+        <button type="button" id="clear-chat">Clear</button>
+      </div>
+
+      <div class="chat-log" id="chat-log">
+        <div class="chat-empty">No messages yet. Say hello.</div>
+      </div>
+
+      <div class="chat-status" id="chat-status"></div>
+
+      <form class="chat-input-row" id="chat-form">
+        <textarea id="chat-input" rows="1" placeholder="Type a message, or hold the mic to speak…"></textarea>
+        <button type="button" id="mic-btn" title="Hold to record">🎤</button>
+        <button type="submit" id="send-btn">Send</button>
+      </form>
+
+      <audio id="tts-audio" controls style="width: 100%; margin-top: 0.5rem;"></audio>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: Live Conversation
+       ═══════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tab-live">
+    <div class="live-page">
+      <div>
+        <h1>Live Conversation</h1>
+        <p class="subtitle">Always-on mic. Speak naturally — pauses end your turn, the agent replies out loud, and you can interrupt any time.</p>
+      </div>
+
+      <div class="live-controls">
+        <label>
+          Agent:
+          <select id="live-agent-select">
+            <option value="voiceAgent">voiceAgent</option>
+            <option value="hybridVoiceAgent">hybridVoiceAgent</option>
+          </select>
+        </label>
+        <label>
+          Voice:
+          <select id="live-speaker-select" disabled>
+            <option value="">Loading…</option>
+          </select>
+        </label>
+        <button type="button" id="live-clear">Clear transcript</button>
+      </div>
+
+      <div class="live-panel">
+        <button type="button" class="live-toggle" id="live-toggle" title="Start conversation">🎙</button>
+        <div class="live-state" id="live-state" data-state="idle">
+          <span class="dot"></span>
+          <span class="label">Idle</span>
+        </div>
+        <div class="live-meter"><div class="live-meter-fill" id="live-meter"></div></div>
+        <div class="live-tuning">
+          <label>Speech threshold
+            <input type="range" id="live-threshold" min="0.3" max="0.85" step="0.05" value="0.5">
+            <span id="live-threshold-val">0.50</span>
+          </label>
+          <label>End-of-turn pause
+            <input type="range" id="live-silence" min="300" max="2000" step="100" value="700">
+            <span id="live-silence-val">700ms</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="live-transcript" id="live-transcript">
+        <div class="live-transcript-empty">Tap the mic to start a live conversation.</div>
+      </div>
+
+      <audio id="live-tts" style="display:none"></audio>
     </div>
   </div>
 
@@ -487,6 +911,612 @@ src/mastra/workflows/
     });
 
     console.log('[Sandbox] page loaded');
+
+    // ── Voice Chat ──────────────────────────────────
+    (function initVoiceChat() {
+      var API_BASE = '/api';
+      var chatLog = document.getElementById('chat-log');
+      var form = document.getElementById('chat-form');
+      var input = document.getElementById('chat-input');
+      var sendBtn = document.getElementById('send-btn');
+      var micBtn = document.getElementById('mic-btn');
+      var agentSel = document.getElementById('agent-select');
+      var speakerSel = document.getElementById('speaker-select');
+      var autoSpeak = document.getElementById('auto-speak');
+      var clearBtn = document.getElementById('clear-chat');
+      var status = document.getElementById('chat-status');
+      var ttsAudio = document.getElementById('tts-audio');
+
+      var history = []; // { role: 'user'|'assistant', content: string }[]
+      var recorder = null;
+      var recordChunks = [];
+      var recordStream = null;
+
+      function setStatus(msg) { status.textContent = msg || ''; }
+
+      function currentAgentId() { return agentSel.value; }
+      function currentSpeakerId() { return speakerSel.value || undefined; }
+
+      async function loadSpeakers() {
+        var agentId = currentAgentId();
+        speakerSel.disabled = true;
+        speakerSel.innerHTML = '<option value="">Loading…</option>';
+        try {
+          var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/speakers', {
+            credentials: 'include',
+          });
+          if (!res.ok) throw new Error('speakers failed (' + res.status + ')');
+          var speakers = await res.json();
+          if (!Array.isArray(speakers) || speakers.length === 0) {
+            speakerSel.innerHTML = '<option value="">(agent default)</option>';
+            speakerSel.disabled = true;
+            return;
+          }
+          speakerSel.innerHTML = '<option value="">(agent default)</option>' + speakers.map(function (s) {
+            var id = s.voiceId;
+            var label = s.name || s.displayName || s.voice_name || id;
+            var suffix = s.labels && s.labels.accent ? ' · ' + s.labels.accent : '';
+            return '<option value="' + id + '">' + label + suffix + '</option>';
+          }).join('');
+          speakerSel.disabled = false;
+        } catch (err) {
+          speakerSel.innerHTML = '<option value="">(agent default)</option>';
+          speakerSel.disabled = true;
+          console.warn('[VoiceChat] could not load speakers:', err);
+        }
+      }
+
+      function clearEmpty() {
+        var empty = chatLog.querySelector('.chat-empty');
+        if (empty) empty.remove();
+      }
+
+      function renderMsg(role, text, opts) {
+        clearEmpty();
+        var div = document.createElement('div');
+        div.className = 'chat-msg ' + role;
+        var rolePill = document.createElement('div');
+        rolePill.className = 'role';
+        rolePill.textContent = role === 'user' ? 'You' : role === 'agent' ? 'Agent' : 'System';
+        div.appendChild(rolePill);
+        var body = document.createElement('div');
+        body.textContent = text;
+        div.appendChild(body);
+        if (opts && opts.withReplay) {
+          var btn = document.createElement('button');
+          btn.className = 'replay';
+          btn.type = 'button';
+          btn.textContent = '▶ Play';
+          btn.addEventListener('click', function () { speak(text).catch(logError); });
+          div.appendChild(btn);
+        }
+        chatLog.appendChild(div);
+        chatLog.scrollTop = chatLog.scrollHeight;
+        return div;
+      }
+
+      function logError(err) {
+        console.error('[VoiceChat]', err);
+        setStatus('Error: ' + (err && err.message ? err.message : String(err)));
+      }
+
+      async function generate(agentId, userText) {
+        history.push({ role: 'user', content: userText });
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ messages: history }),
+        });
+        if (!res.ok) {
+          var errText = await res.text().catch(function () { return ''; });
+          throw new Error('generate failed (' + res.status + '): ' + errText);
+        }
+        var data = await res.json();
+        // v5 generate returns { text, ... }; legacy paths sometimes nest under .response
+        var text = data && (data.text || (data.response && data.response.text)) || '';
+        if (!text && data && Array.isArray(data.content)) {
+          text = data.content.map(function (c) { return c.text || ''; }).join('');
+        }
+        history.push({ role: 'assistant', content: text });
+        return text;
+      }
+
+      async function speak(text) {
+        var agentId = currentAgentId();
+        var speakerId = currentSpeakerId();
+        setStatus('Speaking…');
+        var body = speakerId ? { text: text, speakerId: speakerId } : { text: text };
+        var res = await fetch('/voice-speak/' + encodeURIComponent(agentId), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          var errText = await res.text().catch(function () { return ''; });
+          throw new Error('speak failed (' + res.status + '): ' + errText);
+        }
+        var blob = await res.blob();
+        var url = URL.createObjectURL(blob);
+        ttsAudio.src = url;
+        try {
+          await ttsAudio.play();
+          setStatus('');
+        } catch (err) {
+          console.warn('[VoiceChat] autoplay blocked:', err);
+          setStatus('Audio ready — click the player to play (autoplay blocked).');
+        }
+      }
+
+      async function transcribe(audioBlob) {
+        var agentId = currentAgentId();
+        var fd = new FormData();
+        // Infer extension from mime type
+        var mime = audioBlob.type || 'audio/webm';
+        var ext = mime.indexOf('webm') !== -1 ? 'webm'
+                : mime.indexOf('mp4') !== -1 ? 'mp4'
+                : mime.indexOf('ogg') !== -1 ? 'ogg'
+                : 'webm';
+        fd.append('audio', audioBlob, 'recording.' + ext);
+        fd.append('options', JSON.stringify({ filetype: ext }));
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/listen', {
+          method: 'POST',
+          credentials: 'include',
+          body: fd,
+        });
+        if (!res.ok) {
+          var errText = await res.text().catch(function () { return ''; });
+          throw new Error('listen failed (' + res.status + '): ' + errText);
+        }
+        var data = await res.json();
+        return (data && data.text) || '';
+      }
+
+      async function handleUserMessage(userText) {
+        if (!userText) return;
+        renderMsg('user', userText);
+        input.value = '';
+        autosize();
+        sendBtn.disabled = true;
+        micBtn.disabled = true;
+        setStatus('Thinking…');
+        try {
+          var reply = await generate(currentAgentId(), userText);
+          var msgEl = renderMsg('agent', reply || '(no response)', { withReplay: true });
+          if (autoSpeak.checked && reply) {
+            try { await speak(reply); } catch (e) { logError(e); }
+          } else {
+            setStatus('');
+          }
+        } catch (err) {
+          logError(err);
+        } finally {
+          sendBtn.disabled = false;
+          micBtn.disabled = false;
+        }
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        handleUserMessage(input.value.trim());
+      });
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleUserMessage(input.value.trim());
+        }
+      });
+
+      function autosize() {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 160) + 'px';
+      }
+      input.addEventListener('input', autosize);
+
+      clearBtn.addEventListener('click', function () {
+        history = [];
+        chatLog.innerHTML = '<div class="chat-empty">No messages yet. Say hello.</div>';
+        setStatus('');
+      });
+
+      // ── Recording ─────────────────────────────────
+      async function startRecording() {
+        if (recorder) return;
+        if (!navigator.mediaDevices || !window.MediaRecorder) {
+          setStatus('Recording not supported in this browser.');
+          return;
+        }
+        try {
+          recordStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (err) {
+          logError(err);
+          return;
+        }
+        recordChunks = [];
+        var mime = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+        recorder = mime ? new MediaRecorder(recordStream, { mimeType: mime }) : new MediaRecorder(recordStream);
+        recorder.addEventListener('dataavailable', function (e) {
+          if (e.data && e.data.size > 0) recordChunks.push(e.data);
+        });
+        recorder.addEventListener('stop', async function () {
+          var blob = new Blob(recordChunks, { type: recorder.mimeType || 'audio/webm' });
+          if (recordStream) {
+            recordStream.getTracks().forEach(function (t) { t.stop(); });
+            recordStream = null;
+          }
+          recorder = null;
+          micBtn.classList.remove('recording');
+          if (blob.size === 0) { setStatus(''); return; }
+          setStatus('Transcribing…');
+          try {
+            var text = await transcribe(blob);
+            if (text) { await handleUserMessage(text); }
+            else { setStatus('No speech detected.'); }
+          } catch (err) {
+            logError(err);
+          }
+        });
+        recorder.start();
+        micBtn.classList.add('recording');
+        setStatus('Recording… release to send.');
+      }
+
+      function stopRecording() {
+        if (recorder && recorder.state !== 'inactive') recorder.stop();
+      }
+
+      micBtn.addEventListener('mousedown', startRecording);
+      micBtn.addEventListener('touchstart', function (e) { e.preventDefault(); startRecording(); });
+      ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(function (ev) {
+        micBtn.addEventListener(ev, stopRecording);
+      });
+
+      agentSel.addEventListener('change', loadSpeakers);
+      loadSpeakers();
+    })();
+
+    // ── Live Conversation ───────────────────────────
+    (function initLiveConversation() {
+      var API_BASE = '/api';
+      var VAD_BASE = 'https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.24/dist/';
+      var ORT_BASE = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/';
+      var FRAME_MS = 96; // vad-web default frame = 1536 samples @ 16kHz
+
+      var toggleBtn = document.getElementById('live-toggle');
+      var stateEl = document.getElementById('live-state');
+      var stateLabel = stateEl.querySelector('.label');
+      var meter = document.getElementById('live-meter');
+      var transcript = document.getElementById('live-transcript');
+      var agentSel = document.getElementById('live-agent-select');
+      var speakerSel = document.getElementById('live-speaker-select');
+      var clearBtn = document.getElementById('live-clear');
+      var thresholdInput = document.getElementById('live-threshold');
+      var thresholdVal = document.getElementById('live-threshold-val');
+      var silenceInput = document.getElementById('live-silence');
+      var silenceVal = document.getElementById('live-silence-val');
+      var ttsEl = document.getElementById('live-tts');
+
+      var state = 'idle'; // idle | listening | recording | transcribing | thinking | speaking
+      var vadInstance = null;
+      var vadLoadPromise = null;
+      var history = [];
+      var currentTtsUrl = null;
+      var generation = 0;
+
+      function setState(next) {
+        state = next;
+        stateEl.dataset.state = next;
+        var labels = { idle: 'Idle', listening: 'Listening', recording: 'Recording', transcribing: 'Transcribing', thinking: 'Thinking', speaking: 'Speaking' };
+        stateLabel.textContent = labels[next] || next;
+      }
+
+      function addLine(who, what) {
+        var empty = transcript.querySelector('.live-transcript-empty');
+        if (empty) empty.remove();
+        var line = document.createElement('div');
+        line.className = 'live-line ' + who;
+        var whoEl = document.createElement('div');
+        whoEl.className = 'who';
+        whoEl.textContent = who === 'user' ? 'You' : 'Agent';
+        var whatEl = document.createElement('div');
+        whatEl.className = 'what';
+        whatEl.textContent = what;
+        line.appendChild(whoEl);
+        line.appendChild(whatEl);
+        transcript.appendChild(line);
+        transcript.scrollTop = transcript.scrollHeight;
+      }
+
+      function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = src;
+          s.onload = function () { resolve(); };
+          s.onerror = function () { reject(new Error('failed to load ' + src)); };
+          document.head.appendChild(s);
+        });
+      }
+
+      function ensureVadLoaded() {
+        if (window.vad) return Promise.resolve();
+        if (!vadLoadPromise) {
+          // ort must be global before the vad bundle evaluates
+          vadLoadPromise = loadScript(ORT_BASE + 'ort.js').then(function () {
+            return loadScript(VAD_BASE + 'bundle.min.js');
+          });
+        }
+        return vadLoadPromise;
+      }
+
+      async function loadSpeakers() {
+        var agentId = agentSel.value;
+        speakerSel.disabled = true;
+        speakerSel.innerHTML = '<option value="">Loading…</option>';
+        try {
+          var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/speakers', { credentials: 'include' });
+          if (!res.ok) throw new Error('speakers failed');
+          var speakers = await res.json();
+          if (!Array.isArray(speakers) || speakers.length === 0) {
+            speakerSel.innerHTML = '<option value="">(agent default)</option>';
+            return;
+          }
+          speakerSel.innerHTML = '<option value="">(agent default)</option>' + speakers.map(function (s) {
+            var id = s.voiceId;
+            var label = s.name || s.displayName || s.voice_name || id;
+            var suffix = s.labels && s.labels.accent ? ' · ' + s.labels.accent : '';
+            return '<option value="' + id + '">' + label + suffix + '</option>';
+          }).join('');
+          speakerSel.disabled = false;
+        } catch (err) {
+          speakerSel.innerHTML = '<option value="">(agent default)</option>';
+          console.warn('[Live] speakers:', err);
+        }
+      }
+
+      async function startSession() {
+        stateLabel.textContent = 'Loading VAD…';
+        try {
+          await ensureVadLoaded();
+        } catch (err) {
+          addLine('agent', '(could not load VAD: ' + err.message + ')');
+          setState('idle');
+          return;
+        }
+
+        var threshold = parseFloat(thresholdInput.value);
+        var silenceMs = parseInt(silenceInput.value, 10);
+        var redemption = Math.max(3, Math.round(silenceMs / FRAME_MS));
+
+        try {
+          vadInstance = await window.vad.MicVAD.new({
+            baseAssetPath: VAD_BASE,
+            onnxWASMBasePath: ORT_BASE,
+            positiveSpeechThreshold: threshold,
+            negativeSpeechThreshold: Math.max(0.1, threshold - 0.15),
+            redemptionFrames: redemption,
+            minSpeechFrames: 3,
+            preSpeechPadFrames: 1,
+            onSpeechStart: handleSpeechStart,
+            onSpeechEnd: handleSpeechEnd,
+            onVADMisfire: function () {
+              if (state === 'recording') setState('listening');
+            },
+            onFrameProcessed: function (probs) {
+              if (state === 'idle') return;
+              meter.style.width = Math.min(100, probs.isSpeech * 100) + '%';
+            },
+          });
+        } catch (err) {
+          addLine('agent', '(could not initialize VAD: ' + err.message + ')');
+          setState('idle');
+          return;
+        }
+
+        vadInstance.start();
+        toggleBtn.classList.add('active');
+        toggleBtn.title = 'Stop conversation';
+        setState('listening');
+      }
+
+      function stopSession() {
+        generation++;
+        setState('idle');
+        if (vadInstance) {
+          try { vadInstance.pause(); } catch (e) {}
+          try { vadInstance.destroy(); } catch (e) {}
+          vadInstance = null;
+        }
+        if (!ttsEl.paused) ttsEl.pause();
+        ttsEl.removeAttribute('src');
+        if (currentTtsUrl) { URL.revokeObjectURL(currentTtsUrl); currentTtsUrl = null; }
+        meter.style.width = '0%';
+        toggleBtn.classList.remove('active');
+        toggleBtn.title = 'Start conversation';
+      }
+
+      function handleSpeechStart() {
+        if (state === 'idle') return;
+        if (state === 'speaking') {
+          if (!ttsEl.paused) ttsEl.pause(); // barge-in
+          setState('recording');
+        } else if (state === 'listening') {
+          setState('recording');
+        }
+        // In transcribing/thinking we stay put and discard on speech end.
+      }
+
+      async function handleSpeechEnd(audio) {
+        var gen = generation;
+        if (state !== 'recording') return; // drop stray utterances while busy
+        if (!audio || audio.length === 0) { setState('listening'); return; }
+
+        setState('transcribing');
+        var blob = encodeWAV(audio, 16000);
+        var text = '';
+        try {
+          text = await transcribe(blob);
+        } catch (err) {
+          console.warn('[Live] transcribe:', err);
+          if (gen === generation && state !== 'idle') setState('listening');
+          return;
+        }
+        if (gen !== generation) return;
+        if (!text) { setState('listening'); return; }
+        addLine('user', text);
+        history.push({ role: 'user', content: text });
+
+        setState('thinking');
+        var reply = '';
+        try {
+          reply = await generate();
+        } catch (err) {
+          console.warn('[Live] generate:', err);
+          if (gen === generation && state !== 'idle') setState('listening');
+          return;
+        }
+        if (gen !== generation) return;
+        if (!reply) { setState('listening'); return; }
+        addLine('agent', reply);
+        history.push({ role: 'assistant', content: reply });
+
+        setState('speaking');
+        try {
+          await speak(reply);
+        } catch (err) {
+          console.warn('[Live] speak:', err);
+        }
+        if (gen === generation && state === 'speaking') setState('listening');
+      }
+
+      function encodeWAV(samples, sampleRate) {
+        var bytesPerSample = 2;
+        var buffer = new ArrayBuffer(44 + samples.length * bytesPerSample);
+        var view = new DataView(buffer);
+        writeString(view, 0, 'RIFF');
+        view.setUint32(4, 36 + samples.length * bytesPerSample, true);
+        writeString(view, 8, 'WAVE');
+        writeString(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);       // PCM chunk size
+        view.setUint16(20, 1, true);        // format = PCM
+        view.setUint16(22, 1, true);        // mono
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * bytesPerSample, true);
+        view.setUint16(32, bytesPerSample, true);
+        view.setUint16(34, 16, true);       // bits/sample
+        writeString(view, 36, 'data');
+        view.setUint32(40, samples.length * bytesPerSample, true);
+        var offset = 44;
+        for (var i = 0; i < samples.length; i++, offset += 2) {
+          var s = Math.max(-1, Math.min(1, samples[i]));
+          view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        }
+        return new Blob([buffer], { type: 'audio/wav' });
+      }
+
+      function writeString(view, offset, str) {
+        for (var i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      }
+
+      async function transcribe(blob) {
+        var agentId = agentSel.value;
+        var fd = new FormData();
+        fd.append('audio', blob, 'recording.wav');
+        fd.append('options', JSON.stringify({ filetype: 'wav' }));
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/voice/listen', {
+          method: 'POST',
+          credentials: 'include',
+          body: fd,
+        });
+        if (!res.ok) throw new Error('listen failed (' + res.status + ')');
+        var data = await res.json();
+        return ((data && data.text) || '').trim();
+      }
+
+      async function generate() {
+        var agentId = agentSel.value;
+        var res = await fetch(API_BASE + '/agents/' + encodeURIComponent(agentId) + '/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ messages: history }),
+        });
+        if (!res.ok) throw new Error('generate failed (' + res.status + ')');
+        var data = await res.json();
+        var text = data && (data.text || (data.response && data.response.text)) || '';
+        if (!text && data && Array.isArray(data.content)) {
+          text = data.content.map(function (c) { return c.text || ''; }).join('');
+        }
+        return text;
+      }
+
+      async function speak(text) {
+        var agentId = agentSel.value;
+        var speakerId = speakerSel.value || undefined;
+        var body = speakerId ? { text: text, speakerId: speakerId } : { text: text };
+        var res = await fetch('/voice-speak/' + encodeURIComponent(agentId), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error('speak failed (' + res.status + ')');
+        var blob = await res.blob();
+        if (currentTtsUrl) URL.revokeObjectURL(currentTtsUrl);
+        currentTtsUrl = URL.createObjectURL(blob);
+        ttsEl.src = currentTtsUrl;
+        return new Promise(function (resolve) {
+          var done = false;
+          function finish() { if (done) return; done = true; resolve(); }
+          ttsEl.onended = finish;
+          ttsEl.onpause = finish;
+          ttsEl.onerror = finish;
+          ttsEl.play().catch(finish);
+        });
+      }
+
+      function applyTuning() {
+        if (!vadInstance) return;
+        // vad-web exposes the internal frame processor; nudge live if present.
+        var threshold = parseFloat(thresholdInput.value);
+        var silenceMs = parseInt(silenceInput.value, 10);
+        var redemption = Math.max(3, Math.round(silenceMs / FRAME_MS));
+        try {
+          var opts = vadInstance.options || (vadInstance.frameProcessor && vadInstance.frameProcessor.options);
+          if (opts) {
+            opts.positiveSpeechThreshold = threshold;
+            opts.negativeSpeechThreshold = Math.max(0.1, threshold - 0.15);
+            opts.redemptionFrames = redemption;
+          }
+        } catch (e) {}
+      }
+
+      toggleBtn.addEventListener('click', function () {
+        if (state === 'idle') startSession();
+        else stopSession();
+      });
+
+      clearBtn.addEventListener('click', function () {
+        history = [];
+        transcript.innerHTML = '<div class="live-transcript-empty">Tap the mic to start a live conversation.</div>';
+      });
+
+      thresholdInput.addEventListener('input', function () {
+        thresholdVal.textContent = parseFloat(thresholdInput.value).toFixed(2);
+        applyTuning();
+      });
+      silenceInput.addEventListener('input', function () {
+        silenceVal.textContent = silenceInput.value + 'ms';
+        applyTuning();
+      });
+
+      agentSel.addEventListener('change', function () {
+        history = [];
+        loadSpeakers();
+      });
+      loadSpeakers();
+    })();
   </script>
 </body>
 </html>

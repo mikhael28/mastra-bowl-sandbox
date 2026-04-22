@@ -1,0 +1,16 @@
+[
+  {
+    "id": "todo-1776818206050-h0odfc",
+    "text": "Integrate Vapi agent calling as a tool that OpenClaw can call when the user asks to 'call someone'.",
+    "completed": false,
+    "createdAt": "2026-04-22T00:36:46.050Z",
+    "completedAt": null
+  },
+  {
+    "id": "todo-1776818237254-089bi1",
+    "text": "Backlog: Provision and integrate a CRM for OpenClaw to manage (features: contacts, deals/pipelines, tasks, email sync, API access, reporting). Add acceptance criteria and integration plan.",
+    "completed": false,
+    "createdAt": "2026-04-22T00:37:17.254Z",
+    "completedAt": null
+  }
+]
