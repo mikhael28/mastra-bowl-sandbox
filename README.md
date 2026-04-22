@@ -20,6 +20,7 @@ The flagship agent in this sandbox. OpenClaw (`src/mastra/agents/openclaw-agent.
 - **Browser Automation** — Navigate websites, interact with page elements, and extract structured data via [`@mastra/stagehand`](https://mastra.ai/docs/agents/browsing-the-web) (uses [BrowserBase](https://browserbase.com/) in production, headless local browser in development)
 - **Email** — Send, receive, read, and reply to emails autonomously via [AgentMail](https://agentmail.to/) with 7 dedicated tools (create inbox, list inboxes, send, list messages, get message, reply, list threads)
 - **Web Search** — Dual search strategy with [Tavily](https://tavily.com/) (fast search with topic/time filters) and [Exa](https://exa.ai/) (semantic search with category filtering)
+- **Agentic RAG** — A generic knowledge-base stack backed by Pinecone. Collections isolate different bodies of knowledge; one unified `kb-search` tool picks between a one-shot semantic query and a full agentic loop with query planning, result evaluation, and full-document reads. Ships with a `seed:mastra-docs` script that populates a `mastra-docs` collection from [mastra.ai/llms.txt](https://mastra.ai/llms.txt) and the Mastra skills index.
 - **Memory** — Observational memory for persistent context across conversations
 - **MCP Server** — Reads Mastra documentation via a custom Model Context Protocol server with resource exposure
 - **Telegram Channel** — Configured with `@chat-adapter/telegram` for messaging integration
@@ -49,6 +50,7 @@ Each agent highlights different Mastra patterns:
 | Exa semantic search | `tools/exa-search.ts` |
 | AgentMail (7 email tools) | `tools/agentmail.ts` |
 | Agent-as-tool (copywriter + editor) | `tools/content-tools.ts` |
+| Knowledge-base RAG (Pinecone) — collection CRUD, ingestion, unified quick/deep/auto search | `tools/rag/` |
 
 ### Workflows
 
@@ -82,7 +84,8 @@ Each agent highlights different Mastra patterns:
 
 | Variable | Required By |
 |---|---|
-| `OPENAI_API_KEY` | All agents (GPT-5-mini) |
+| `OPENAI_API_KEY` | All agents (GPT-5-mini), embeddings, and image OCR |
+| `PINECONE_API_KEY` | Knowledge-base RAG tools (`kb-*`) and the `rag-workflow` |
 | `TAVILY_API_KEY` | Tavily search tool |
 | `EXA_API_KEY` | Exa search tool |
 | `AGENT_MAIL_API_KEY` | AgentMail tools |
@@ -90,6 +93,15 @@ Each agent highlights different Mastra patterns:
 | `BROWSERBASE_PROJECT_ID` | BrowserBase (optional) |
 | `TELEGRAM_BOT_TOKEN` | Telegram channel adapter |
 | `CLICKHOUSE_HOST`, `CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`, `CLICKHOUSE_DATABASE` | ClickHouse observability (optional, falls back to DuckDB) |
+| `KNOWLEDGE_BASE_INDEX` | Override the default Pinecone index name (`knowledge-base`) |
+
+### Seeding the knowledge base
+
+```bash
+npm run seed:mastra-docs
+```
+
+Populates the `mastra-docs` collection with the contents of `https://mastra.ai/llms.txt` and `https://mastra.ai/.well-known/skills/index.json`. Requires `PINECONE_API_KEY` and `OPENAI_API_KEY`. Once seeded, OpenClaw can answer Mastra framework questions by calling `kb-search` against the `mastra-docs` collection.
 
 ## Learn More
 

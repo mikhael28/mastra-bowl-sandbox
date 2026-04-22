@@ -23,14 +23,14 @@ import {
 } from '../tools/agentmail';
 import {
   ingestDocumentTool,
+  ingestTextTool,
   batchIngestTool,
-  createCaseTool,
-  listCasesTool,
-  describeCaseTool,
-  deleteCaseDocumentsTool,
-  agenticRagTool,
-  legalCaseSearchTool,
-} from '../tools/legal';
+  createCollectionTool,
+  listCollectionsTool,
+  describeCollectionTool,
+  deleteCollectionDocumentTool,
+  ragSearchTool,
+} from '../tools/rag';
 import { todoAdd, todoList, todoComplete } from '../tools/todo-tools';
 
 // Detect environment: use E2B when deployed (production without MASTRA_DEV flag), local otherwise
@@ -119,31 +119,35 @@ You have your own email inboxes via AgentMail. You can send, receive, read, and 
 - Ask clarifying questions when requirements are ambiguous
 - Proactively suggest next steps after completing a task
 
-## Agentic RAG for Legal Cases
-You have full document management and search capabilities for legal cases:
+## Agentic RAG (Knowledge Base)
+You have a general-purpose knowledge base backed by Pinecone. Each **collection** is an isolated namespace — use collections to separate distinct bodies of knowledge (e.g. \`mastra-docs\`, a client's product manual, a specific project's case files).
 
-### Case Management
-- \`legal-create-case\`: Create a new case (each case is an isolated Pinecone namespace)
-- \`legal-list-cases\`: List all cases and their document counts
-- \`legal-describe-case\`: Get stats on a specific case
+### Collection Management
+- \`kb-create-collection\`: Create a new collection (isolated Pinecone namespace)
+- \`kb-list-collections\`: List all collections and their vector counts
+- \`kb-describe-collection\`: Get stats on a specific collection
+- \`kb-delete-document\`: Remove all vectors for a named document in a collection
 
-### Document Ingestion
-- \`legal-ingest-document\`: Ingest a single document (PDF, DOCX, XLSX, CSV, Markdown, TXT, JPG, PNG) into a case. The tool parses the file, chunks it, generates embeddings, and stores vectors in Pinecone with metadata (documentName, documentType, partyNames, pageNumber, etc.)
-- \`legal-batch-ingest\`: Ingest multiple documents at once into a case
+### Ingestion
+- \`kb-ingest-document\`: Ingest a file (PDF, DOCX, XLSX, CSV, Markdown, TXT, JPG, PNG). Parses, chunks, embeds, and upserts to Pinecone. Attach \`sourceType\`, \`tags\`, and \`extraMetadata\` for later filtering.
+- \`kb-ingest-text\`: Ingest raw text (e.g. a scraped page, an API response) without a file on disk.
+- \`kb-batch-ingest\`: Ingest multiple files at once into the same collection.
 
 ### Search
-- \`legal-case-search\`: Quick one-shot semantic search within a case. Use for simple lookups.
-- \`legal-agentic-search\`: **Iterative agentic RAG** — use this for complex legal queries. It plans multiple search queries, searches the case vector store, evaluates whether results are specific enough, refines and re-searches (up to 3 iterations), then reads the FULL TEXT of the best candidate document to give a precise, well-cited answer. Supports filtering by party name or document type.
+- \`kb-search\`: The unified RAG tool. Set \`mode\` to:
+  - \`quick\`: single embedding search — use for direct lookups ("what's the default chunking strategy?")
+  - \`deep\`: iterative agentic loop — planner proposes 3–5 queries, evaluator judges coverage, up to 3 iterations, then reads the FULL TEXT of the best candidate. Use for complex, citation-heavy questions.
+  - \`auto\` (default): let the planner classify query complexity and pick. Prefer this unless you have a specific reason.
+  Optional filters: \`sourceTypeFilter\`, \`tagFilter\`.
 
 ### Workflow
-When invoked through the \`legal-rag\` workflow, the search process includes a human-in-the-loop step where clarifying questions are asked before searching.
+The \`rag-workflow\` workflow adds a human-in-the-loop clarification step before searching — use it when the user's intent is ambiguous.
 
 ### Usage Guidelines
-- Always create a case first before ingesting documents
-- When ingesting, provide documentType and partyNames for better search filtering later
-- For straightforward lookups, use \`legal-case-search\`
-- For complex questions requiring precision (e.g., "What did Smith say about X?"), use \`legal-agentic-search\`
-- The agentic search reads the full document text for its best candidate, so answers include exact citations
+- Create a collection before ingesting into it.
+- When ingesting, attach meaningful \`tags\` and a \`sourceType\` so retrieval filters work well.
+- Prefer \`kb-search\` with \`mode: 'auto'\` and let the planner decide. Override to \`deep\` when the user asks for precise citations or multi-step reasoning.
+- The \`mastra-docs\` collection ships seeded (run \`npm run seed:mastra-docs\` if empty) — use it to answer Mastra framework questions.
 
 ## Todo List
 You manage a persistent todo list stored at \`workspace/todo.json\`. Use it to track ongoing work, user requests, and follow-ups across sessions.
@@ -166,7 +170,7 @@ When the user asks to remember, track, or follow up on something, add it as a to
 
   channels: {
     adapters: {
-      telegram: createTelegramAdapter(),
+      ...(isDeployed ? { telegram: createTelegramAdapter() } : {}),
     },
   },
 
@@ -182,15 +186,15 @@ When the user asks to remember, track, or follow up on something, add it as a to
     getMessage,
     replyToEmail,
     listThreads,
-    // Agentic RAG for legal cases
+    // Agentic RAG (knowledge base)
     ingestDocumentTool,
+    ingestTextTool,
     batchIngestTool,
-    createCaseTool,
-    listCasesTool,
-    describeCaseTool,
-    deleteCaseDocumentsTool,
-    agenticRagTool,
-    legalCaseSearchTool,
+    createCollectionTool,
+    listCollectionsTool,
+    describeCollectionTool,
+    deleteCollectionDocumentTool,
+    ragSearchTool,
     // Workspace todo list
     todoAdd,
     todoList,

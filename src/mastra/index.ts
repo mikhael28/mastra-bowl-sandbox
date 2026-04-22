@@ -16,17 +16,17 @@ import { intentClarifierAgent } from './agents/intent-clarifier-agent';
 import { researchPlannerAgent } from './agents/research-planner-agent';
 import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-agent';
 import { answererAgent } from './agents/answerer-agent';
-import { legalQueryPlannerAgent } from './agents/legal-query-planner-agent';
-import { legalResultEvaluatorAgent } from './agents/legal-result-evaluator-agent';
+import { queryPlannerAgent } from './agents/query-planner-agent';
+import { retrievalEvaluatorAgent } from './agents/retrieval-evaluator-agent';
 import { voiceAgent } from './agents/voice-agent';
 import { hybridVoiceAgent } from './agents/hybrid-voice-agent';
-import { getPineconeStore } from './tools/legal';
+import { getKnowledgeBaseStore, VECTOR_STORE_NAME } from './tools/rag';
 
 // Workflows
 import { blogPostWorkflow } from './workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
 import { deepSearch } from './workflows/deep-search-workflow';
-import { legalRag } from './workflows/legal-rag-workflow';
+import { ragWorkflow } from './workflows/rag-workflow';
 
 // Custom routes
 import { voiceSpeakRoute } from './routes/voice-speak-route';
@@ -40,7 +40,7 @@ import { ComposioToolProvider } from '@mastra/editor/composio';
 import { ArcadeToolProvider } from '@mastra/editor/arcade';
 
 export const mastra = new Mastra({
-  workflows: { blogPostWorkflow, techTouchdownWorkflow, deepSearch, legalRag },
+  workflows: { blogPostWorkflow, techTouchdownWorkflow, deepSearch, ragWorkflow },
   agents: {
     mathAgent,
     copywriterAgent,
@@ -52,8 +52,8 @@ export const mastra = new Mastra({
     researchPlannerAgent,
     searchResultEvaluatorAgent,
     answererAgent,
-    legalQueryPlannerAgent,
-    legalResultEvaluatorAgent,
+    queryPlannerAgent,
+    retrievalEvaluatorAgent,
     voiceAgent,
     hybridVoiceAgent,
   },
@@ -64,7 +64,7 @@ export const mastra = new Mastra({
     docsMcpServer,
   },
   vectors: {
-    'legal-pinecone': getPineconeStore(),
+    [VECTOR_STORE_NAME]: getKnowledgeBaseStore(),
   },
   storage,
   server: {

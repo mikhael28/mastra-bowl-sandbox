@@ -521,7 +521,7 @@
 
   <!-- ── Tab Bar ──────────────────────────────────────── -->
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" data-tab="legal">Agentic RAG for Legal Cases</button>
+    <button class="tab-btn active" data-tab="rag">Agentic RAG</button>
     <button class="tab-btn" data-tab="voice-chat">Voice Chat</button>
     <button class="tab-btn" data-tab="live">Live Conversation</button>
     <!-- Add more tabs here:
@@ -530,25 +530,26 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════
-       TAB: Agentic RAG for Legal Cases
+       TAB: Agentic RAG (generic knowledge base)
        ═══════════════════════════════════════════════════ -->
-  <div class="tab-content active" id="tab-legal">
+  <div class="tab-content active" id="tab-rag">
     <div class="page">
 
-      <h1>Agentic RAG for Legal Cases</h1>
-      <p class="subtitle">Ingest case documents into Pinecone, then iteratively search them with precision through the OpenClaw agent.</p>
+      <h1>Agentic RAG</h1>
+      <p class="subtitle">A generic knowledge-base stack &mdash; ingest any documents into a named collection, then retrieve with a unified tool that picks between a quick search and a full agentic loop.</p>
 
       <!-- ── Overview ───────────────────────────────── -->
       <h2>Overview</h2>
       <p>
-        This skill adds <strong>document ingestion</strong>, <strong>case management</strong>, and <strong>agentic RAG search</strong> to the OpenClaw agent.
-        Each legal case is an isolated Pinecone namespace. Documents are parsed, chunked, embedded, and stored with rich metadata so the agent can iteratively
-        search, evaluate results, refine queries, and read full documents to give lawyers precise, citation-backed answers.
+        This is a reusable RAG primitive built on Mastra, Pinecone, and the OpenClaw agent. Each <strong>collection</strong> is an
+        isolated Pinecone namespace, so different bodies of knowledge (Mastra docs, a product manual, a case file) stay fully separated.
+        Documents are parsed, chunked, embedded, and stored with rich metadata. The agent retrieves through one unified tool that can
+        either do a quick single-shot search or run an iterative agentic loop with query planning, result evaluation, and full-document reads.
       </p>
 
       <div class="callout">
-        <strong>Key insight:</strong> Unlike one-shot RAG, agentic search loops up to 3 times &mdash; planning new queries, evaluating gaps, and narrowing
-        down to the exact passage before reading the full document for final context.
+        <strong>Seed data:</strong> Run <code>npm run seed:mastra-docs</code> to populate the <code>mastra-docs</code> collection with
+        the live contents of <a href="https://mastra.ai/llms.txt">mastra.ai/llms.txt</a> and the Mastra skills index &mdash; a ready-made demo for the OpenClaw agent to query.
       </div>
 
       <!-- ── Architecture ───────────────────────────── -->
@@ -556,7 +557,7 @@
 
       <div class="card">
         <div class="card-title">Data Flow</div>
-<pre><code>Documents (PDF, DOCX, XLSX, CSV, MD, TXT, JPG, PNG)
+<pre><code>Documents (PDF, DOCX, XLSX, CSV, MD, TXT, JPG, PNG) OR raw text
     |
     v
 [Document Parser] ---> Extract text (OCR for images via GPT-4o)
@@ -568,33 +569,34 @@
 [embedMany()] ---> OpenAI text-embedding-3-small (1536 dimensions)
     |
     v
-[Pinecone] ---> Index: legal-cases, Namespace: {caseId}
-    |            Metadata: documentName, documentType, partyNames,
-    |                      pageNumber, chunkIndex, sourceFilePath, fullTextPath
+[Pinecone] ---> Index: knowledge-base, Namespace: {collectionId}
+    |            Metadata: documentName, sourceType, sourceUri, tags,
+    |                      pageNumber, chunkIndex, fullTextPath, dateCreated, ...
     v
-Full extracted text saved to workspace/legal/cases/{caseId}/full-text/</code></pre>
+Full extracted text saved to workspace/knowledge-base/{collectionId}/full-text/</code></pre>
       </div>
 
       <!-- ── Tools Reference ────────────────────────── -->
       <h2>Tools Reference</h2>
 
-      <h3>Case Management</h3>
+      <h3>Collection Management</h3>
       <table>
         <thead><tr><th>Tool ID</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>legal-create-case</code></td><td>Create a new case. Validates caseId format and ensures the Pinecone index exists.</td></tr>
-          <tr><td><code>legal-list-cases</code></td><td>List all cases with vector counts (reads Pinecone index stats/namespaces).</td></tr>
-          <tr><td><code>legal-describe-case</code></td><td>Get detailed stats for a specific case.</td></tr>
-          <tr><td><code>legal-delete-case-documents</code></td><td>Delete all vectors for a specific document within a case.</td></tr>
+          <tr><td><code>kb-create-collection</code></td><td>Create a new collection. Validates the ID and ensures the Pinecone index exists.</td></tr>
+          <tr><td><code>kb-list-collections</code></td><td>List all collections with vector counts (reads Pinecone namespace stats).</td></tr>
+          <tr><td><code>kb-describe-collection</code></td><td>Get detailed stats for a specific collection.</td></tr>
+          <tr><td><code>kb-delete-document</code></td><td>Delete all vectors for a document within a collection.</td></tr>
         </tbody>
       </table>
 
-      <h3>Document Ingestion</h3>
+      <h3>Ingestion</h3>
       <table>
         <thead><tr><th>Tool ID</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>legal-ingest-document</code></td><td>Ingest a single file. Parses, chunks, embeds, and upserts to Pinecone. Supports PDF, DOCX, XLSX/XLS, CSV, MD, TXT, JPG, PNG.</td></tr>
-          <tr><td><code>legal-batch-ingest</code></td><td>Ingest multiple documents at once into a case. Processes all files in parallel.</td></tr>
+          <tr><td><code>kb-ingest-document</code></td><td>Ingest a single file. Parses, chunks, embeds, and upserts to Pinecone. Supports PDF, DOCX, XLSX/XLS, CSV, MD, TXT, JPG, PNG.</td></tr>
+          <tr><td><code>kb-ingest-text</code></td><td>Ingest raw text (e.g. a scraped page, an API response) without a file on disk.</td></tr>
+          <tr><td><code>kb-batch-ingest</code></td><td>Ingest multiple files at once into the same collection. Processes in parallel.</td></tr>
         </tbody>
       </table>
 
@@ -603,72 +605,89 @@ Full extracted text saved to workspace/legal/cases/{caseId}/full-text/</code></p
         <thead><tr><th>Tool ID</th><th>Description</th><th>When to Use</th></tr></thead>
         <tbody>
           <tr>
-            <td><code>legal-case-search</code></td>
-            <td>One-shot semantic vector search via <code>createVectorQueryTool</code>.</td>
-            <td>Simple lookups: &ldquo;find exhibit A&rdquo;, &ldquo;indemnification clause&rdquo;</td>
+            <td><code>kb-search</code></td>
+            <td>Unified retrieval. Set <code>mode</code> to <code>quick</code>, <code>deep</code>, or <code>auto</code>.</td>
+            <td>One tool covers all retrieval &mdash; let <code>auto</code> classify, or pick explicitly.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>The three modes</h3>
+      <table>
+        <thead><tr><th>Mode</th><th>Behavior</th><th>Best for</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>quick</code></td>
+            <td>Single embedding + top-K Pinecone query. Returns ranked chunks with metadata. Fast.</td>
+            <td>&ldquo;what&rsquo;s the default chunking strategy?&rdquo;, &ldquo;where is X documented?&rdquo;</td>
           </tr>
           <tr>
-            <td><code>legal-agentic-search</code></td>
-            <td>Iterative agentic RAG &mdash; plans queries, searches, evaluates, refines, reads full document.</td>
-            <td>Complex queries: &ldquo;What did Smith say about the timeline?&rdquo;</td>
+            <td><code>deep</code></td>
+            <td>Query Planner agent proposes 3&ndash;5 queries &rarr; parallel vector search &rarr; Retrieval Evaluator agent judges coverage and gaps &rarr; loop up to N times &rarr; read FULL TEXT of the best candidate &rarr; synthesize cited answer.</td>
+            <td>&ldquo;find the section where the customer describes the outage timeline&rdquo;, multi-part questions needing precise citations.</td>
+          </tr>
+          <tr>
+            <td><code>auto</code></td>
+            <td>Query Planner classifies complexity first, then picks <code>quick</code> or <code>deep</code>.</td>
+            <td>Default. Let the agent decide; override when you have a strong reason.</td>
           </tr>
         </tbody>
       </table>
 
       <!-- ── Agentic Search Flow ────────────────────── -->
-      <h2>Agentic Search Flow</h2>
-      <p>When <code>legal-agentic-search</code> is invoked:</p>
+      <h2>Deep Mode Flow</h2>
+      <p>When <code>kb-search</code> runs in deep mode:</p>
 
       <div class="card" style="margin-top: 0.75rem;">
         <div class="flow-step">
           <div class="flow-num">1</div>
           <div class="flow-text">
             <strong>Query Planning</strong>
-            <span><span class="badge badge-agent">Agent</span> Legal Query Planner agent generates 3&ndash;5 diverse search queries using legal terminology</span>
+            <span><span class="badge badge-agent">Agent</span> Query Planner generates 3&ndash;5 diverse vector-search queries using terminology the source corpus likely uses</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">2</div>
           <div class="flow-text">
             <strong>Vector Search</strong>
-            <span>Each query is embedded and searched against Pinecone (namespace = caseId), with optional party/document type filters</span>
+            <span>Each query is embedded and searched against Pinecone (namespace = collectionId), with optional <code>sourceType</code> or <code>tag</code> filters</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">3</div>
           <div class="flow-text">
             <strong>Result Evaluation</strong>
-            <span><span class="badge badge-agent">Agent</span> Legal Result Evaluator agent assesses specificity, identifies gaps (e.g. &ldquo;found references to the timeline but not specific dates&rdquo;)</span>
+            <span><span class="badge badge-agent">Agent</span> Retrieval Evaluator assesses specificity and identifies concrete gaps (e.g. &ldquo;found references to pricing but not the enterprise tier&rdquo;)</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">4</div>
           <div class="flow-text">
             <strong>Iterate or Proceed</strong>
-            <span>If gaps remain and iterations &lt; 3, loop back to step 1 with refined queries. Otherwise, proceed.</span>
+            <span>If gaps remain and iterations &lt; maxIterations, loop back to step 1 with refined queries. Otherwise, proceed.</span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">5</div>
           <div class="flow-text">
             <strong>Full Document Read</strong>
-            <span>Reads the full extracted text of the top candidate document from <code>workspace/legal/cases/{caseId}/full-text/</code></span>
+            <span>Reads the full extracted text of the top candidate from <code>workspace/knowledge-base/{collectionId}/full-text/</code></span>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-num">6</div>
           <div class="flow-text">
             <strong>Answer Synthesis</strong>
-            <span>Produces a precise, citation-backed answer referencing specific documents, page numbers, and quoted passages</span>
+            <span>Produces a precise, citation-backed answer referencing specific documents and quoted passages</span>
           </div>
         </div>
       </div>
 
       <!-- ── Workflow ───────────────────────────────── -->
-      <h2>Workflow: legal-rag</h2>
+      <h2>Workflow: rag-workflow</h2>
       <p>
         The <span class="badge badge-workflow">Workflow</span> version adds a <strong>human-in-the-loop</strong> clarification step before searching.
-        It suspends to ask the lawyer 3 clarifying questions, then runs the same iterative search loop.
+        It suspends to ask 3 clarifying questions, then runs the same iterative search loop.
       </p>
 <pre><code>clarifyQuery (suspend/resume)
     |
@@ -680,40 +699,30 @@ Full extracted text saved to workspace/legal/cases/{caseId}/full-text/</code></p
 readCandidateDocument
     |
     v
-synthesizeAnswer &rarr; { answer, caseId, candidateDocument }</code></pre>
+synthesizeAnswer &rarr; { answer, collectionId, candidateDocument }</code></pre>
 
       <!-- ── Using with OpenClaw ────────────────────── -->
       <h2>Using with OpenClaw</h2>
-      <p>All legal RAG tools are registered on the OpenClaw agent. Here&rsquo;s a typical conversation flow:</p>
+      <p>All RAG tools are registered on the OpenClaw agent. A typical flow:</p>
 
-      <h3>1. Create a case</h3>
-<pre><code>"Create a new legal case called smith-v-jones-2024 for the case Smith v. Jones"</code></pre>
-      <p>OpenClaw will call <code>legal-create-case</code> with <code>caseId: "smith-v-jones-2024"</code>.</p>
+      <h3>1. Create a collection</h3>
+<pre><code>"Create a knowledge-base collection called product-docs for our product manuals."</code></pre>
+      <p>OpenClaw calls <code>kb-create-collection</code> with <code>collectionId: "product-docs"</code>.</p>
 
       <h3>2. Ingest documents</h3>
-<pre><code>"Ingest the deposition transcript at /path/to/smith-deposition.pdf into the
-smith-v-jones-2024 case. It's a deposition, and the relevant parties are
-John Smith, Jane Jones, and Acme Corp."</code></pre>
-      <p>OpenClaw will call <code>legal-ingest-document</code> with the file path, case ID, document type, and party names.</p>
+<pre><code>"Ingest /path/to/pricing.pdf into product-docs, sourceType pdf, tags [pricing, enterprise]."</code></pre>
+      <p>OpenClaw calls <code>kb-ingest-document</code> with the file path, collection ID, sourceType, and tags.</p>
 
-      <h3>3. Batch ingest</h3>
-<pre><code>"Ingest all of these into smith-v-jones-2024:
-  - /docs/exhibit-a.pdf (exhibit, parties: Acme Corp)
-  - /docs/contract.docx (contract, parties: John Smith, Acme Corp)
-  - /docs/financials.xlsx (discovery, parties: Acme Corp)"</code></pre>
-
-      <h3>4. Search</h3>
-<pre><code>"In the smith-v-jones-2024 case, what did John Smith say about
-the timeline of the contract amendment?"</code></pre>
+      <h3>3. Ask anything</h3>
+<pre><code>"In product-docs, what are our enterprise annual pricing tiers?"</code></pre>
       <p>
-        OpenClaw recognizes this as a complex query and uses <code>legal-agentic-search</code>.
-        It will iterate through search queries, evaluate results, and read the full deposition transcript
-        before giving a precise answer with page references.
+        OpenClaw calls <code>kb-search</code> with <code>mode: "auto"</code>. The Query Planner classifies this as <code>deep</code>
+        (multi-part, needs precise numbers), runs the iterative loop, reads the full pricing doc, and returns a cited answer.
       </p>
 
-      <h3>5. Quick lookup</h3>
-<pre><code>"Find the indemnification clause in the smith-v-jones-2024 case"</code></pre>
-      <p>For simple lookups, OpenClaw will use <code>legal-case-search</code> for a fast one-shot search.</p>
+      <h3>4. Quick lookup</h3>
+<pre><code>"In mastra-docs, where is the createVectorQueryTool reference?"</code></pre>
+      <p>The planner classifies this as <code>quick</code> &mdash; one embedding search is enough.</p>
 
       <!-- ── Metadata Schema ────────────────────────── -->
       <h2>Metadata Schema</h2>
@@ -721,16 +730,16 @@ the timeline of the contract amendment?"</code></pre>
       <table>
         <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><code>caseId</code></td><td>string</td><td>Case identifier / Pinecone namespace</td></tr>
-          <tr><td><code>documentName</code></td><td>string</td><td>Original filename</td></tr>
-          <tr><td><code>documentType</code></td><td>string</td><td>deposition, exhibit, motion, brief, contract, correspondence, transcript, pleading, discovery, report, other</td></tr>
+          <tr><td><code>collectionId</code></td><td>string</td><td>Collection identifier / Pinecone namespace</td></tr>
+          <tr><td><code>documentName</code></td><td>string</td><td>Human-readable document name</td></tr>
+          <tr><td><code>sourceType</code></td><td>string</td><td>Free-form label (pdf, webpage, transcript, mastra-docs, ...)</td></tr>
+          <tr><td><code>sourceUri</code></td><td>string</td><td>Origin URL, file path, or identifier</td></tr>
+          <tr><td><code>tags</code></td><td>string[]</td><td>Free-form tags for metadata filtering</td></tr>
           <tr><td><code>dateCreated</code></td><td>ISO string</td><td>When the document was ingested</td></tr>
           <tr><td><code>pageNumber</code></td><td>number</td><td>Estimated page number for the chunk</td></tr>
           <tr><td><code>chunkIndex</code></td><td>number</td><td>Position within the document (0-based)</td></tr>
-          <tr><td><code>partyNames</code></td><td>string</td><td>Comma-separated names of related parties</td></tr>
-          <tr><td><code>sourceFilePath</code></td><td>string</td><td>Path to original file on disk</td></tr>
           <tr><td><code>fullTextPath</code></td><td>string</td><td>Path to full extracted text file</td></tr>
-          <tr><td><code>documentId</code></td><td>string</td><td>Unique ID: <code>{caseId}--{docName}--{timestamp}</code></td></tr>
+          <tr><td><code>documentId</code></td><td>string</td><td>Unique ID: <code>{collectionId}--{docName}--{timestamp}</code></td></tr>
           <tr><td><code>text</code></td><td>string</td><td>The chunk text content</td></tr>
         </tbody>
       </table>
@@ -747,40 +756,29 @@ the timeline of the contract amendment?"</code></pre>
           <tr><td>Markdown</td><td><code>.md</code>, <code>.markdown</code></td><td>Native text read</td></tr>
           <tr><td>Plain text</td><td><code>.txt</code></td><td>Native text read</td></tr>
           <tr><td>Images</td><td><code>.jpg</code>, <code>.jpeg</code>, <code>.png</code></td><td>GPT-4o vision API (OCR)</td></tr>
+          <tr><td>Raw text</td><td>&mdash;</td><td>Pass directly via <code>kb-ingest-text</code></td></tr>
         </tbody>
       </table>
 
-      <!-- ── Scaling Notes ──────────────────────────── -->
-      <h2>Scaling Beyond 100+ Documents</h2>
-      <div class="callout">
-        <strong>Current design:</strong> Optimized for 10&ndash;25 documents per case. For 100+ documents per case, consider these adjustments:
-      </div>
-      <ul>
-        <li><strong>Chunking strategy:</strong> Switch from <code>recursive</code> (512 tokens) to <code>semantic-markdown</code> or <code>sentence</code> for better semantic boundaries</li>
-        <li><strong>Embedding batching:</strong> The <code>embedMany</code> call handles batching automatically, but monitor rate limits with large corpora</li>
-        <li><strong>Metadata filters:</strong> Lean on <code>documentType</code> and <code>partyNames</code> filters to narrow search scope before vector similarity</li>
-        <li><strong>Re-ranking:</strong> Add Cohere or LLM-based re-ranking to the search pipeline via <code>createVectorQueryTool</code>&rsquo;s <code>reranker</code> option</li>
-        <li><strong>Parallel ingestion:</strong> Use <code>legal-batch-ingest</code> but consider queueing with concurrency limits for very large batches</li>
-        <li><strong>Full-text storage:</strong> For very large documents (&gt;50k chars), the agentic search truncates to 50k. Consider storing section-level extracts instead</li>
-      </ul>
-
       <!-- ── File Map ───────────────────────────────── -->
       <h2>File Map</h2>
-<pre><code>src/mastra/tools/legal/
+<pre><code>src/mastra/tools/rag/
   pinecone-store.ts        PineconeVector singleton, index constants
   document-parser.ts       Multi-format document text extraction
-  ingest-document-tool.ts  Single + batch document ingestion tools
-  case-tools.ts            Case CRUD tools
-  agentic-rag-tool.ts      Iterative agentic RAG search tool
-  simple-search-tool.ts    One-shot vector query tool
+  ingest-tool.ts           Document, text, and batch ingestion tools
+  collection-tools.ts      Collection CRUD tools
+  rag-tool.ts              Unified quick/deep/auto RAG search tool
   index.ts                 Re-exports
 
 src/mastra/agents/
-  legal-query-planner-agent.ts      Legal search query generation
-  legal-result-evaluator-agent.ts   Result evaluation + answer synthesis
+  query-planner-agent.ts        Complexity classifier + query generation
+  retrieval-evaluator-agent.ts  Result evaluation + answer synthesis
 
 src/mastra/workflows/
-  legal-rag-workflow.ts             Human-in-the-loop agentic RAG workflow</code></pre>
+  rag-workflow.ts          Human-in-the-loop agentic RAG workflow
+
+scripts/
+  seed-mastra-docs.ts      Populate mastra-docs from llms.txt + skills index</code></pre>
 
     </div>
   </div>

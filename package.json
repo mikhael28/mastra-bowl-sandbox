@@ -10,7 +10,8 @@
     "start": "mastra start",
     "patch-studio": "node scripts/patch-studio.mjs",
     "unpatch-studio": "node scripts/patch-studio.mjs --undo",
-    "postinstall": "node scripts/patch-studio.mjs"
+    "postinstall": "node scripts/patch-studio.mjs",
+    "seed:mastra-docs": "tsx scripts/seed-mastra-docs.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,19 +22,19 @@
   },
   "dependencies": {
     "@chat-adapter/telegram": "^4.24.0",
-    "@mastra/clickhouse": "^1.4.1",
-    "@mastra/core": "^1.25.0",
-    "@mastra/duckdb": "^1.1.2",
+    "@mastra/clickhouse": "^1.5.0",
+    "@mastra/core": "^1.26.0",
+    "@mastra/duckdb": "^1.2.0",
     "@mastra/e2b": "^0.1.2",
-    "@mastra/editor": "^0.7.16",
+    "@mastra/editor": "^0.7.17",
     "@mastra/evals": "^1.2.1",
-    "@mastra/libsql": "^1.8.1",
+    "@mastra/libsql": "^1.9.0",
     "@mastra/loggers": "^1.1.1",
-    "@mastra/mcp": "^1.5.0",
-    "@mastra/memory": "^1.15.1",
-    "@mastra/observability": "^1.9.1",
+    "@mastra/mcp": "^1.5.1",
+    "@mastra/memory": "^1.16.0",
+    "@mastra/observability": "^1.10.0",
     "@mastra/pinecone": "^1.0.1",
-    "@mastra/rag": "^2.2.0",
+    "@mastra/rag": "^2.2.1",
     "@mastra/stagehand": "^0.2.0",
     "@mastra/voice-elevenlabs": "^0.12.0",
     "@mastra/voice-openai": "^0.12.1",
@@ -45,7 +46,8 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
-    "mastra": "^1.6.0",
+    "mastra": "^1.6.1",
+    "tsx": "^4.20.0",
     "typescript": "^6.0.2"
   }
 }
