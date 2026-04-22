@@ -36,8 +36,7 @@ import { basedScorer } from './scorers/based-scorer';
 
 // MCP
 import { docsMcpServer } from './mcp/docs-server';
-import { ComposioToolProvider } from '@mastra/editor/composio';
-import { ArcadeToolProvider } from '@mastra/editor/arcade';
+import { composioProvider, arcadeProvider } from './tool-providers';
 
 export const mastra = new Mastra({
   workflows: { blogPostWorkflow, techTouchdownWorkflow, deepSearch, ragWorkflow },
@@ -76,12 +75,8 @@ export const mastra = new Mastra({
   }),
   editor: new MastraEditor({
     toolProviders: {
-      composio: new ComposioToolProvider({
-        apiKey: process.env.COMPOSIO_API_KEY!,
-      }),
-      arcade: new ArcadeToolProvider({
-        apiKey: process.env.ARCADE_API_KEY!,
-      }),
+      ...(composioProvider ? { composio: composioProvider } : {}),
+      ...(arcadeProvider ? { arcade: arcadeProvider } : {}),
     },
   }),
   observability: new Observability({

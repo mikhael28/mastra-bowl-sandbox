@@ -119,11 +119,20 @@ export const deepResearchTool = createTool({
     } = inputData;
     const mastra = toolContext?.mastra;
     const log = mastra?.getLogger?.() ?? console;
+    const writer = toolContext?.writer;
+    const emit = async (phase: string, data: Record<string, unknown> = {}) => {
+      await writer?.custom?.({
+        type: 'data-deep-research-progress',
+        data: { phase, ...data },
+        transient: true,
+      });
+    };
 
     const sessionId = `${new Date().toISOString().replace(/[:.]/g, '-')}-${slugify(query)}`;
     const sessionDir = join(RESEARCH_ROOT, sessionId);
     const sourcesDir = join(sessionDir, 'sources');
     await mkdir(sourcesDir, { recursive: true });
+    await emit('session-created', { sessionId, maxIterations });
     await writeFile(
       join(sessionDir, 'query.md'),
       `# Research Session\n\n- Query: ${query}\n- Clarified intent: ${clarifiedIntent || '(none)'}\n- Started: ${new Date().toISOString()}\n`,
@@ -151,6 +160,7 @@ export const deepResearchTool = createTool({
       const gapsText = gaps.length ? `\nKnown gaps:\n- ${gaps.join('\n- ')}` : '';
 
       log.info('deepResearch plan', { iteration: iterations, sessionId });
+      await emit('planning', { iteration: iterations });
       const planResp = await plannerAgent.generate(
         `User initial query: "${query}"
 Additional context: "${clarifiedIntent}"
@@ -171,6 +181,7 @@ Generate 3-5 focused search queries.`,
         sessionId,
         queries: expandedQueries,
       });
+      await emit('searching', { iteration: iterations, queries: expandedQueries });
       const batch = await Promise.all(
         expandedQueries.map(async (q) => {
           const results = await exaSearchWithSummary(q, resultsPerQuery);
@@ -187,6 +198,10 @@ Generate 3-5 focused search queries.`,
       searchResults.push(...batch);
 
       log.info('deepResearch evaluate', { iteration: iterations, sessionId });
+      await emit('evaluating', {
+        iteration: iterations,
+        sourcesCollected: searchResults.reduce((n, r) => n + r.results.length, 0),
+      });
       const evalResp = await evaluatorAgent.generate(
         `User query: "${query}"
 Clarified intent: "${clarifiedIntent}"
@@ -217,6 +232,7 @@ Determine if the results are sufficient.`,
       ? 'Note: We may not have all the information needed. Please provide your best attempt based on available information.\n'
       : '';
 
+    await emit('answering', { iterations, satisfactory: answerIsSatisfactory });
     const answerStream = await answererAgent.stream(
       `Query: "${query}"
 Clarified needs: "${clarifiedIntent}"
@@ -257,6 +273,7 @@ ${JSON.stringify(searchResults, null, 2)}`,
       answerIsSatisfactory,
       artifactPath,
     });
+    await emit('done', { sessionId, sourceCount, iterations, answerIsSatisfactory, artifactPath });
 
     return {
       sessionId,

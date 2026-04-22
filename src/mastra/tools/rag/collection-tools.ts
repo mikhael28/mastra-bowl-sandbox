@@ -94,6 +94,7 @@ export const deleteCollectionDocumentTool = createTool({
   id: 'kb-delete-document',
   description:
     'Delete all vectors for a specific document within a collection. Use this to re-ingest a document or remove it from the collection.',
+  requireApproval: true,
   inputSchema: z.object({
     collectionId: z.string().describe('Collection identifier'),
     documentName: z.string().describe('Exact document name to delete vectors for'),

@@ -3,6 +3,8 @@ import { Agent } from '@mastra/core/agent';
 export const retrievalEvaluatorAgent = new Agent({
   id: 'retrieval-evaluator',
   name: 'Retrieval Evaluator',
+  description:
+    'Evaluates whether RAG retrieval results are sufficient for a question, names specific gaps when they are not, and synthesizes grounded answers from retrieved context. Delegate to this agent to judge or explain RAG results.',
   instructions: `You are a retrieval-quality evaluator and answer synthesizer for a RAG system. You have two jobs:
 
 ## 1. Evaluate result sufficiency

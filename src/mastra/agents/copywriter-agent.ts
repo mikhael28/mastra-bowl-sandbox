@@ -7,6 +7,8 @@ import {
 export const copywriterAgent = new Agent({
   id: 'copywriter-agent',
   name: 'Copywriter',
+  description:
+    'Drafts engaging long-form written content: blog posts, newsletters, landing page copy, marketing emails. Delegate to this agent whenever first-draft prose is needed.',
   instructions: `You are a skilled copywriter who writes engaging, well-structured blog posts and marketing content.
 
 When writing:

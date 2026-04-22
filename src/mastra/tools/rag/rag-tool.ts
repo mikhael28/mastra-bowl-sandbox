@@ -101,6 +101,7 @@ Results are scoped to a single collection (Pinecone namespace). Optional metadat
 
     const mastra = toolContext?.mastra;
     const log = mastra?.getLogger?.() ?? console;
+    const writer = toolContext?.writer;
 
     const filter = buildFilter({ sourceTypeFilter, tagFilter });
 
@@ -120,6 +121,7 @@ Results are scoped to a single collection (Pinecone namespace). Optional metadat
       filter,
       mastra,
       log,
+      writer,
     });
   },
 });
@@ -233,8 +235,9 @@ async function runDeep(opts: {
   filter: Record<string, any> | undefined;
   mastra: any;
   log: any;
+  writer?: any;
 }) {
-  const { query, collectionId, topK, maxIterations, filter, mastra, log } = opts;
+  const { query, collectionId, topK, maxIterations, filter, mastra, log, writer } = opts;
 
   if (!mastra) {
     throw new Error('kb-search deep mode requires mastra context (agents must be registered)');
@@ -243,6 +246,14 @@ async function runDeep(opts: {
   const planner = mastra.getAgent('queryPlannerAgent');
   const evaluator = mastra.getAgent('retrievalEvaluatorAgent');
   const store = getKnowledgeBaseStore();
+  const emit = async (data: Record<string, unknown>) => {
+    await writer?.custom?.({
+      type: 'data-kb-search-progress',
+      data,
+      transient: true,
+    });
+  };
+  await emit({ phase: 'deep-started', collectionId, maxIterations });
 
   let iterations = 0;
   let gaps: string[] = [];
@@ -253,6 +264,7 @@ async function runDeep(opts: {
 
   while (iterations < maxIterations && !isSatisfactory) {
     iterations++;
+    await emit({ phase: 'planning', iteration: iterations });
 
     const priorText = priorQueries.length
       ? `\nPrevious queries (do NOT repeat these):\n- ${priorQueries.join('\n- ')}`
@@ -275,6 +287,7 @@ Generate 3-5 targeted vector-search queries to find the most relevant chunks.`,
 
     const expandedQueries: string[] = planResp.object.queries;
     priorQueries.push(...expandedQueries);
+    await emit({ phase: 'searching', iteration: iterations, queries: expandedQueries });
 
     const iterationResults: VectorResult[] = [];
     await Promise.all(
@@ -350,7 +363,15 @@ Are these results specific enough to answer the user's question?`,
       isSatisfactory,
       totalResults: allResults.length,
     });
+    await emit({
+      phase: 'evaluated',
+      iteration: iterations,
+      isSatisfactory,
+      totalResults: allResults.length,
+      gaps,
+    });
   }
+  await emit({ phase: 'deep-done', iterations, totalResults: allResults.length });
 
   const ranked = allResults.sort((a, b) => b.score - a.score);
   const topResults = ranked.slice(0, 20);

@@ -73,6 +73,7 @@ export const sendEmail = createTool({
   id: 'agentmail-send-email',
   description:
     'Sends an email from an agent inbox. Supports plain text and HTML bodies, CC, BCC, and attachments.',
+  requireApproval: true,
   inputSchema: z.object({
     inboxId: z.string().describe('The inbox ID to send from'),
     to: z
@@ -223,6 +224,7 @@ export const replyToEmail = createTool({
   id: 'agentmail-reply',
   description:
     'Replies to an existing email message. Maintains the thread context automatically.',
+  requireApproval: true,
   inputSchema: z.object({
     inboxId: z.string().describe('The inbox ID'),
     messageId: z.string().describe('The message ID to reply to'),

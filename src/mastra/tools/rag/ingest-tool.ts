@@ -220,10 +220,20 @@ export const batchIngestTool = createTool({
       }),
     ),
   }),
-  execute: async ({ collectionId, documents }) => {
+  execute: async ({ collectionId, documents }, toolContext: any) => {
     await ensureIndex();
     let totalChunks = 0;
+    const writer = toolContext?.writer;
+    const emit = async (data: Record<string, unknown>) => {
+      await writer?.custom?.({
+        type: 'data-batch-ingest-progress',
+        data,
+        transient: true,
+      });
+    };
+    await emit({ phase: 'started', totalDocuments: documents.length, collectionId });
 
+    let completed = 0;
     const results = await Promise.all(
       documents.map(async (doc) => {
         const docName = doc.documentName ?? basename(doc.filePath);
@@ -239,12 +249,28 @@ export const batchIngestTool = createTool({
             extraMetadata: doc.extraMetadata ?? {},
           });
           totalChunks += result.chunksCreated;
+          completed++;
+          await emit({
+            phase: 'document-ingested',
+            documentName: docName,
+            chunksCreated: result.chunksCreated,
+            completed,
+            totalDocuments: documents.length,
+          });
           return {
             documentName: docName,
             chunksCreated: result.chunksCreated,
             success: true,
           };
         } catch (err) {
+          completed++;
+          await emit({
+            phase: 'document-failed',
+            documentName: docName,
+            error: String(err),
+            completed,
+            totalDocuments: documents.length,
+          });
           return {
             documentName: docName,
             chunksCreated: 0,
@@ -254,6 +280,8 @@ export const batchIngestTool = createTool({
         }
       }),
     );
+
+    await emit({ phase: 'done', totalDocuments: documents.length, totalChunks });
 
     return {
       collectionId,

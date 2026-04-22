@@ -3,6 +3,8 @@ import { Agent } from '@mastra/core/agent';
 export const researchPlannerAgent = new Agent({
   id: 'research-planner',
   name: 'Research Planner Agent',
+  description:
+    'Generates 3–5 high-quality web search queries for a research topic. Handles first-pass exploratory queries and gap-filling follow-ups. Delegate when a new research topic needs to be scoped into searchable queries.',
   model: 'openai/gpt-5-mini',
   instructions: `Today's date is ${new Date().toDateString()}.
 
