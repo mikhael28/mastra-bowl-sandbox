@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@chat-adapter/telegram": "^4.24.0",
-    "@mastra/clickhouse": "^1.5.0",
-    "@mastra/core": "^1.26.0",
+    "@mastra/clickhouse": "^1.5.1-alpha.0",
+    "@mastra/core": "^1.26.1-alpha.0",
     "@mastra/duckdb": "^1.2.0",
     "@mastra/e2b": "^0.1.2",
     "@mastra/editor": "^0.7.17",
