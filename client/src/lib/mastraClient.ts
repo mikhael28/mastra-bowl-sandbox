@@ -541,3 +541,297 @@ export async function transcribeAudio(
   const data = await res.json();
   return (data && data.text ? String(data.text) : '').trim();
 }
+
+// ---------------------------------------------------------------------------
+// Scorers (evals)
+// ---------------------------------------------------------------------------
+
+export type ScoreRecord = {
+  id: string;
+  scorerId: string;
+  score?: number;
+  preprocessStepResult?: unknown;
+  analyzeStepResult?: unknown;
+  generateScoreStepResult?: unknown;
+  generateReasonStepResult?: { reason?: string };
+  reason?: string;
+  entityId?: string;
+  entityType?: string;
+  runId?: string;
+  traceId?: string;
+  createdAt?: string;
+  input?: unknown;
+  output?: unknown;
+  metadata?: Record<string, unknown>;
+  [k: string]: unknown;
+};
+
+export async function listScorers(): Promise<Array<{ id: string; scorer?: { description?: string } }>> {
+  try {
+    const raw = await j<any>('/api/scores/scorers');
+    if (!raw) return [];
+    return Object.entries(raw).map(([id, s]) => ({ id, ...(s as any) }));
+  } catch {
+    return [];
+  }
+}
+
+export async function listScoresByRunId(runId: string): Promise<ScoreRecord[]> {
+  try {
+    const raw = await j<any>(`/api/scores/run/${runId}`);
+    if (Array.isArray(raw)) return raw;
+    if (raw?.scores && Array.isArray(raw.scores)) return raw.scores;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+export async function listScoresByEntity(
+  entityType: 'AGENT' | 'WORKFLOW',
+  entityId: string,
+  perPage = 20,
+): Promise<ScoreRecord[]> {
+  try {
+    const raw = await j<any>(
+      `/api/scores/entity/${entityType}/${entityId}?perPage=${perPage}`,
+    );
+    if (Array.isArray(raw)) return raw;
+    if (raw?.scores && Array.isArray(raw.scores)) return raw.scores;
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Workspace helpers
+//
+// These delegate to the WORKSPACE_TOOLS that the openclaw-agent already
+// registers — we just call them via `/api/agents/:agentId/tools/:toolId/execute`.
+// That keeps the file-tree / file-read paths exactly in sync with the
+// approval policies the agent uses, and teaches the reader that the workspace
+// itself is just a bag of tools.
+// ---------------------------------------------------------------------------
+
+export type WorkspaceEntry = {
+  name: string;
+  path: string;
+  type: 'file' | 'directory';
+  size?: number;
+  modified?: string;
+};
+
+// The openclaw-agent exposes its workspace through the MCP filesystem client,
+// which provides `fs_*` tools. The WORKSPACE_TOOLS set (mastra_workspace_*)
+// is registered on the Agent internally but is not reachable via
+// `/api/agents/:id/tools/:toolId/execute`. So we drive the explorer through
+// `fs_list_directory_with_sizes` and `fs_read_text_file`, which ARE callable
+// — same files the agent sees, same access boundaries.
+//
+// Directory listings come back as a text string like:
+//   [DIR] foo
+//   [FILE] bar.txt   1.2K
+// which we parse into WorkspaceEntry objects.
+export async function listWorkspace(
+  agentId: string,
+  path = 'workspace',
+): Promise<WorkspaceEntry[]> {
+  const normalized = path === '.' || path === '' ? 'workspace' : path;
+  try {
+    const raw = await executeAgentTool(
+      agentId,
+      'fs_list_directory_with_sizes',
+      { path: normalized },
+    );
+    const data = unwrapToolResult(raw);
+    const text: string =
+      typeof data === 'string'
+        ? data
+        : typeof (data as any)?.content === 'string'
+          ? (data as any).content
+          : '';
+    if (!text) return [];
+    return parseFsListing(text, normalized);
+  } catch {
+    return [];
+  }
+}
+
+function parseFsListing(text: string, basePath: string): WorkspaceEntry[] {
+  const out: WorkspaceEntry[] = [];
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('Total:') || line.startsWith('Combined size:'))
+      continue;
+    const dirMatch = line.match(/^\[DIR\]\s+(.+?)(?:\s+\d.*)?$/);
+    const fileMatch = line.match(/^\[FILE\]\s+(\S+)(?:\s+([\d.]+)\s*([KMG]?B))?$/);
+    if (dirMatch) {
+      const name = dirMatch[1].trim();
+      out.push({
+        name,
+        path: `${basePath}/${name}`,
+        type: 'directory',
+      });
+    } else if (fileMatch) {
+      const name = fileMatch[1].trim();
+      const sizeNum = parseFloat(fileMatch[2] ?? '');
+      const unit = fileMatch[3] ?? 'B';
+      const mult =
+        unit === 'KB' ? 1024 : unit === 'MB' ? 1024 * 1024 : unit === 'GB' ? 1024 ** 3 : 1;
+      out.push({
+        name,
+        path: `${basePath}/${name}`,
+        type: 'file',
+        size: isFinite(sizeNum) ? Math.round(sizeNum * mult) : undefined,
+      });
+    }
+  }
+  // Sort dirs first, then files, each alphabetical.
+  out.sort((a, b) => {
+    if (a.type !== b.type) return a.type === 'directory' ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+  return out;
+}
+
+export async function readWorkspaceFile(
+  agentId: string,
+  path: string,
+): Promise<{ content: string; path: string; size?: number } | null> {
+  try {
+    const raw = await executeAgentTool(agentId, 'fs_read_text_file', { path });
+    const data = unwrapToolResult(raw);
+    if (typeof data === 'string') return { content: data, path };
+    if (data && typeof data === 'object') {
+      const content =
+        (data as any).content ?? (data as any).text ?? (data as any).data;
+      if (typeof content === 'string')
+        return { content, path, size: (data as any).size };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// Small helper: Mastra wraps execute results as `{ data: ... }` or returns raw
+// depending on the endpoint — flatten either shape for consumers.
+function unwrapToolResult(raw: any): any {
+  if (raw == null) return raw;
+  if (typeof raw === 'object' && 'data' in raw) return (raw as any).data;
+  if (typeof raw === 'object' && 'result' in raw) return (raw as any).result;
+  return raw;
+}
+
+// ---------------------------------------------------------------------------
+// Workspace todo list (workspace/todo.json via todo-* tools)
+// ---------------------------------------------------------------------------
+
+export type TodoItem = {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
+  completedAt: string | null;
+};
+
+export async function listTodos(
+  agentId: string,
+  filter: 'all' | 'pending' | 'completed' = 'all',
+): Promise<{ todos: TodoItem[]; counts: { total: number; pending: number; completed: number } }> {
+  try {
+    const raw = await executeAgentTool(agentId, 'todo-list', { filter });
+    const data = unwrapToolResult(raw);
+    return {
+      todos: Array.isArray(data?.todos) ? (data.todos as TodoItem[]) : [],
+      counts: data?.counts ?? { total: 0, pending: 0, completed: 0 },
+    };
+  } catch {
+    return { todos: [], counts: { total: 0, pending: 0, completed: 0 } };
+  }
+}
+
+export async function completeTodo(
+  agentId: string,
+  id: string,
+): Promise<TodoItem | null> {
+  try {
+    const raw = await executeAgentTool(agentId, 'todo-complete', { id });
+    const data = unwrapToolResult(raw);
+    return (data?.todo as TodoItem) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function addTodo(
+  agentId: string,
+  text: string,
+): Promise<TodoItem | null> {
+  try {
+    const raw = await executeAgentTool(agentId, 'todo-add', { text });
+    const data = unwrapToolResult(raw);
+    return (data?.todo as TodoItem) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Working memory (custom route — see src/mastra/routes/working-memory-route.ts)
+// ---------------------------------------------------------------------------
+
+export type WorkingMemory = {
+  agentId: string;
+  resourceId?: string;
+  threadId?: string;
+  template?: string | null;
+  scope?: string | null;
+  enabled?: boolean;
+  workingMemory?: string | null;
+  updatedAt?: string | null;
+  error?: string;
+};
+
+export async function getWorkingMemory(
+  agentId: string,
+  params: { resourceId?: string; threadId?: string } = {},
+): Promise<WorkingMemory | null> {
+  const q = new URLSearchParams();
+  if (params.resourceId) q.set('resourceId', params.resourceId);
+  if (params.threadId) q.set('threadId', params.threadId);
+  const suffix = q.toString() ? `?${q.toString()}` : '';
+  try {
+    return await j<WorkingMemory>(`/working-memory/${agentId}${suffix}`);
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Workflow runs — used to render a completed workflow's step timeline after
+// the agent calls it as a tool. See Chat.tsx → WorkflowToolCard.
+// ---------------------------------------------------------------------------
+
+export type WorkflowRunRecord = {
+  runId: string;
+  workflowName?: string;
+  snapshot?: any;
+  createdAt?: string;
+  updatedAt?: string;
+  [k: string]: unknown;
+};
+
+export async function getWorkflowRun(
+  workflowId: string,
+  runId: string,
+): Promise<WorkflowRunRecord | null> {
+  try {
+    return await j<WorkflowRunRecord>(
+      `/api/workflows/${workflowId}/runs/${runId}`,
+    );
+  } catch {
+    return null;
+  }
+}

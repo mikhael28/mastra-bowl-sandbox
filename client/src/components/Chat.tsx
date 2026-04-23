@@ -15,23 +15,25 @@ import {
 import { PrimitiveId, educationForChunk } from '../lib/education';
 import { PrimitiveBadge } from './PrimitiveBadge';
 import { VoiceControls } from './VoiceControls';
-
-type ToolCall = {
-  toolCallId: string;
-  toolName: string;
-  args?: unknown;
-  result?: unknown;
-  isError?: boolean;
-  status: 'calling' | 'awaiting-approval' | 'declined' | 'done' | 'error';
-};
+import { ToolCallRouter } from './tool-cards/ToolCallRouter';
+import { ToolCallState } from './tool-cards/types';
+import { EvalBadges } from './EvalBadges';
+import { WorkspaceExplorer } from './side-panels/WorkspaceExplorer';
+import { TodosRail } from './side-panels/TodosRail';
+import { WorkingMemoryView } from './side-panels/WorkingMemoryView';
+import { ToolCatalogDrawer } from './side-panels/ToolCatalogDrawer';
 
 type Message = {
   id: string;
   role: 'user' | 'assistant';
   text: string;
   reasoning?: string;
-  toolCalls: ToolCall[];
-  tripwire?: { reason: string; processorId?: string };
+  toolCalls: ToolCallState[];
+  tripwire?: {
+    reason: string;
+    processorId?: string;
+    rewritten?: string;
+  };
   finished?: boolean;
   usage?: { promptTokens?: number; completionTokens?: number };
   runId?: string;
@@ -44,6 +46,9 @@ interface Props {
 
 const RESOURCE_ID = 'mastra-bowl-demo-user';
 
+/** Right-rail panel selection. `null` = rail collapsed. */
+type RailPanel = 'files' | 'todos' | 'memory' | null;
+
 export function Chat({ agent, onTeach }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -53,15 +58,31 @@ export function Chat({ agent, onTeach }: Props) {
   const [threadsLoading, setThreadsLoading] = useState(false);
   const [threadPanelOpen, setThreadPanelOpen] = useState(true);
   const [pendingSpeak, setPendingSpeak] = useState<{ id: string; text: string } | null>(null);
-  // True when the selected agent advertises at least one voice speaker.
-  // Drives the voice controls, voice badge, and per-message play button.
   const [hasVoice, setHasVoice] = useState(false);
+
+  // Right-rail state (Workspace Explorer / Todos / Working Memory).
+  const [railPanel, setRailPanel] = useState<RailPanel>(null);
+  const [workspaceFileToOpen, setWorkspaceFileToOpen] = useState<string | null>(null);
+  const [todoRefreshNonce, setTodoRefreshNonce] = useState(0);
+  const [memoryRefreshNonce, setMemoryRefreshNonce] = useState(0);
+  const [evalRefreshNonce, setEvalRefreshNonce] = useState(0);
+  const [catalogOpen, setCatalogOpen] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const currentAssistantIdRef = useRef<string | null>(null);
 
-  // Load thread list and auto-open the most recently used one when agent changes.
+  // Known subagents + workflows for this agent — fed into the router so
+  // subagent/workflow tool calls get the right specialized card.
+  const knownSubagents = useMemo(
+    () => Object.keys(agent?.agents ?? {}),
+    [agent?.agents],
+  );
+  const knownWorkflows = useMemo(
+    () => Object.keys(agent?.workflows ?? {}),
+    [agent?.workflows],
+  );
+
   const refreshThreads = useCallback(async () => {
     if (!agent) return [] as MemoryThreadSummary[];
     setThreadsLoading(true);
@@ -70,7 +91,6 @@ export function Chat({ agent, onTeach }: Props) {
         resourceId: RESOURCE_ID,
         agentId: agent.id,
       });
-      // Sort by updatedAt desc, fall back to createdAt, then stable.
       const sorted = [...list].sort((a, b) => {
         const ta = Date.parse(a.updatedAt ?? a.createdAt ?? '') || 0;
         const tb = Date.parse(b.updatedAt ?? b.createdAt ?? '') || 0;
@@ -83,7 +103,6 @@ export function Chat({ agent, onTeach }: Props) {
     }
   }, [agent?.id]);
 
-  // On agent change: clear current thread, load threads, auto-open newest.
   useEffect(() => {
     if (!agent) {
       setMessages([]);
@@ -99,9 +118,6 @@ export function Chat({ agent, onTeach }: Props) {
     });
   }, [agent?.id, refreshThreads]);
 
-  // Probe voice capability by asking for the agent's speakers — a non-empty
-  // list means the agent has a voice provider wired in. This replaces the old
-  // `agent.id.includes('voice')` name-based gate, which missed OpenClaw.
   useEffect(() => {
     if (!agent) {
       setHasVoice(false);
@@ -117,7 +133,6 @@ export function Chat({ agent, onTeach }: Props) {
     };
   }, [agent?.id]);
 
-  // When the selected thread changes, rehydrate its messages.
   useEffect(() => {
     if (!agent || !currentThreadId) {
       setMessages([]);
@@ -142,8 +157,6 @@ export function Chat({ agent, onTeach }: Props) {
     });
   }, [messages]);
 
-  // Ensure we have a thread id to send with. Server will create server-side
-  // memory rows lazily on first write, so a client-generated UUID is safe.
   function ensureThreadId(): string {
     if (currentThreadId) return currentThreadId;
     const id = `t-${crypto.randomUUID()}`;
@@ -164,8 +177,6 @@ export function Chat({ agent, onTeach }: Props) {
   ): Promise<string> {
     let accumulated = '';
     for await (const chunk of stream) {
-      // Capture runId from the first chunk that carries one — we need it to
-      // approve/decline pending tool calls.
       if (chunk.runId) {
         setMessages((m) =>
           m.map((msg) =>
@@ -223,7 +234,6 @@ export function Chat({ agent, onTeach }: Props) {
       finalText = await consumeStream(stream, assistantId);
     } catch (err: any) {
       if (err?.name === 'AbortError') {
-        // User hit stop; leave the partial reply intact. Don't auto-speak.
         finalText = '';
       } else {
         setMessages((m) =>
@@ -244,8 +254,13 @@ export function Chat({ agent, onTeach }: Props) {
       if (finalText.trim()) {
         setPendingSpeak({ id: assistantId, text: finalText });
       }
-      // Refresh thread list so a newly created thread shows up in the rail.
       refreshThreads();
+      // When the turn completes, nudge the right-rail panels to refresh —
+      // todos and working memory may have been mutated by tools or by the
+      // agent's updateWorkingMemory call.
+      setTodoRefreshNonce((n) => n + 1);
+      setMemoryRefreshNonce((n) => n + 1);
+      setEvalRefreshNonce((n) => n + 1);
     }
   }
 
@@ -263,7 +278,6 @@ export function Chat({ agent, onTeach }: Props) {
     approved: boolean,
   ) {
     if (!agent || streaming) return;
-    // Update the local tool call status so the buttons disappear immediately.
     setMessages((m) =>
       m.map((msg) => {
         if (msg.id !== assistantId) return msg;
@@ -311,6 +325,9 @@ export function Chat({ agent, onTeach }: Props) {
         setPendingSpeak({ id: `${assistantId}-${Date.now()}`, text: deltaText });
       }
       refreshThreads();
+      setTodoRefreshNonce((n) => n + 1);
+      setMemoryRefreshNonce((n) => n + 1);
+      setEvalRefreshNonce((n) => n + 1);
     }
   }
 
@@ -318,6 +335,11 @@ export function Chat({ agent, onTeach }: Props) {
     abortRef.current?.abort();
     abortRef.current = null;
     setStreaming(false);
+  }
+
+  function openFileInRail(path: string) {
+    setRailPanel('files');
+    setWorkspaceFileToOpen(path);
   }
 
   if (!agent) {
@@ -329,14 +351,13 @@ export function Chat({ agent, onTeach }: Props) {
   }
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
-  // Whether to show the thinking indicator inside the active assistant bubble.
   const thinkingId =
     streaming && lastAssistant && !lastAssistant.text && lastAssistant.toolCalls.length === 0
       ? lastAssistant.id
       : null;
 
   return (
-    <div className="flex-1 flex min-w-0">
+    <div className="flex-1 flex min-w-0 relative">
       {threadPanelOpen && (
         <ThreadRail
           threads={threads}
@@ -369,7 +390,7 @@ export function Chat({ agent, onTeach }: Props) {
                 {agent.name ?? agent.id}
               </h2>
               <PrimitiveBadge primitive="agent" onTeach={onTeach} compact />
-              {Object.keys(agent.agents ?? {}).length > 0 && (
+              {knownSubagents.length > 0 && (
                 <PrimitiveBadge
                   primitive="agent-as-tool"
                   onTeach={onTeach}
@@ -379,9 +400,22 @@ export function Chat({ agent, onTeach }: Props) {
               {Object.keys(agent.tools ?? {}).length > 0 && (
                 <PrimitiveBadge primitive="tool" onTeach={onTeach} compact />
               )}
+              {knownWorkflows.length > 0 && (
+                <PrimitiveBadge primitive="workflow" onTeach={onTeach} compact />
+              )}
               {hasVoice && (
                 <PrimitiveBadge primitive="voice" onTeach={onTeach} compact />
               )}
+              <PrimitiveBadge primitive="workspace" onTeach={onTeach} compact />
+              <PrimitiveBadge primitive="memory" onTeach={onTeach} compact />
+
+              <button
+                onClick={() => setCatalogOpen(true)}
+                className="ml-auto text-[11px] px-2 py-0.5 rounded border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100"
+                title="Browse every tool this agent can call"
+              >
+                🧰 Tool catalog
+              </button>
             </div>
             {agent.description && (
               <p className="text-xs text-slate-400 mt-1 line-clamp-2">
@@ -391,6 +425,12 @@ export function Chat({ agent, onTeach }: Props) {
             <div className="text-[10px] font-mono text-slate-500 mt-1 truncate">
               POST /api/agents/{agent.id}/stream · thread{' '}
               {currentThreadId ?? '(new)'}
+              {agent.modelId && (
+                <>
+                  {' · '}
+                  <span className="text-slate-400">{agent.modelId}</span>
+                </>
+              )}
             </div>
           </div>
         </header>
@@ -408,13 +448,16 @@ export function Chat({ agent, onTeach }: Props) {
               thinking={thinkingId === m.id}
               streaming={streaming}
               hasVoice={hasVoice}
+              knownSubagents={knownSubagents}
+              knownWorkflows={knownWorkflows}
+              onOpenFile={openFileInRail}
+              onRefreshTodos={() => setTodoRefreshNonce((n) => n + 1)}
+              evalNonce={evalRefreshNonce}
               onApprove={(tcId) =>
-                m.runId &&
-                decideApproval(m.id, m.runId, tcId, true)
+                m.runId && decideApproval(m.id, m.runId, tcId, true)
               }
               onDecline={(tcId) =>
-                m.runId &&
-                decideApproval(m.id, m.runId, tcId, false)
+                m.runId && decideApproval(m.id, m.runId, tcId, false)
               }
             />
           ))}
@@ -437,8 +480,6 @@ export function Chat({ agent, onTeach }: Props) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-                  // Enter (with no Shift) sends. Shift+Enter inserts a newline.
-                  // Cmd/Ctrl+Enter also sends.
                   e.preventDefault();
                   send();
                 }
@@ -466,12 +507,94 @@ export function Chat({ agent, onTeach }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Right rail — panel selector + active panel */}
+      <RightRail
+        railPanel={railPanel}
+        onChange={setRailPanel}
+      />
+      {railPanel && (
+        <aside className="w-[340px] border-l border-slate-800 bg-slate-950 flex flex-col min-h-0">
+          {railPanel === 'files' && (
+            <WorkspaceExplorer
+              agentId={agent.id}
+              onTeach={onTeach}
+              openPath={workspaceFileToOpen}
+              onClearOpenPath={() => setWorkspaceFileToOpen(null)}
+            />
+          )}
+          {railPanel === 'todos' && (
+            <TodosRail
+              agentId={agent.id}
+              onTeach={onTeach}
+              refreshNonce={todoRefreshNonce}
+            />
+          )}
+          {railPanel === 'memory' && (
+            <WorkingMemoryView
+              agentId={agent.id}
+              resourceId={RESOURCE_ID}
+              threadId={currentThreadId}
+              onTeach={onTeach}
+              refreshNonce={memoryRefreshNonce}
+            />
+          )}
+        </aside>
+      )}
+
+      {catalogOpen && (
+        <ToolCatalogDrawer
+          agentId={agent.id}
+          onTeach={onTeach}
+          onClose={() => setCatalogOpen(false)}
+        />
+      )}
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Thread rail
+// Right-rail panel selector
+//
+// Three vertical icon tabs: Files / Todos / Memory. Clicking the active one
+// closes the rail. Keeps the rail compact when the user just wants chat.
+// ---------------------------------------------------------------------------
+
+function RightRail({
+  railPanel,
+  onChange,
+}: {
+  railPanel: RailPanel;
+  onChange: (p: RailPanel) => void;
+}) {
+  const tabs: Array<{ id: Exclude<RailPanel, null>; label: string; icon: string; title: string }> = [
+    { id: 'files', label: 'Files', icon: '📁', title: "Browse the agent's workspace" },
+    { id: 'todos', label: 'Todos', icon: '☑', title: 'workspace/todo.json' },
+    { id: 'memory', label: 'Memory', icon: '🧠', title: 'What the agent remembers about you' },
+  ];
+  return (
+    <div className="w-10 border-l border-slate-800 bg-slate-950/80 flex flex-col items-stretch shrink-0">
+      {tabs.map((t) => (
+        <button
+          key={t.id}
+          onClick={() => onChange(railPanel === t.id ? null : t.id)}
+          title={t.title}
+          className={`h-10 flex flex-col items-center justify-center text-[9px] border-l-2 ${
+            railPanel === t.id
+              ? 'bg-slate-900 border-l-indigo-500 text-indigo-200'
+              : 'border-l-transparent text-slate-500 hover:text-slate-200 hover:bg-slate-900/60'
+          }`}
+        >
+          <span className="text-sm leading-none">{t.icon}</span>
+          <span className="mt-0.5">{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Thread rail (unchanged)
 // ---------------------------------------------------------------------------
 
 function ThreadRail({
@@ -563,7 +686,7 @@ function formatRelative(iso: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Empty state
+// Empty state (unchanged)
 // ---------------------------------------------------------------------------
 
 function EmptyState({
@@ -578,6 +701,7 @@ function EmptyState({
       'Draft a 200-word intro for an AI-for-SMB landing page.',
       'Research the top 3 alternatives to Zapier for 2026.',
       'Add "follow up with Acme" to my todos, then list pending todos.',
+      'Save the research into workspace/research/zapier/ and open it for me.',
     ],
     'math-agent': [
       'What is 17 * 23 + 4^3?',
@@ -619,12 +743,16 @@ function EmptyState({
           </div>
         ))}
       </div>
+      <div className="text-[11px] text-slate-500 text-center pt-2">
+        Pro tip: open the right-rail 📁 Files panel to watch the workspace as
+        the agent writes to it.
+      </div>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Thinking indicator
+// Thinking indicator (unchanged)
 // ---------------------------------------------------------------------------
 
 const THINKING_VERBS = [
@@ -670,8 +798,13 @@ function MessageBubble({
   thinking,
   streaming,
   hasVoice,
+  knownSubagents,
+  knownWorkflows,
   onApprove,
   onDecline,
+  onOpenFile,
+  onRefreshTodos,
+  evalNonce,
 }: {
   message: Message;
   agentId: string;
@@ -679,8 +812,13 @@ function MessageBubble({
   thinking: boolean;
   streaming: boolean;
   hasVoice: boolean;
+  knownSubagents: string[];
+  knownWorkflows: string[];
   onApprove: (toolCallId: string) => void;
   onDecline: (toolCallId: string) => void;
+  onOpenFile: (path: string) => void;
+  onRefreshTodos: () => void;
+  evalNonce: number;
 }) {
   const isUser = message.role === 'user';
   const [playing, setPlaying] = useState(false);
@@ -732,13 +870,18 @@ function MessageBubble({
         )}
 
         {message.toolCalls.map((tc) => (
-          <ToolCallView
+          <ToolCallRouter
             key={tc.toolCallId}
             tc={tc}
+            agentId={agentId}
             onTeach={onTeach}
             onApprove={() => onApprove(tc.toolCallId)}
             onDecline={() => onDecline(tc.toolCallId)}
             canRespond={!streaming}
+            knownSubagents={knownSubagents}
+            knownWorkflows={knownWorkflows}
+            onOpenFile={onOpenFile}
+            onRefreshTodos={onRefreshTodos}
           />
         ))}
 
@@ -751,6 +894,16 @@ function MessageBubble({
               </span>
             </div>
             <div className="text-slate-300">{message.tripwire.reason}</div>
+            {message.tripwire.rewritten && (
+              <div className="mt-1">
+                <div className="text-[10px] uppercase text-slate-500">
+                  rewritten to
+                </div>
+                <pre className="bg-slate-950 p-1.5 rounded text-[11px] whitespace-pre-wrap break-all mt-0.5">
+                  {message.tripwire.rewritten}
+                </pre>
+              </div>
+            )}
             {message.tripwire.processorId && (
               <div className="text-slate-500 font-mono text-[10px] mt-1">
                 processor: {message.tripwire.processorId}
@@ -760,13 +913,18 @@ function MessageBubble({
         )}
 
         {!isUser && message.finished && (
-          <div className="mt-2 flex items-center gap-2 text-[10px] text-slate-500">
+          <div className="mt-2 flex items-center gap-2 flex-wrap text-[10px] text-slate-500">
             {message.usage && (
               <span>
                 tokens in {message.usage.promptTokens ?? '?'} / out{' '}
                 {message.usage.completionTokens ?? '?'}
               </span>
             )}
+            <EvalBadges
+              runId={message.runId}
+              onTeach={onTeach}
+              nonce={evalNonce}
+            />
             {hasVoice && message.text.trim() && (
               <button
                 onClick={play}
@@ -782,125 +940,6 @@ function MessageBubble({
       </div>
     </div>
   );
-}
-
-// ---------------------------------------------------------------------------
-// Tool call view (with approval support)
-// ---------------------------------------------------------------------------
-
-function ToolCallView({
-  tc,
-  onTeach,
-  onApprove,
-  onDecline,
-  canRespond,
-}: {
-  tc: ToolCall;
-  onTeach: (id: PrimitiveId) => void;
-  onApprove: () => void;
-  onDecline: () => void;
-  canRespond: boolean;
-}) {
-  const [open, setOpen] = useState(tc.status === 'awaiting-approval');
-
-  const statusColor =
-    tc.status === 'error'
-      ? 'bg-rose-500/15 border-rose-500/30'
-      : tc.status === 'awaiting-approval'
-        ? 'bg-sky-500/10 border-sky-500/40'
-        : tc.status === 'declined'
-          ? 'bg-slate-700/30 border-slate-600/50'
-          : tc.status === 'calling'
-            ? 'bg-amber-500/10 border-amber-500/30'
-            : 'bg-emerald-500/10 border-emerald-500/30';
-
-  const isAgentAsTool =
-    /-agent$/i.test(tc.toolName) || tc.toolName.includes('Agent');
-  const primitive: PrimitiveId = isAgentAsTool ? 'agent-as-tool' : 'tool';
-
-  const statusText =
-    tc.status === 'awaiting-approval'
-      ? 'awaiting approval'
-      : tc.status === 'declined'
-        ? 'declined'
-        : tc.status === 'calling'
-          ? '…'
-          : tc.status === 'error'
-            ? 'errored'
-            : 'done';
-
-  return (
-    <div className={`mt-2 border rounded p-2 text-xs ${statusColor}`}>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-2"
-      >
-        <div className="flex items-center gap-2 min-w-0">
-          <PrimitiveBadge primitive={primitive} onTeach={onTeach} compact />
-          <span className="font-mono text-slate-200 truncate">
-            {tc.toolName}
-          </span>
-          <span className="text-slate-400">{statusText}</span>
-        </div>
-        <span className="text-slate-500">{open ? '▲' : '▼'}</span>
-      </button>
-
-      {tc.status === 'awaiting-approval' && (
-        <div className="mt-2 flex items-center gap-2 flex-wrap">
-          <div className="text-sky-200 text-[11px]">
-            This tool requires your approval before it runs.
-          </div>
-          <div className="ml-auto flex gap-2">
-            <button
-              onClick={onDecline}
-              disabled={!canRespond}
-              className="px-2 py-1 rounded border border-slate-600 text-slate-200 hover:bg-slate-700/40 disabled:opacity-40"
-            >
-              Decline
-            </button>
-            <button
-              onClick={onApprove}
-              disabled={!canRespond}
-              className="px-2 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium disabled:opacity-40"
-            >
-              Approve
-            </button>
-          </div>
-        </div>
-      )}
-
-      {open && (
-        <div className="mt-2 space-y-2">
-          <div>
-            <div className="text-[10px] uppercase text-slate-500 mb-0.5">
-              args
-            </div>
-            <pre className="bg-slate-950 rounded p-2 overflow-x-auto text-[11px] whitespace-pre-wrap break-all">
-              {safeStringify(tc.args)}
-            </pre>
-          </div>
-          {tc.result !== undefined && (
-            <div>
-              <div className="text-[10px] uppercase text-slate-500 mb-0.5">
-                result
-              </div>
-              <pre className="bg-slate-950 rounded p-2 overflow-x-auto text-[11px] whitespace-pre-wrap break-all max-h-64">
-                {safeStringify(tc.result)}
-              </pre>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function safeStringify(v: unknown): string {
-  try {
-    return JSON.stringify(v, null, 2) ?? String(v);
-  } catch {
-    return String(v);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1013,6 +1052,10 @@ function applyChunkToMessage(
             tripwire: {
               reason: chunk.payload?.reason ?? 'blocked',
               processorId: chunk.payload?.processorId,
+              rewritten:
+                chunk.payload?.rewritten ??
+                chunk.payload?.replacement ??
+                undefined,
             },
           };
         }
@@ -1057,7 +1100,6 @@ function rehydrateMessages(raw: MemoryMessage[]): Message[] {
     const role: 'user' | 'assistant' =
       m.role === 'user' ? 'user' : 'assistant';
     const { text, toolCalls } = extractContent(m.content);
-    // Skip empty system-ish messages that sometimes come back.
     if (!text && toolCalls.length === 0) continue;
     out.push({
       id: m.id ?? crypto.randomUUID(),
@@ -1072,7 +1114,7 @@ function rehydrateMessages(raw: MemoryMessage[]): Message[] {
 
 function extractContent(content: unknown): {
   text: string;
-  toolCalls: ToolCall[];
+  toolCalls: ToolCallState[];
 } {
   if (typeof content === 'string') {
     return { text: content, toolCalls: [] };
@@ -1080,7 +1122,6 @@ function extractContent(content: unknown): {
   if (!content || typeof content !== 'object') {
     return { text: '', toolCalls: [] };
   }
-  // AI SDK v5 shape: { parts: [{type, text | toolName, args, ...}] }
   const anyContent = content as any;
   const parts: any[] = Array.isArray(anyContent)
     ? anyContent
@@ -1088,13 +1129,13 @@ function extractContent(content: unknown): {
       ? anyContent.parts
       : [];
   let text = '';
-  const toolCalls: ToolCall[] = [];
+  const toolCalls: ToolCallState[] = [];
   for (const p of parts) {
     if (!p || typeof p !== 'object') continue;
     if (p.type === 'text' && typeof p.text === 'string') {
       text += p.text;
     } else if (p.type === 'reasoning' && typeof p.text === 'string') {
-      // Drop reasoning when rehydrating to keep bubbles clean.
+      // drop
     } else if (
       p.type === 'tool-call' ||
       p.type === 'tool-invocation' ||

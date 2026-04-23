@@ -16,6 +16,13 @@ export default defineConfig({
         target: MASTRA_URL,
         changeOrigin: true,
       },
+      // Custom Mastra routes can't live under /api (reserved), so the
+      // working-memory-route is mounted at the root. Proxy it through Vite
+      // so the UI can still use a relative URL in the browser.
+      '/working-memory': {
+        target: MASTRA_URL,
+        changeOrigin: true,
+      },
     },
   },
 });

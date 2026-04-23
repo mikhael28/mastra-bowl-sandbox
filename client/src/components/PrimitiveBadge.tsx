@@ -21,6 +21,9 @@ const COLOR: Record<PrimitiveId, string> = {
   voice: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
   browser: 'bg-lime-500/20 text-lime-300 border-lime-500/30',
   workspace: 'bg-slate-500/30 text-slate-200 border-slate-500/30',
+  sandbox: 'bg-zinc-700/40 text-zinc-100 border-zinc-500/40',
+  approval: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+  stream: 'bg-indigo-500/15 text-indigo-200 border-indigo-500/30',
   observability: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
 };
 
