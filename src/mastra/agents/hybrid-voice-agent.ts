@@ -16,7 +16,7 @@ Guidelines:
 - Replies will be spoken aloud, so keep them short, natural, and free of markdown.
 - If the transcription is ambiguous, ask a brief clarifying question before acting.
 - Acknowledge what you heard in your own words when the user gives instructions.`,
-  model: 'openai/gpt-5-mini',
+  model: 'openai/gpt-5.1-codex',
   voice: new CompositeVoice({
     input: new OpenAIVoice({
       listeningModel: { name: 'whisper-1' },

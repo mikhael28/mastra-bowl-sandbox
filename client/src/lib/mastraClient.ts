@@ -220,6 +220,62 @@ export async function generateAgent(
   });
 }
 
+/**
+ * Resume a suspended run after a `tool-call-approval` chunk by approving or
+ * declining the pending tool call. The response is a new NDJSON stream that
+ * continues the same run. Caller should fold chunks into the same assistant
+ * message.
+ */
+export async function* resumeToolApproval(
+  agentId: string,
+  opts: {
+    runId: string;
+    toolCallId: string;
+    approved: boolean;
+  },
+  signal?: AbortSignal,
+): AsyncGenerator<Chunk, void, void> {
+  const path = opts.approved ? 'approve-tool-call' : 'decline-tool-call';
+  const res = await fetch(`/api/agents/${agentId}/${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ runId: opts.runId, toolCallId: opts.toolCallId }),
+    signal,
+  });
+  if (!res.ok || !res.body) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`${path} ${res.status}: ${text}`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  let buf = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    let nl: number;
+    while ((nl = buf.indexOf('\n')) >= 0) {
+      const rawLine = buf.slice(0, nl).trim();
+      buf = buf.slice(nl + 1);
+      if (!rawLine) continue;
+      const line = rawLine.startsWith('data:') ? rawLine.slice(5).trim() : rawLine;
+      if (!line || line === '[DONE]') continue;
+      try {
+        yield JSON.parse(line) as Chunk;
+      } catch {
+        yield { type: 'text-delta', payload: { text: line } };
+      }
+    }
+  }
+  if (buf.trim()) {
+    try {
+      yield JSON.parse(buf.trim()) as Chunk;
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Workflows
 // ---------------------------------------------------------------------------
@@ -431,15 +487,57 @@ export async function pingServer(): Promise<boolean> {
 // Voice (custom route wired in this project's mastra/index.ts)
 // ---------------------------------------------------------------------------
 
-export async function speakText(agentId: string, text: string): Promise<Blob> {
+export type VoiceSpeaker = {
+  voiceId: string;
+  name?: string;
+  displayName?: string;
+  voice_name?: string;
+  labels?: { accent?: string; [k: string]: unknown };
+  [k: string]: unknown;
+};
+
+export async function speakText(
+  agentId: string,
+  text: string,
+  speakerId?: string,
+): Promise<Blob> {
   const res = await fetch(`/voice-speak/${agentId}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify(speakerId ? { text, speakerId } : { text }),
   });
   if (!res.ok) {
     const err = await res.text().catch(() => '');
     throw new Error(`voice-speak ${res.status}: ${err}`);
   }
   return res.blob();
+}
+
+export async function listVoiceSpeakers(agentId: string): Promise<VoiceSpeaker[]> {
+  try {
+    const raw = await j<any>(`/api/agents/${agentId}/voice/speakers`);
+    return Array.isArray(raw) ? raw : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function transcribeAudio(
+  agentId: string,
+  audio: Blob,
+  filetype: 'wav' | 'webm' | 'mp4' | 'ogg' = 'webm',
+): Promise<string> {
+  const fd = new FormData();
+  fd.append('audio', audio, `recording.${filetype}`);
+  fd.append('options', JSON.stringify({ filetype }));
+  const res = await fetch(`/api/agents/${agentId}/voice/listen`, {
+    method: 'POST',
+    body: fd,
+  });
+  if (!res.ok) {
+    const err = await res.text().catch(() => '');
+    throw new Error(`voice/listen ${res.status}: ${err}`);
+  }
+  const data = await res.json();
+  return (data && data.text ? String(data.text) : '').trim();
 }

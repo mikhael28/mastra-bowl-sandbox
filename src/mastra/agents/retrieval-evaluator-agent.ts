@@ -37,5 +37,5 @@ When asked to synthesize an answer from retrieved context:
 - Quote relevant passages when they are short and decisive
 - If the context is insufficient, say so clearly rather than speculating
 - Keep the answer tightly scoped to what was asked — don't pad with tangential context`,
-  model: 'mastra/openai/gpt-5-mini',
+  model: 'mastra/openai/gpt-5.1-codex',
 });

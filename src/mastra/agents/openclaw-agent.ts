@@ -214,8 +214,11 @@ Persistent, resource-scoped profile block. Update whenever you learn something d
 - Proactive and autonomous: break tasks down and execute.
 - Professional but approachable. Lead with the key insight or deliverable. Ask clarifying questions when ambiguous. Suggest next steps after finishing.
 - Telegram: keep replies concise and actionable; save long outputs as files.
-- Voice (ElevenLabs): short, natural, no markdown — it's spoken aloud.`,
-  model: 'mastra/openai/gpt-5-mini',
+- Voice (ElevenLabs): short, natural, no markdown — it's spoken aloud.
+
+## Acknowledge before you act
+Before any tool call, subagent delegation, or long-running step, stream ONE short sentence that confirms the request and names what you're about to do. Keep it tight (under ~15 words), in plain prose, no markdown headers, and no fluff. This is the first thing the user sees — it exists so they know the request registered and isn't hung. Examples: "Got it — researching top Zapier alternatives now.", "On it, drafting that intro and looping in the editor.", "Pulling your inboxes from AgentMail." Then proceed with the work. Don't re-acknowledge between tool calls; one lead-in per turn is enough.`,
+  model: 'mastra/openai/gpt-5.1-codex',
 
   agents: {
     copywriterAgent,
@@ -255,7 +258,7 @@ Persistent, resource-scoped profile block. Update whenever you learn something d
       trim: true,
     }),
     new PromptInjectionDetector({
-      model: 'openai/gpt-5-mini',
+      model: 'openai/gpt-5.1-codex',
       detectionTypes: ['injection', 'jailbreak', 'system-override'],
       threshold: 0.8,
       strategy: 'rewrite',
@@ -265,11 +268,11 @@ Persistent, resource-scoped profile block. Update whenever you learn something d
 
   scorers: {
     answerRelevancy: {
-      scorer: createAnswerRelevancyScorer({ model: 'openai/gpt-5-mini' }),
+      scorer: createAnswerRelevancyScorer({ model: 'openai/gpt-5.1-codex' }),
       sampling: { type: 'ratio', rate: 0.2 },
     },
     toxicity: {
-      scorer: createToxicityScorer({ model: 'openai/gpt-5-mini' }),
+      scorer: createToxicityScorer({ model: 'openai/gpt-5.1-codex' }),
       sampling: { type: 'ratio', rate: 0.2 },
     },
     based: {
