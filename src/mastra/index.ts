@@ -18,6 +18,7 @@ import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-age
 import { answererAgent } from './agents/answerer-agent';
 import { queryPlannerAgent } from './agents/query-planner-agent';
 import { retrievalEvaluatorAgent } from './agents/retrieval-evaluator-agent';
+import { emailAgent } from './agents/email-agent';
 import { voiceAgent } from './agents/voice-agent';
 import { hybridVoiceAgent } from './agents/hybrid-voice-agent';
 import { getKnowledgeBaseStore, VECTOR_STORE_NAME } from './tools/rag';
@@ -53,6 +54,7 @@ export const mastra = new Mastra({
     answererAgent,
     queryPlannerAgent,
     retrievalEvaluatorAgent,
+    emailAgent,
     voiceAgent,
     hybridVoiceAgent,
   },
