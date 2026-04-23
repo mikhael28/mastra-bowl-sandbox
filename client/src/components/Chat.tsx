@@ -6,6 +6,7 @@ import {
   resumeToolApproval,
   speakText,
   listMemoryThreads,
+  listVoiceSpeakers,
   getMemoryThreadMessages,
   MemoryThreadSummary,
   MemoryMessage,
@@ -52,6 +53,9 @@ export function Chat({ agent, onTeach }: Props) {
   const [threadsLoading, setThreadsLoading] = useState(false);
   const [threadPanelOpen, setThreadPanelOpen] = useState(true);
   const [pendingSpeak, setPendingSpeak] = useState<{ id: string; text: string } | null>(null);
+  // True when the selected agent advertises at least one voice speaker.
+  // Drives the voice controls, voice badge, and per-message play button.
+  const [hasVoice, setHasVoice] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -94,6 +98,24 @@ export function Chat({ agent, onTeach }: Props) {
       if (newest) setCurrentThreadId(newest.id);
     });
   }, [agent?.id, refreshThreads]);
+
+  // Probe voice capability by asking for the agent's speakers — a non-empty
+  // list means the agent has a voice provider wired in. This replaces the old
+  // `agent.id.includes('voice')` name-based gate, which missed OpenClaw.
+  useEffect(() => {
+    if (!agent) {
+      setHasVoice(false);
+      return;
+    }
+    let alive = true;
+    setHasVoice(false);
+    listVoiceSpeakers(agent.id).then((speakers) => {
+      if (alive) setHasVoice(speakers.length > 0);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [agent?.id]);
 
   // When the selected thread changes, rehydrate its messages.
   useEffect(() => {
@@ -306,7 +328,6 @@ export function Chat({ agent, onTeach }: Props) {
     );
   }
 
-  const hasVoice = agent.id.includes('voice');
   const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
   // Whether to show the thinking indicator inside the active assistant bubble.
   const thinkingId =
@@ -386,6 +407,7 @@ export function Chat({ agent, onTeach }: Props) {
               onTeach={onTeach}
               thinking={thinkingId === m.id}
               streaming={streaming}
+              hasVoice={hasVoice}
               onApprove={(tcId) =>
                 m.runId &&
                 decideApproval(m.id, m.runId, tcId, true)
@@ -647,6 +669,7 @@ function MessageBubble({
   onTeach,
   thinking,
   streaming,
+  hasVoice,
   onApprove,
   onDecline,
 }: {
@@ -655,6 +678,7 @@ function MessageBubble({
   onTeach: (id: PrimitiveId) => void;
   thinking: boolean;
   streaming: boolean;
+  hasVoice: boolean;
   onApprove: (toolCallId: string) => void;
   onDecline: (toolCallId: string) => void;
 }) {
@@ -743,7 +767,7 @@ function MessageBubble({
                 {message.usage.completionTokens ?? '?'}
               </span>
             )}
-            {message.text.trim() && (
+            {hasVoice && message.text.trim() && (
               <button
                 onClick={play}
                 disabled={playing}
