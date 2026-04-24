@@ -11,7 +11,7 @@ import { copywriterAgent } from './agents/copywriter-agent';
 import { editorAgent } from './agents/editor-agent';
 import { publisherAgent } from './agents/publisher-agent';
 import { newsAgent } from './agents/news-agent';
-import { openclawAgent } from './agents/openclaw-agent';
+import { mastraclawAgent } from './agents/mastraclaw-agent';
 import { intentClarifierAgent } from './agents/intent-clarifier-agent';
 import { researchPlannerAgent } from './agents/research-planner-agent';
 import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-agent';
@@ -48,7 +48,7 @@ export const mastra = new Mastra({
     editorAgent,
     publisherAgent,
     newsAgent,
-    openclawAgent,
+    mastraclawAgent,
     intentClarifierAgent,
     researchPlannerAgent,
     searchResultEvaluatorAgent,

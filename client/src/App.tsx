@@ -16,6 +16,7 @@ import { ToolsPanel } from './components/ToolsPanel';
 import { MemoryPanel } from './components/MemoryPanel';
 import { McpPanel } from './components/McpPanel';
 import { ScorersPanel } from './components/ScorersPanel';
+import { ObservabilityPanel } from './components/ObservabilityPanel';
 import { EducationPanel } from './components/EducationPanel';
 
 export default function App() {
@@ -27,6 +28,10 @@ export default function App() {
   const [teaching, setTeaching] = useState<PrimitiveId | null>(null);
   const [serverOnline, setServerOnline] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // Shared across panels so a finished Chat turn refreshes the Observability
+  // trace list, and "view trace" from Chat deep-links into the right trace.
+  const [traceRefreshNonce, setTraceRefreshNonce] = useState(0);
+  const [focusRunId, setFocusRunId] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -51,9 +56,9 @@ export default function App() {
         setAgents(a);
         setWorkflows(w);
         setTools(t);
-        // Prefer OpenClaw as the default selection — it's the flagship.
+        // Prefer MastraClaw as the default selection — it's the flagship.
         const preferred =
-          a.find((x) => x.id === 'openclaw-agent') ?? a[0] ?? null;
+          a.find((x) => x.id === 'mastraclaw-agent') ?? a[0] ?? null;
         if (preferred) setSelectedAgentId(preferred.id);
       } catch (err: any) {
         setLoadError(String(err.message ?? err));
@@ -104,10 +109,26 @@ export default function App() {
             </div>
           )}
           {!loadError && tab === 'chat' && (
-            <Chat agent={selectedAgent} onTeach={setTeaching} />
+            <Chat
+              agent={selectedAgent}
+              onTeach={setTeaching}
+              onTurnFinished={() => setTraceRefreshNonce((n) => n + 1)}
+              onViewTrace={(runId) => {
+                setFocusRunId(runId);
+                setTab('observability');
+              }}
+            />
           )}
           {!loadError && tab === 'workflows' && (
-            <WorkflowPanel workflows={workflows} onTeach={setTeaching} />
+            <WorkflowPanel
+              workflows={workflows}
+              onTeach={setTeaching}
+              onRunFinished={() => setTraceRefreshNonce((n) => n + 1)}
+              onViewTrace={(runId) => {
+                setFocusRunId(runId);
+                setTab('observability');
+              }}
+            />
           )}
           {!loadError && tab === 'tools' && (
             <ToolsPanel
@@ -122,6 +143,14 @@ export default function App() {
           {!loadError && tab === 'mcp' && <McpPanel onTeach={setTeaching} />}
           {!loadError && tab === 'scorers' && (
             <ScorersPanel onTeach={setTeaching} />
+          )}
+          {!loadError && tab === 'observability' && (
+            <ObservabilityPanel
+              focusRunId={focusRunId}
+              focusTraceId={null}
+              onTeach={setTeaching}
+              refreshNonce={traceRefreshNonce}
+            />
           )}
           <EducationPanel
             primitiveId={teaching}
@@ -139,7 +168,7 @@ function TopBar({ onTeach }: { onTeach: (id: PrimitiveId) => void }) {
       <div className="font-semibold">
         Mastra Bowl Sandbox
         <span className="text-slate-500 ml-2 text-xs font-normal">
-          building an OpenClaw, lego by lego
+          building an MastraClaw, lego by lego
         </span>
       </div>
       <div className="ml-auto flex items-center gap-2">

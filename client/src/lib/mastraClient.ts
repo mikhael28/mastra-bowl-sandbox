@@ -607,7 +607,7 @@ export async function listScoresByEntity(
 // ---------------------------------------------------------------------------
 // Workspace helpers
 //
-// These delegate to the WORKSPACE_TOOLS that the openclaw-agent already
+// These delegate to the WORKSPACE_TOOLS that the mastraclaw-agent already
 // registers — we just call them via `/api/agents/:agentId/tools/:toolId/execute`.
 // That keeps the file-tree / file-read paths exactly in sync with the
 // approval policies the agent uses, and teaches the reader that the workspace
@@ -622,7 +622,7 @@ export type WorkspaceEntry = {
   modified?: string;
 };
 
-// The openclaw-agent exposes its workspace through the MCP filesystem client,
+// The mastraclaw-agent exposes its workspace through the MCP filesystem client,
 // which provides `fs_*` tools. The WORKSPACE_TOOLS set (mastra_workspace_*)
 // is registered on the Agent internally but is not reachable via
 // `/api/agents/:id/tools/:toolId/execute`. So we drive the explorer through
@@ -834,4 +834,144 @@ export async function getWorkflowRun(
   } catch {
     return null;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Observability — traces + spans
+//
+// Mastra's observability domain stores every agent/workflow/model/tool span
+// against a traceId. The server exposes:
+//
+//   GET  /api/observability/traces              list traces (paginated)
+//   GET  /api/observability/traces/:traceId     trace + all its spans
+//
+// List supports optional filters: runId, entityId, entityType.
+// Each span has a spanType from this set (see SpanRecord.spanType):
+//   agent_run, workflow_run, workflow_step, workflow_conditional,
+//   workflow_conditional_eval, workflow_parallel, workflow_loop,
+//   model_generation, model_step, model_chunk,
+//   tool_call, mcp_tool_call, processor_run, generic
+// ---------------------------------------------------------------------------
+
+export type SpanType =
+  | 'agent_run'
+  | 'workflow_run'
+  | 'workflow_step'
+  | 'workflow_conditional'
+  | 'workflow_conditional_eval'
+  | 'workflow_parallel'
+  | 'workflow_loop'
+  | 'model_generation'
+  | 'model_step'
+  | 'model_chunk'
+  | 'tool_call'
+  | 'mcp_tool_call'
+  | 'processor_run'
+  | 'generic'
+  | (string & {});
+
+export type TokenUsage = {
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+  inputDetails?: { cacheRead?: number; cacheWrite?: number; text?: number };
+  outputDetails?: { reasoning?: number; text?: number };
+  // Older shape seen on finish chunks
+  promptTokens?: number;
+  completionTokens?: number;
+};
+
+export type SpanRecord = {
+  traceId: string;
+  spanId: string;
+  parentSpanId: string | null;
+  name: string;
+  spanType: SpanType;
+  isEvent: boolean;
+  startedAt: string;
+  endedAt: string | null;
+  entityType?: string | null;
+  entityId?: string | null;
+  entityName?: string | null;
+  parentEntityType?: string | null;
+  parentEntityId?: string | null;
+  parentEntityName?: string | null;
+  rootEntityType?: string | null;
+  rootEntityId?: string | null;
+  rootEntityName?: string | null;
+  runId?: string | null;
+  threadId?: string | null;
+  resourceId?: string | null;
+  sessionId?: string | null;
+  tags?: string[] | null;
+  metadata?: Record<string, any> | null;
+  attributes?: Record<string, any> | null;
+  input?: any;
+  output?: any;
+  requestContext?: Record<string, any> | null;
+  errorInfo?: { message?: string; [k: string]: any } | null;
+  createdAt?: string;
+  updatedAt?: string | null;
+};
+
+export type TracePage = {
+  pagination: { total: number; page: number; perPage: number; hasMore: boolean };
+  spans: SpanRecord[];
+};
+
+export type TraceDetail = {
+  traceId: string;
+  spans: SpanRecord[];
+};
+
+export type TraceListFilters = {
+  page?: number;
+  perPage?: number;
+  runId?: string;
+  entityId?: string;
+  entityType?: string;
+};
+
+/**
+ * List recent root spans (one per trace). The server returns one span per
+ * trace — the top-level agent_run / workflow_run — with pagination metadata.
+ */
+export async function listTraces(
+  filters: TraceListFilters = {},
+): Promise<TracePage> {
+  const q = new URLSearchParams();
+  q.set('page', String(filters.page ?? 0));
+  q.set('perPage', String(filters.perPage ?? 25));
+  if (filters.runId) q.set('runId', filters.runId);
+  if (filters.entityId) q.set('entityId', filters.entityId);
+  if (filters.entityType) q.set('entityType', filters.entityType);
+  try {
+    return await j<TracePage>(`/api/observability/traces?${q.toString()}`);
+  } catch {
+    return {
+      pagination: { total: 0, page: 0, perPage: filters.perPage ?? 25, hasMore: false },
+      spans: [],
+    };
+  }
+}
+
+/** Fetch one trace plus every span that belongs to it. */
+export async function getTrace(traceId: string): Promise<TraceDetail | null> {
+  try {
+    return await j<TraceDetail>(`/api/observability/traces/${traceId}`);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Resolve a runId (the id a Chat turn or workflow stream used) to its trace.
+ * The list endpoint filters by runId and returns the root span — we grab its
+ * traceId and fetch the full tree.
+ */
+export async function getTraceByRunId(runId: string): Promise<TraceDetail | null> {
+  const page = await listTraces({ runId, perPage: 1 });
+  const root = page.spans[0];
+  if (!root?.traceId) return null;
+  return getTrace(root.traceId);
 }

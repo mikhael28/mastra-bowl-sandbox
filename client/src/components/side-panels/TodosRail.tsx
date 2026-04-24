@@ -8,7 +8,7 @@ import { PrimitiveId } from '../../lib/education';
  * `todo-list` tool (which reads workspace/todo.json) and writes via
  * `todo-complete`. Refreshable.
  *
- * Why it's here: OpenClaw's prompt tells it to use todos for cross-session
+ * Why it's here: MastraClaw's prompt tells it to use todos for cross-session
  * follow-ups. Without a UI, the user never saw them. Now they do, and the
  * "workspace-as-store" pattern becomes tangible.
  */

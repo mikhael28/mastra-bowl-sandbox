@@ -14,7 +14,7 @@ const SCORERS = [
     dimensions: ['authenticity', 'boldness', 'originality', 'personality', 'impact'],
     file: 'src/mastra/scorers/based-scorer.ts',
     usage:
-      'Called directly from blog-post-workflow (`basedScorer.run({ output: { text } })`) and sampled 10% on openclaw-agent.',
+      'Called directly from blog-post-workflow (`basedScorer.run({ output: { text } })`) and sampled 10% on mastraclaw-agent.',
   },
   {
     id: 'answer-relevancy',
@@ -22,8 +22,8 @@ const SCORERS = [
     description:
       'LLM-as-judge scorer that checks whether an agent response actually answers the question. Ships in @mastra/evals/scorers/prebuilt.',
     dimensions: [],
-    file: 'imported into openclaw-agent.ts',
-    usage: 'Sampled 20% on openclaw-agent responses.',
+    file: 'imported into mastraclaw-agent.ts',
+    usage: 'Sampled 20% on mastraclaw-agent responses.',
   },
   {
     id: 'toxicity',
@@ -31,8 +31,8 @@ const SCORERS = [
     description:
       'Flags toxic, harassing, or otherwise harmful content. Pairs well with the content-moderation processors.',
     dimensions: [],
-    file: 'imported into openclaw-agent.ts',
-    usage: 'Sampled 20% on openclaw-agent responses.',
+    file: 'imported into mastraclaw-agent.ts',
+    usage: 'Sampled 20% on mastraclaw-agent responses.',
   },
 ];
 

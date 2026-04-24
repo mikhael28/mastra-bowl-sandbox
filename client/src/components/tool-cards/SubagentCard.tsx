@@ -4,7 +4,7 @@ import { PrimitiveBadge } from '../PrimitiveBadge';
 import { ToolCardProps, statusColor, unwrap, safeStringify } from './types';
 
 /**
- * When OpenClaw calls one of its specialist agents (copywriter, editor,
+ * When MastraClaw calls one of its specialist agents (copywriter, editor,
  * research-planner, retrieval-evaluator, email-agent) the parent agent sees
  * the call as a tool invocation. The stream we receive here is the *parent's*
  * stream, so we don't get the subagent's inner text/reasoning chunks. What we
@@ -100,7 +100,7 @@ export function SubagentCard(props: ToolCardProps) {
         <span>
           This whole bubble is the *reply* from {subagentLabel}. It ran its own
           agent loop — instructions, model, tools, memory — before coming back
-          with this answer to OpenClaw.
+          with this answer to MastraClaw.
         </span>
       </div>
     </div>

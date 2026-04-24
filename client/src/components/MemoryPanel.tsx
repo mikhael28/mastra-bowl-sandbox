@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function MemoryPanel({ agents, onTeach }: Props) {
-  const [agentId, setAgentId] = useState<string>('openclaw-agent');
+  const [agentId, setAgentId] = useState<string>('mastraclaw-agent');
   const [resourceId, setResourceId] = useState<string>('mastra-bowl-demo-user');
   const [threads, setThreads] = useState<MemoryThreadSummary[]>([]);
   const [selected, setSelected] = useState<string | null>(null);

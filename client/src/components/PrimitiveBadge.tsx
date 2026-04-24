@@ -4,6 +4,9 @@ interface Props {
   primitive: PrimitiveId;
   onTeach: (id: PrimitiveId) => void;
   compact?: boolean;
+  /** Render as a non-interactive <span> (no nested <button>s). Use inside
+   * a parent button / link where the badge is purely decorative. */
+  asStatic?: boolean;
 }
 
 const COLOR: Record<PrimitiveId, string> = {
@@ -27,14 +30,25 @@ const COLOR: Record<PrimitiveId, string> = {
   observability: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
 };
 
-export function PrimitiveBadge({ primitive, onTeach, compact }: Props) {
+export function PrimitiveBadge({ primitive, onTeach, compact, asStatic }: Props) {
   const entry = EDUCATION[primitive];
+  const className = `inline-flex items-center gap-1 border rounded-full font-mono transition ${
+    COLOR[primitive]
+  } ${compact ? 'text-[10px] px-1.5 py-px' : 'text-xs px-2 py-0.5'} ${
+    asStatic ? '' : 'hover:brightness-125'
+  }`;
+
+  if (asStatic) {
+    return (
+      <span className={className} title={entry.title}>
+        <span>{entry.title}</span>
+      </span>
+    );
+  }
   return (
     <button
       onClick={() => onTeach(primitive)}
-      className={`inline-flex items-center gap-1 border rounded-full font-mono hover:brightness-125 transition ${
-        COLOR[primitive]
-      } ${compact ? 'text-[10px] px-1.5 py-px' : 'text-xs px-2 py-0.5'}`}
+      className={className}
       title={`What is ${entry.title}? Click to learn →`}
     >
       <span>{entry.title}</span>

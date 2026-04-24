@@ -78,7 +78,7 @@ export function WorkingMemoryView({
 
         <div>
           <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
-            What OpenClaw remembers
+            What MastraClaw remembers
           </div>
           {loading ? (
             <div className="text-slate-500 italic">loading…</div>

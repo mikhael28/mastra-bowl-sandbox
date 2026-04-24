@@ -2,7 +2,14 @@ import { AgentSummary, WorkflowSummary, ToolSummary } from '../lib/mastraClient'
 import { PrimitiveId } from '../lib/education';
 import { PrimitiveBadge } from './PrimitiveBadge';
 
-export type Tab = 'chat' | 'workflows' | 'tools' | 'memory' | 'mcp' | 'scorers';
+export type Tab =
+  | 'chat'
+  | 'workflows'
+  | 'tools'
+  | 'memory'
+  | 'mcp'
+  | 'scorers'
+  | 'observability';
 
 interface Props {
   tab: Tab;
@@ -23,6 +30,7 @@ const TABS: Array<{ id: Tab; label: string; primitive: PrimitiveId }> = [
   { id: 'memory', label: 'Memory', primitive: 'memory' },
   { id: 'mcp', label: 'MCP', primitive: 'mcp' },
   { id: 'scorers', label: 'Scorers', primitive: 'scorer' },
+  { id: 'observability', label: 'Observability', primitive: 'observability' },
 ];
 
 export function Sidebar({
@@ -45,7 +53,7 @@ export function Sidebar({
           </div>
           <div>
             <div className="text-sm font-semibold">Mastra Bowl</div>
-            <div className="text-xs text-slate-400">OpenClaw sandbox</div>
+            <div className="text-xs text-slate-400">MastraClaw sandbox</div>
           </div>
         </div>
         <div className="mt-3 flex items-center gap-2 text-xs">
@@ -72,12 +80,13 @@ export function Sidebar({
             }`}
           >
             <span>{t.label}</span>
+            {/* asStatic — avoid <button> inside <button>. The tab row is the
+                click target; the badge is pure decoration. */}
             <PrimitiveBadge
               primitive={t.primitive}
-              onTeach={(id) => {
-                onTeach(id);
-              }}
+              onTeach={onTeach}
               compact
+              asStatic
             />
           </button>
         ))}

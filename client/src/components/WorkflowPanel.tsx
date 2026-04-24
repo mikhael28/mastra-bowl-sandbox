@@ -3,14 +3,20 @@ import {
   WorkflowSummary,
   streamWorkflow,
   resumeWorkflow,
+  getWorkflow,
   Chunk,
 } from '../lib/mastraClient';
 import { PrimitiveId } from '../lib/education';
 import { PrimitiveBadge } from './PrimitiveBadge';
+import { WorkflowGraph, StepRunState } from './WorkflowGraph';
 
 interface Props {
   workflows: WorkflowSummary[];
   onTeach: (id: PrimitiveId) => void;
+  /** Bumped after every finished workflow run so other panels refresh. */
+  onRunFinished?: () => void;
+  /** Deep-link into Observability for this run. */
+  onViewTrace?: (runId: string) => void;
 }
 
 type StepEntry = {
@@ -18,6 +24,8 @@ type StepEntry = {
   status: 'running' | 'completed' | 'suspended' | 'failed';
   output?: unknown;
   suspendPayload?: unknown;
+  /** How many times this step has entered 'running' (for dountil loops). */
+  iterations?: number;
 };
 
 type RunState = {
@@ -53,7 +61,12 @@ const INPUT_TEMPLATES: Record<string, string> = {
   ),
 };
 
-export function WorkflowPanel({ workflows, onTeach }: Props) {
+export function WorkflowPanel({
+  workflows,
+  onTeach,
+  onRunFinished,
+  onViewTrace,
+}: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(
     workflows[0]?.id ?? null,
   );
@@ -61,12 +74,28 @@ export function WorkflowPanel({ workflows, onTeach }: Props) {
   const [run, setRun] = useState<RunState | null>(null);
   const [running, setRunning] = useState(false);
   const [resumeText, setResumeText] = useState('');
+  /** Full workflow record (fetched) — has stepGraph, steps, etc. */
+  const [detail, setDetail] = useState<any | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const selected = useMemo(
     () => workflows.find((w) => w.id === selectedId) ?? null,
     [workflows, selectedId],
   );
+
+  useEffect(() => {
+    if (!selectedId) {
+      setDetail(null);
+      return;
+    }
+    let alive = true;
+    getWorkflow(selectedId).then((d) => {
+      if (alive) setDetail(d);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [selectedId]);
 
   useEffect(() => {
     if (selectedId && INPUT_TEMPLATES[selectedId]) {
@@ -111,6 +140,7 @@ export function WorkflowPanel({ workflows, onTeach }: Props) {
     } finally {
       setRunning(false);
       abortRef.current = null;
+      onRunFinished?.();
     }
   }
 
@@ -223,52 +253,40 @@ export function WorkflowPanel({ workflows, onTeach }: Props) {
         </div>
 
         <div className="flex-1 p-4 overflow-y-auto">
-          <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">
-            Run timeline
+          <div className="flex items-center gap-2 mb-3">
+            <div className="text-xs uppercase tracking-wider text-slate-500 flex-1">
+              Run graph
+            </div>
+            {run?.runId && onViewTrace && (
+              <button
+                onClick={() => onViewTrace(run.runId!)}
+                className="text-[11px] text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+                title="Open this run in the Observability tab"
+              >
+                view trace ↗
+              </button>
+            )}
           </div>
-          {!run && (
+          {!run && !detail && (
             <div className="text-sm text-slate-500">
               Hit &quot;Start workflow&quot; to see steps as they execute.
             </div>
           )}
 
           {run?.error && (
-            <div className="p-3 rounded bg-rose-500/10 border border-rose-500/30 text-xs text-rose-200">
+            <div className="p-3 rounded bg-rose-500/10 border border-rose-500/30 text-xs text-rose-200 mb-3">
               {run.error}
             </div>
           )}
 
-          <ol className="space-y-2">
-            {run?.steps.map((s, i) => (
-              <li
-                key={`${s.stepId}-${i}`}
-                className={`p-2 rounded border text-xs ${
-                  s.status === 'completed'
-                    ? 'bg-emerald-500/5 border-emerald-500/30'
-                    : s.status === 'suspended'
-                      ? 'bg-amber-500/10 border-amber-500/40'
-                      : s.status === 'failed'
-                        ? 'bg-rose-500/10 border-rose-500/30'
-                        : 'bg-slate-900 border-slate-800'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="font-mono text-slate-200">{s.stepId}</div>
-                  <div className="text-slate-400">{s.status}</div>
-                </div>
-                {s.output !== undefined && (
-                  <details className="mt-1">
-                    <summary className="cursor-pointer text-slate-500">
-                      output
-                    </summary>
-                    <pre className="mt-1 bg-slate-950 p-2 rounded overflow-x-auto whitespace-pre-wrap break-all text-[11px]">
-                      {safe(s.output)}
-                    </pre>
-                  </details>
-                )}
-              </li>
-            ))}
-          </ol>
+          {detail?.stepGraph && (
+            <WorkflowGraph
+              stepGraph={detail.stepGraph}
+              stepStatus={stepStatusMap(run?.steps ?? [])}
+              loopIterations={loopIterationsMap(run?.steps ?? [])}
+              stepOutputs={stepOutputsMap(run?.steps ?? [])}
+            />
+          )}
 
           {run?.suspendedAtStep && (
             <div className="mt-4 p-3 rounded border border-amber-500/40 bg-amber-500/5">
@@ -328,6 +346,24 @@ function safe(v: unknown): string {
   }
 }
 
+function stepStatusMap(steps: StepEntry[]): Record<string, StepRunState> {
+  const out: Record<string, StepRunState> = {};
+  for (const s of steps) out[s.stepId] = s.status;
+  return out;
+}
+
+function loopIterationsMap(steps: StepEntry[]): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const s of steps) if (s.iterations) out[s.stepId] = s.iterations;
+  return out;
+}
+
+function stepOutputsMap(steps: StepEntry[]): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const s of steps) if (s.output !== undefined) out[s.stepId] = s.output;
+  return out;
+}
+
 function applyWorkflowChunk(
   chunk: Chunk,
   setRun: React.Dispatch<React.SetStateAction<RunState | null>>,
@@ -352,12 +388,28 @@ function applyWorkflowChunk(
       case 'workflow-step-start': {
         if (!maybeStepId) return run;
         const already = run.steps.find((s) => s.stepId === maybeStepId);
-        if (already) return run;
+        if (already) {
+          // Re-entering a step (e.g. inside a dountil loop) — bump the
+          // iteration count, reset status to running, clear prior output.
+          return {
+            ...run,
+            steps: run.steps.map((s) =>
+              s.stepId === maybeStepId
+                ? {
+                    ...s,
+                    status: 'running' as const,
+                    iterations: (s.iterations ?? 1) + 1,
+                    output: undefined,
+                  }
+                : s,
+            ),
+          };
+        }
         return {
           ...run,
           steps: [
             ...run.steps,
-            { stepId: maybeStepId, status: 'running' },
+            { stepId: maybeStepId, status: 'running', iterations: 1 },
           ],
         };
       }

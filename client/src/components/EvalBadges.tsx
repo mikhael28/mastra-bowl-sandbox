@@ -5,7 +5,7 @@ import { PrimitiveId } from '../lib/education';
 /**
  * Shows the scorer results for a given `runId` as chips next to a finished
  * assistant message. Scores come from the Mastra evals pipeline
- * (answerRelevancy, toxicity, based) configured on openclaw-agent with
+ * (answerRelevancy, toxicity, based) configured on mastraclaw-agent with
  * sampling rates of 10–20%. On most turns this returns [] — *that's a
  * teaching point*: evals don't run on every turn. When it does return data,
  * it's tangible proof that the agent's output is being independently judged.

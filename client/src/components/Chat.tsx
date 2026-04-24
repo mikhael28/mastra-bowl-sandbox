@@ -11,6 +11,7 @@ import {
   MemoryThreadSummary,
   MemoryMessage,
   Chunk,
+  TokenUsage,
 } from '../lib/mastraClient';
 import { PrimitiveId, educationForChunk } from '../lib/education';
 import { PrimitiveBadge } from './PrimitiveBadge';
@@ -22,6 +23,15 @@ import { WorkspaceExplorer } from './side-panels/WorkspaceExplorer';
 import { TodosRail } from './side-panels/TodosRail';
 import { WorkingMemoryView } from './side-panels/WorkingMemoryView';
 import { ToolCatalogDrawer } from './side-panels/ToolCatalogDrawer';
+import {
+  addBreakdown,
+  breakdownFromUsage,
+  computeCost,
+  EMPTY_BREAKDOWN,
+  formatCost,
+  formatTokens,
+  TokenBreakdown,
+} from '../lib/cost';
 
 type Message = {
   id: string;
@@ -35,13 +45,19 @@ type Message = {
     rewritten?: string;
   };
   finished?: boolean;
-  usage?: { promptTokens?: number; completionTokens?: number };
+  usage?: TokenUsage;
   runId?: string;
 };
 
 interface Props {
   agent: AgentSummary | null;
   onTeach: (id: PrimitiveId) => void;
+  /** Called after every finished turn (stream, approval resume). Lets the App
+   * refresh the Observability trace list so the new run appears. */
+  onTurnFinished?: () => void;
+  /** Called when the user clicks "view trace" on a message. Deep-links into
+   * the Observability tab, passing the runId we assigned at stream start. */
+  onViewTrace?: (runId: string) => void;
 }
 
 const RESOURCE_ID = 'mastra-bowl-demo-user';
@@ -49,7 +65,7 @@ const RESOURCE_ID = 'mastra-bowl-demo-user';
 /** Right-rail panel selection. `null` = rail collapsed. */
 type RailPanel = 'files' | 'todos' | 'memory' | null;
 
-export function Chat({ agent, onTeach }: Props) {
+export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -261,6 +277,7 @@ export function Chat({ agent, onTeach }: Props) {
       setTodoRefreshNonce((n) => n + 1);
       setMemoryRefreshNonce((n) => n + 1);
       setEvalRefreshNonce((n) => n + 1);
+      onTurnFinished?.();
     }
   }
 
@@ -328,6 +345,7 @@ export function Chat({ agent, onTeach }: Props) {
       setTodoRefreshNonce((n) => n + 1);
       setMemoryRefreshNonce((n) => n + 1);
       setEvalRefreshNonce((n) => n + 1);
+      onTurnFinished?.();
     }
   }
 
@@ -341,6 +359,27 @@ export function Chat({ agent, onTeach }: Props) {
     setRailPanel('files');
     setWorkspaceFileToOpen(path);
   }
+
+  // Session totals across every finished assistant message in this thread.
+  // Must run before any early return — React hook order is structural.
+  const sessionUsage = useMemo(() => {
+    let total: TokenBreakdown = { ...EMPTY_BREAKDOWN };
+    let cost = 0;
+    let costKnown = false;
+    let turns = 0;
+    for (const m of messages) {
+      if (m.role !== 'assistant' || !m.usage) continue;
+      turns += 1;
+      const b = breakdownFromUsage(m.usage);
+      total = addBreakdown(total, b);
+      const c = computeCost(b, agent?.modelId);
+      if (c != null) {
+        cost += c;
+        costKnown = true;
+      }
+    }
+    return { total, cost: costKnown ? cost : null, turns };
+  }, [messages, agent?.modelId]);
 
   if (!agent) {
     return (
@@ -432,6 +471,13 @@ export function Chat({ agent, onTeach }: Props) {
                 </>
               )}
             </div>
+            {sessionUsage.turns > 0 && (
+              <SessionUsageHud
+                usage={sessionUsage.total}
+                cost={sessionUsage.cost}
+                turns={sessionUsage.turns}
+              />
+            )}
           </div>
         </header>
 
@@ -444,6 +490,7 @@ export function Chat({ agent, onTeach }: Props) {
               key={m.id}
               message={m}
               agentId={agent.id}
+              modelId={agent.modelId}
               onTeach={onTeach}
               thinking={thinkingId === m.id}
               streaming={streaming}
@@ -453,6 +500,7 @@ export function Chat({ agent, onTeach }: Props) {
               onOpenFile={openFileInRail}
               onRefreshTodos={() => setTodoRefreshNonce((n) => n + 1)}
               evalNonce={evalRefreshNonce}
+              onViewTrace={onViewTrace}
               onApprove={(tcId) =>
                 m.runId && decideApproval(m.id, m.runId, tcId, true)
               }
@@ -697,7 +745,7 @@ function EmptyState({
   onTeach: (id: PrimitiveId) => void;
 }) {
   const suggestions: Record<string, string[]> = {
-    'openclaw-agent': [
+    'mastraclaw-agent': [
       'Draft a 200-word intro for an AI-for-SMB landing page.',
       'Research the top 3 alternatives to Zapier for 2026.',
       'Add "follow up with Acme" to my todos, then list pending todos.',
@@ -794,6 +842,7 @@ function ThinkingIndicator() {
 function MessageBubble({
   message,
   agentId,
+  modelId,
   onTeach,
   thinking,
   streaming,
@@ -805,9 +854,11 @@ function MessageBubble({
   onOpenFile,
   onRefreshTodos,
   evalNonce,
+  onViewTrace,
 }: {
   message: Message;
   agentId: string;
+  modelId?: string;
   onTeach: (id: PrimitiveId) => void;
   thinking: boolean;
   streaming: boolean;
@@ -819,6 +870,7 @@ function MessageBubble({
   onOpenFile: (path: string) => void;
   onRefreshTodos: () => void;
   evalNonce: number;
+  onViewTrace?: (runId: string) => void;
 }) {
   const isUser = message.role === 'user';
   const [playing, setPlaying] = useState(false);
@@ -914,17 +966,21 @@ function MessageBubble({
 
         {!isUser && message.finished && (
           <div className="mt-2 flex items-center gap-2 flex-wrap text-[10px] text-slate-500">
-            {message.usage && (
-              <span>
-                tokens in {message.usage.promptTokens ?? '?'} / out{' '}
-                {message.usage.completionTokens ?? '?'}
-              </span>
-            )}
+            {message.usage && <UsageChip usage={message.usage} modelId={modelId} />}
             <EvalBadges
               runId={message.runId}
               onTeach={onTeach}
               nonce={evalNonce}
             />
+            {message.runId && onViewTrace && (
+              <button
+                onClick={() => onViewTrace(message.runId!)}
+                className="text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+                title="Open this turn in the Observability tab"
+              >
+                view trace ↗
+              </button>
+            )}
             {hasVoice && message.text.trim() && (
               <button
                 onClick={play}
@@ -938,6 +994,90 @@ function MessageBubble({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Token usage + cost chips
+//
+// Per-message chip shows this turn's tokens and estimated $; session HUD
+// shows the running total across every finished turn in the thread.
+// ---------------------------------------------------------------------------
+
+function UsageChip({
+  usage,
+  modelId,
+}: {
+  usage: TokenUsage;
+  modelId?: string;
+}) {
+  const b = breakdownFromUsage(usage);
+  if (b.totalTokens === 0) return null;
+  const cost = computeCost(b, modelId);
+  const extras: string[] = [];
+  if (b.cachedTokens > 0) extras.push(`${formatTokens(b.cachedTokens)} cached`);
+  if (b.reasoningTokens > 0) extras.push(`${formatTokens(b.reasoningTokens)} reasoning`);
+  return (
+    <span
+      title={`input ${b.inputTokens.toLocaleString()} · output ${b.outputTokens.toLocaleString()}${
+        extras.length ? ` · ${extras.join(' · ')}` : ''
+      }${cost != null ? ` · ${formatCost(cost)}` : ''}`}
+      className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-800 text-slate-300"
+    >
+      <span className="text-slate-500">tok</span>
+      <span>
+        <span className="text-slate-200">{formatTokens(b.inputTokens)}</span>
+        <span className="text-slate-600 mx-0.5">→</span>
+        <span className="text-slate-200">{formatTokens(b.outputTokens)}</span>
+      </span>
+      {cost != null && (
+        <>
+          <span className="text-slate-700">·</span>
+          <span className="text-emerald-300">{formatCost(cost)}</span>
+        </>
+      )}
+    </span>
+  );
+}
+
+function SessionUsageHud({
+  usage,
+  cost,
+  turns,
+}: {
+  usage: TokenBreakdown;
+  cost: number | null;
+  turns: number;
+}) {
+  return (
+    <div className="mt-2 flex items-center gap-2 flex-wrap text-[10px]">
+      <span className="text-slate-500 uppercase tracking-wider">Session</span>
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 font-medium">
+        {turns} turn{turns === 1 ? '' : 's'}
+      </span>
+      <span
+        title={`input ${usage.inputTokens.toLocaleString()} · output ${usage.outputTokens.toLocaleString()}${
+          usage.cachedTokens ? ` · ${usage.cachedTokens.toLocaleString()} cached` : ''
+        }${usage.reasoningTokens ? ` · ${usage.reasoningTokens.toLocaleString()} reasoning` : ''}`}
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-200"
+      >
+        <span className="text-slate-500">tokens</span>
+        <span>{formatTokens(usage.totalTokens)}</span>
+        <span className="text-slate-600 ml-0.5">
+          ({formatTokens(usage.inputTokens)}→{formatTokens(usage.outputTokens)})
+        </span>
+        {usage.cachedTokens > 0 && (
+          <span className="text-slate-500">· {formatTokens(usage.cachedTokens)} cached</span>
+        )}
+      </span>
+      <span
+        title={cost == null ? 'No pricing data for this model' : undefined}
+        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-200"
+      >
+        <span className="text-emerald-400/70">cost</span>
+        <span className="font-medium">{formatCost(cost)}</span>
+      </span>
     </div>
   );
 }
@@ -1060,18 +1200,12 @@ function applyChunkToMessage(
           };
         }
         case 'finish': {
-          const usage = chunk.payload?.output?.usage;
-          return {
-            ...msg,
-            finished: true,
-            usage: usage
-              ? {
-                  promptTokens: usage.promptTokens ?? usage.inputTokens,
-                  completionTokens:
-                    usage.completionTokens ?? usage.outputTokens,
-                }
-              : undefined,
-          };
+          // Newer Mastra streams emit the full TokenUsage shape at
+          // `chunk.payload.output.usage`. Older variants use just
+          // `chunk.payload.usage`. Accept both.
+          const usage: TokenUsage | undefined =
+            chunk.payload?.output?.usage ?? chunk.payload?.usage;
+          return { ...msg, finished: true, usage };
         }
         case 'error': {
           const err = chunk.payload?.error;

@@ -3,6 +3,7 @@ import { listWorkspace, readWorkspaceFile, WorkspaceEntry } from '../../lib/mast
 import { PrimitiveBadge } from '../PrimitiveBadge';
 import ReactMarkdown from 'react-markdown';
 import { PrimitiveId } from '../../lib/education';
+import { createPortal } from 'react-dom';
 
 /**
  * Workspace Explorer — a right-rail file tree + viewer for the agent's
@@ -47,6 +48,16 @@ export function WorkspaceExplorer({ agentId, onTeach, openPath, onClearOpenPath 
   const [selected, setSelected] = useState<string | null>(null);
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [fileLoading, setFileLoading] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+
+  useEffect(() => {
+    if (!fullscreen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFullscreen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [fullscreen]);
 
   const loadDir = useCallback(
     async (path: string): Promise<WorkspaceEntry[]> => {
@@ -130,8 +141,17 @@ export function WorkspaceExplorer({ agentId, onTeach, openPath, onClearOpenPath 
           )}
           {selected && (
             <div>
-              <div className="text-[10px] font-mono text-slate-500 mb-2 truncate">
-                {selected}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="text-[10px] font-mono text-slate-500 truncate flex-1 min-w-0">
+                  {selected}
+                </div>
+                <button
+                  onClick={() => setFullscreen(true)}
+                  className="shrink-0 text-[10px] text-slate-400 hover:text-slate-100 border border-slate-700 hover:border-slate-500 rounded px-2 py-0.5"
+                  title="Open full screen (Esc to exit)"
+                >
+                  ⛶ full screen
+                </button>
               </div>
               {fileLoading ? (
                 <div className="text-xs text-slate-500 italic">reading…</div>
@@ -149,6 +169,40 @@ export function WorkspaceExplorer({ agentId, onTeach, openPath, onClearOpenPath 
         </span>
         . No backend shortcut — the UI uses the primitive.
       </div>
+      {fullscreen && selected &&
+        createPortal(
+          <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-sm flex flex-col">
+            <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-800">
+              <span className="text-slate-400">📄</span>
+              <div className="text-sm font-mono text-slate-200 truncate flex-1 min-w-0">
+                {selected}
+              </div>
+              <span className="text-[10px] text-slate-500 hidden sm:inline">
+                Esc to close
+              </span>
+              <button
+                onClick={() => setFullscreen(false)}
+                className="text-slate-400 hover:text-slate-100 border border-slate-700 hover:border-slate-500 rounded px-3 py-1 text-xs"
+              >
+                ✕ exit full screen
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-6 md:px-12 py-6">
+              <div className="max-w-4xl mx-auto">
+                {fileLoading ? (
+                  <div className="text-sm text-slate-500 italic">reading…</div>
+                ) : (
+                  <FilePreview
+                    path={selected}
+                    content={fileContent ?? ''}
+                    fullscreen
+                  />
+                )}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
@@ -248,11 +302,23 @@ function formatSize(n: number): string {
   return `${(n / 1024 / 1024).toFixed(1)}M`;
 }
 
-function FilePreview({ path, content }: { path: string; content: string }) {
+function FilePreview({
+  path,
+  content,
+  fullscreen = false,
+}: {
+  path: string;
+  content: string;
+  fullscreen?: boolean;
+}) {
   const lower = path.toLowerCase();
+  const textSize = fullscreen ? 'text-base' : 'text-sm';
+  const codeSize = fullscreen ? 'text-sm p-4' : 'text-[11px] p-3';
+  const iframeHeight = fullscreen ? 'h-[80vh]' : 'h-[60vh]';
+
   if (lower.endsWith('.md') || lower.endsWith('.markdown')) {
     return (
-      <div className="prose-chat text-sm">
+      <div className={`prose-chat ${textSize}`}>
         <ReactMarkdown>{content}</ReactMarkdown>
       </div>
     );
@@ -261,7 +327,7 @@ function FilePreview({ path, content }: { path: string; content: string }) {
     return (
       <iframe
         srcDoc={content}
-        className="w-full h-[60vh] bg-white rounded"
+        className={`w-full ${iframeHeight} bg-white rounded`}
         title={path}
         sandbox=""
       />
@@ -275,13 +341,13 @@ function FilePreview({ path, content }: { path: string; content: string }) {
       /* leave as-is */
     }
     return (
-      <pre className="bg-slate-950 rounded p-3 text-[11px] whitespace-pre-wrap break-all font-mono overflow-auto">
+      <pre className={`bg-slate-950 rounded ${codeSize} whitespace-pre-wrap break-all font-mono overflow-auto`}>
         {pretty}
       </pre>
     );
   }
   return (
-    <pre className="bg-slate-950 rounded p-3 text-[11px] whitespace-pre-wrap break-all font-mono overflow-auto">
+    <pre className={`bg-slate-950 rounded ${codeSize} whitespace-pre-wrap break-all font-mono overflow-auto`}>
       {content || '(empty)'}
     </pre>
   );

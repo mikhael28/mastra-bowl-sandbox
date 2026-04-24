@@ -46,16 +46,16 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     title: 'Agent',
     tagline: 'An autonomous LLM loop with tools, memory, and instructions.',
     why:
-      'Agents are the decision-makers of Mastra: give them a goal plus some tools, and they plan, call the tools, and keep going until the job is done. This is what turns a plain chat into an OpenClaw.',
+      'Agents are the decision-makers of Mastra: give them a goal plus some tools, and they plan, call the tools, and keep going until the job is done. This is what turns a plain chat into an MastraClaw.',
     howHere: [
-      'OpenClaw is the flagship agent — instructions scope it to BD & content work, and it orchestrates specialist sub-agents.',
+      'MastraClaw is the flagship agent — instructions scope it to BD & content work, and it orchestrates specialist sub-agents.',
       'Each specialist (copywriter, editor, email, news, math) is a standalone Agent registered in src/mastra/index.ts.',
       'This chat streams from POST /api/agents/:id/stream and renders text-delta + tool-call chunks live.',
     ],
     details: [
       "An Agent is an object you construct with `new Agent({ id, name, instructions, model, tools, agents, workflows, memory, ... })`.",
       'At runtime the agent calls the model → inspects the response → if it contains tool-calls, runs them → feeds results back → repeats. This is "the agent loop".',
-      'OpenClaw uses `mastra/openai/gpt-5.1-codex` via the Model Router, so you can swap models without changing code.',
+      'MastraClaw uses `mastra/openai/gpt-5.1-codex` via the Model Router, so you can swap models without changing code.',
     ],
     endpoint: 'POST /api/agents/:agentId/stream',
     docs: 'https://mastra.ai/docs/agents/overview',
@@ -67,7 +67,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       'Mastra lets you expose a specialist agent to a supervisor agent as if it were just another tool. The supervisor plans, delegates, and composes — no custom orchestration layer needed.',
     howHere: [
-      'OpenClaw lists copywriter, editor, research-planner, retrieval-evaluator, and email-agent in its `agents` option.',
+      'MastraClaw lists copywriter, editor, research-planner, retrieval-evaluator, and email-agent in its `agents` option.',
       'publisher-agent also does this — it calls copywriter-agent and editor-agent via content-tools.ts.',
       'When the supervisor calls one, you see the nested tool-call chunk in the stream below.',
     ],
@@ -111,7 +111,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     ],
     details: [
       'Workflows are first-class primitives: you build them with a typed builder API, attach them to the Mastra instance, and they get their own REST surface and observability spans.',
-      'Agents can call workflows as if they were tools (add to `workflows` on the Agent) — so OpenClaw can delegate structured pipelines.',
+      'Agents can call workflows as if they were tools (add to `workflows` on the Agent) — so MastraClaw can delegate structured pipelines.',
       "When a step fails, the workflow snapshots its state and can be resumed or retried — that's the value of the primitive over 'just a function'.",
     ],
     endpoint: 'POST /api/workflows/:workflowId/stream',
@@ -137,7 +137,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       "Agents need to remember. Mastra's Memory stores every message, supports semantic recall via embeddings, and persists across sessions using LibSQL (or Postgres/MongoDB).",
     howHere: [
-      'openclaw-agent uses a LibSQLStore + LibSQLVector at file:./openclaw-memory.db with text-embedding-3-small.',
+      'mastraclaw-agent uses a LibSQLStore + LibSQLVector at file:./mastraclaw-memory.db with text-embedding-3-small.',
       'observationalMemory is enabled — the agent silently learns across turns.',
       'Threads and messages are inspectable via GET /api/memory/threads and /messages endpoints.',
     ],
@@ -156,8 +156,8 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       'Beyond chat history, working memory is a free-form markdown template the agent writes into — things it should always remember about the user: name, tone, ICP, active projects.',
     howHere: [
-      'OpenClaw has a userProfile template with fields for name, role, timezone, tone, active projects, ICP, etc.',
-      'The instructions teach OpenClaw to update it only after the user-facing reply is finished.',
+      'MastraClaw has a userProfile template with fields for name, role, timezone, tone, active projects, ICP, etc.',
+      'The instructions teach MastraClaw to update it only after the user-facing reply is finished.',
       'scope: "resource" — tied to the user, not a single thread.',
     ],
     details: [
@@ -209,7 +209,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
       'Once agents are in production you need to measure output quality over time. Scorers analyze outputs on custom rubrics and can be run inline with sampling, or in CI.',
     howHere: [
       'basedScorer grades blog posts 0-10 on authenticity, boldness, originality, personality, impact.',
-      'OpenClaw attaches answerRelevancy, toxicity, and based scorers at low sampling rates.',
+      'MastraClaw attaches answerRelevancy, toxicity, and based scorers at low sampling rates.',
       'blog-post-workflow calls basedScorer.run() directly and branches on score.',
     ],
     details: [
@@ -227,7 +227,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       "Processors let you intercept agent I/O without changing instructions. Think of them as the agent's firewall.",
     howHere: [
-      'OpenClaw uses UnicodeNormalizer + PromptInjectionDetector as input processors.',
+      'MastraClaw uses UnicodeNormalizer + PromptInjectionDetector as input processors.',
       'Copywriter + publisher use ContentModerationInputProcessor / OutputProcessor to block violent or political content.',
       'A tripped output processor emits a `tripwire` chunk in the stream.',
     ],
@@ -259,7 +259,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       'Some tasks only exist in the browser: forms, dashboards, gated content. Stagehand lets an agent navigate, observe, act, and extract structured data using natural language.',
     howHere: [
-      'OpenClaw gets StagehandBrowser with stagehand_navigate / observe / act / extract tools.',
+      'MastraClaw gets StagehandBrowser with stagehand_navigate / observe / act / extract tools.',
       'Uses BrowserBase in production, headless local Chrome in dev.',
     ],
     details: [
@@ -276,7 +276,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       "Give the agent a real scratch space — it can save drafts, run scripts, index artifacts. All destructive ops gate behind approval so you don't wake up to a deleted repo.",
     howHere: [
-      "OpenClaw's workspace is ./workspace with LocalFilesystem + LocalSandbox in dev, E2B in prod.",
+      "MastraClaw's workspace is ./workspace with LocalFilesystem + LocalSandbox in dev, E2B in prod.",
       'WRITE_FILE, EDIT_FILE, DELETE, AST_EDIT, EXECUTE_COMMAND, KILL_PROCESS require approval.',
       'BM25 search + autoIndex mean the agent can grep its own outputs from prior sessions.',
     ],
@@ -314,7 +314,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     howHere: [
       'Any tool with `requireApproval: true` emits a `tool-call-approval` chunk.',
       'The chat here turns those into Approve / Decline buttons; clicking calls POST /api/agents/:id/approve-tool-call (or decline-) which resumes the run.',
-      "OpenClaw's workspace config gates writes/edits/deletes and shell commands.",
+      "MastraClaw's workspace config gates writes/edits/deletes and shell commands.",
     ],
     endpoint: 'POST /api/agents/:agentId/approve-tool-call',
     docs: 'https://mastra.ai/docs/agents/tool-approval',
@@ -336,15 +336,21 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
   observability: {
     id: 'observability',
     title: 'Observability',
-    tagline: 'Traces, spans, logs, and sensitive-data scrubbing.',
+    tagline: 'Traces, spans, token usage, and cost — every agent and tool call, timed and typed.',
     why:
-      'You cannot debug what you cannot see. Mastra ships OpenTelemetry-flavored tracing out of the box and pipes it to Studio and (optionally) Mastra Cloud.',
+      'You cannot debug what you cannot see. Mastra ships OpenTelemetry-flavored tracing out of the box and pipes it to Studio and (optionally) Mastra Cloud. Every agent loop, tool call, processor, and model generation becomes a span with typed attributes.',
     howHere: [
-      'Observability in src/mastra/index.ts wires DefaultExporter (local storage) + CloudExporter.',
-      'SensitiveDataFilter redacts passwords / tokens / keys from spans.',
-      'Traces are queryable via /api/telemetry/traces and power the Studio timeline.',
+      'The Observability tab renders a live trace waterfall for every chat turn and workflow run — click a span to see its input, output, attributes, and token usage.',
+      'Chat messages show per-turn token counts + estimated cost; the session HUD sums them across the thread.',
+      'Every turn links to its trace via the "view trace" button on assistant messages.',
+      'Backend observability is wired in src/mastra/index.ts with DefaultExporter (local storage) + CloudExporter, with a SensitiveDataFilter that redacts secrets.',
     ],
-    endpoint: 'GET /api/telemetry/traces',
+    details: [
+      'Spans are typed: agent_run, workflow_run, workflow_step, model_generation, model_step, tool_call, mcp_tool_call, processor_run, ... Each type carries its own attribute schema.',
+      'The runId is the canonical link between a Chat turn, the stored messages, the evaluation scores, and the trace — one id, four views.',
+      'Cost is computed client-side from per-model prices; the breakdown shows input/output/cached/reasoning tokens distinct so you can see how context caching is paying off.',
+    ],
+    endpoint: 'GET /api/observability/traces',
     docs: 'https://mastra.ai/docs/observability/overview',
   },
 };
@@ -378,7 +384,7 @@ export function educationForChunk(type: string): PrimitiveId | null {
 /**
  * Classify a tool by its id. Used by the chat view to dispatch the right
  * specialized card. The patterns come directly from the tools registered
- * in src/mastra/agents/openclaw-agent.ts (WORKSPACE_TOOLS prefix, the
+ * in src/mastra/agents/mastraclaw-agent.ts (WORKSPACE_TOOLS prefix, the
  * StagehandBrowser's `stagehand_` prefix, the rag tool family, and our
  * subagent naming convention of `*-agent` or `*Agent`).
  */

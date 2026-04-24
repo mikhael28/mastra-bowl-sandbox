@@ -5,7 +5,7 @@ import { registerApiRoute } from '@mastra/core/server';
  *
  * The Mastra server exposes thread storage at /api/memory/threads but does not
  * (as of this version) have a dedicated endpoint for resource-scoped working
- * memory. OpenClaw's memory config sets `workingMemory.scope: 'resource'` with
+ * memory. MastraClaw's memory config sets `workingMemory.scope: 'resource'` with
  * a markdown template — this route returns the resolved block so the UI can
  * render it in the "Working memory" panel alongside the rest of the education.
  *

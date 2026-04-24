@@ -541,7 +541,7 @@
       <!-- ── Overview ───────────────────────────────── -->
       <h2>Overview</h2>
       <p>
-        This is a reusable RAG primitive built on Mastra, Pinecone, and the OpenClaw agent. Each <strong>collection</strong> is an
+        This is a reusable RAG primitive built on Mastra, Pinecone, and the MastraClaw agent. Each <strong>collection</strong> is an
         isolated Pinecone namespace, so different bodies of knowledge (Mastra docs, a product manual, a case file) stay fully separated.
         Documents are parsed, chunked, embedded, and stored with rich metadata. The agent retrieves through one unified tool that can
         either do a quick single-shot search or run an iterative agentic loop with query planning, result evaluation, and full-document reads.
@@ -549,7 +549,7 @@
 
       <div class="callout">
         <strong>Seed data:</strong> Run <code>npm run seed:mastra-docs</code> to populate the <code>mastra-docs</code> collection with
-        the live contents of <a href="https://mastra.ai/llms.txt">mastra.ai/llms.txt</a> and the Mastra skills index &mdash; a ready-made demo for the OpenClaw agent to query.
+        the live contents of <a href="https://mastra.ai/llms.txt">mastra.ai/llms.txt</a> and the Mastra skills index &mdash; a ready-made demo for the MastraClaw agent to query.
       </div>
 
       <!-- ── Architecture ───────────────────────────── -->
@@ -701,22 +701,22 @@ readCandidateDocument
     v
 synthesizeAnswer &rarr; { answer, collectionId, candidateDocument }</code></pre>
 
-      <!-- ── Using with OpenClaw ────────────────────── -->
-      <h2>Using with OpenClaw</h2>
-      <p>All RAG tools are registered on the OpenClaw agent. A typical flow:</p>
+      <!-- ── Using with MastraClaw ────────────────────── -->
+      <h2>Using with MastraClaw</h2>
+      <p>All RAG tools are registered on the MastraClaw agent. A typical flow:</p>
 
       <h3>1. Create a collection</h3>
 <pre><code>"Create a knowledge-base collection called product-docs for our product manuals."</code></pre>
-      <p>OpenClaw calls <code>kb-create-collection</code> with <code>collectionId: "product-docs"</code>.</p>
+      <p>MastraClaw calls <code>kb-create-collection</code> with <code>collectionId: "product-docs"</code>.</p>
 
       <h3>2. Ingest documents</h3>
 <pre><code>"Ingest /path/to/pricing.pdf into product-docs, sourceType pdf, tags [pricing, enterprise]."</code></pre>
-      <p>OpenClaw calls <code>kb-ingest-document</code> with the file path, collection ID, sourceType, and tags.</p>
+      <p>MastraClaw calls <code>kb-ingest-document</code> with the file path, collection ID, sourceType, and tags.</p>
 
       <h3>3. Ask anything</h3>
 <pre><code>"In product-docs, what are our enterprise annual pricing tiers?"</code></pre>
       <p>
-        OpenClaw calls <code>kb-search</code> with <code>mode: "auto"</code>. The Query Planner classifies this as <code>deep</code>
+        MastraClaw calls <code>kb-search</code> with <code>mode: "auto"</code>. The Query Planner classifies this as <code>deep</code>
         (multi-part, needs precise numbers), runs the iterative loop, reads the full pricing doc, and returns a cited answer.
       </p>
 

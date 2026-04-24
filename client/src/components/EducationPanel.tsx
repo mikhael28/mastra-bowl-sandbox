@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { EDUCATION, PrimitiveId } from '../lib/education';
 
 interface Props {
@@ -5,12 +6,66 @@ interface Props {
   onClose: () => void;
 }
 
+const COLLAPSED_KEY = 'mastra-bowl:education-panel-collapsed';
+
 export function EducationPanel({ primitiveId, onClose }: Props) {
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(COLLAPSED_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSED_KEY, collapsed ? '1' : '0');
+    } catch {
+      /* ignore */
+    }
+  }, [collapsed]);
+
+  // If a user clicks a primitive badge while the panel is collapsed, open it.
+  useEffect(() => {
+    if (primitiveId && collapsed) setCollapsed(false);
+  }, [primitiveId]);
+
+  if (collapsed) {
+    return (
+      <aside className="hidden lg:flex flex-col w-8 border-l border-slate-800 bg-slate-900/40 items-center pt-3">
+        <button
+          onClick={() => setCollapsed(false)}
+          className="text-slate-400 hover:text-slate-100 text-xs px-1.5 py-2 rounded hover:bg-slate-800/60"
+          title="Show learning panel"
+          aria-label="Show learning panel"
+        >
+          <span className="block leading-none">‹</span>
+          <span
+            className="block mt-2 text-[10px] tracking-widest text-slate-500"
+            style={{ writingMode: 'vertical-rl' }}
+          >
+            LEARN
+          </span>
+        </button>
+      </aside>
+    );
+  }
+
   if (!primitiveId) {
     return (
       <aside className="hidden lg:flex flex-col w-80 border-l border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-400 overflow-y-auto">
-        <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">
-          Learning panel
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-xs uppercase tracking-wider text-slate-500">
+            Learning panel
+          </div>
+          <button
+            onClick={() => setCollapsed(true)}
+            className="text-slate-500 hover:text-slate-200 text-xs px-1.5 rounded hover:bg-slate-800/60"
+            title="Hide learning panel"
+            aria-label="Hide learning panel"
+          >
+            ›
+          </button>
         </div>
         <p className="leading-relaxed">
           Click any{' '}
@@ -46,8 +101,8 @@ export function EducationPanel({ primitiveId, onClose }: Props) {
 
   return (
     <aside className="hidden lg:flex flex-col w-80 border-l border-slate-800 bg-slate-900/40 overflow-y-auto">
-      <div className="p-4 border-b border-slate-800 flex items-start justify-between">
-        <div>
+      <div className="p-4 border-b border-slate-800 flex items-start justify-between gap-2">
+        <div className="min-w-0">
           <div className="text-xs uppercase tracking-wider text-indigo-400">
             Mastra primitive
           </div>
@@ -56,13 +111,24 @@ export function EducationPanel({ primitiveId, onClose }: Props) {
             {entry.tagline}
           </p>
         </div>
-        <button
-          onClick={onClose}
-          className="text-slate-500 hover:text-slate-200 text-lg leading-none"
-          aria-label="Close"
-        >
-          ×
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-200 text-lg leading-none px-1"
+            aria-label="Close primitive detail"
+            title="Close this primitive"
+          >
+            ×
+          </button>
+          <button
+            onClick={() => setCollapsed(true)}
+            className="text-slate-500 hover:text-slate-200 text-sm leading-none px-1"
+            aria-label="Hide learning panel"
+            title="Hide learning panel"
+          >
+            ›
+          </button>
+        </div>
       </div>
 
       <div className="p-4 space-y-4 text-sm">

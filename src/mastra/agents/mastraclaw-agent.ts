@@ -75,7 +75,7 @@ const getIntegrationTools = (userId: string | undefined): Promise<ToolMap> => {
 const getMcpTools = (): Promise<ToolMap> => {
   if (!mcpToolsPromise) {
     mcpToolsPromise = filesystemMcp.listTools().catch((err: unknown) => {
-      console.warn('[openclaw-agent] filesystem MCP unavailable:', err);
+      console.warn('[mastraclaw-agent] filesystem MCP unavailable:', err);
       mcpToolsPromise = null; // retry on next call
       return {};
     }) as Promise<ToolMap>;
@@ -85,7 +85,7 @@ const getMcpTools = (): Promise<ToolMap> => {
 
 const sandbox = isDeployed
   ? new E2BSandbox({
-      id: 'openclaw-sandbox',
+      id: 'mastraclaw-sandbox',
       timeout: 300_000,
     })
   : new LocalSandbox({
@@ -93,8 +93,8 @@ const sandbox = isDeployed
     });
 
 const workspace = new Workspace({
-  id: 'openclaw-workspace',
-  name: 'OpenClaw Workspace',
+  id: 'mastraclaw-workspace',
+  name: 'MastraClaw Workspace',
   filesystem: new LocalFilesystem({
     basePath: './workspace',
   }),
@@ -153,12 +153,12 @@ const workingMemoryTemplate = `# User Profile
 - **Notable decisions or commitments made in prior sessions**:
 `;
 
-export const openclawAgent = new Agent({
-  id: 'openclaw-agent',
-  name: 'OpenClaw',
+export const mastraclawAgent = new Agent({
+  id: 'mastraclaw-agent',
+  name: 'MastraClaw',
   description:
     'General-purpose autonomous assistant for business development and content. Coordinates specialist subagents (copywriter, editor, research planner, retrieval evaluator), runs research + RAG, drafts and sends email with approval, and maintains a persistent todo list.',
-  instructions: `You are OpenClaw, an autonomous assistant for business development and content.
+  instructions: `You are MastraClaw, an autonomous assistant for business development and content.
 
 ## Scope
 - **BD**: market/competitive research, pitch decks, business plans, outreach drafts, lead qualification, GTM.
@@ -230,12 +230,12 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
 
   memory: new Memory({
     storage: new LibSQLStore({
-      id: 'openclaw-memory-storage',
-      url: 'file:./openclaw-memory.db',
+      id: 'mastraclaw-memory-storage',
+      url: 'file:./mastraclaw-memory.db',
     }),
     vector: new LibSQLVector({
-      id: 'openclaw-memory-vector',
-      url: 'file:./openclaw-memory.db',
+      id: 'mastraclaw-memory-vector',
+      url: 'file:./mastraclaw-memory.db',
     }),
     embedder: new ModelRouterEmbeddingModel('openai/text-embedding-3-small'),
     options: {

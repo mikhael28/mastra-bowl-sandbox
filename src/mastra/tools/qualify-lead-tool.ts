@@ -35,7 +35,7 @@ const qualificationSchema = z.object({
 });
 
 const qualifierAgent = new Agent({
-  id: 'openclaw-lead-qualifier',
+  id: 'mastraclaw-lead-qualifier',
   name: 'Lead Qualifier',
   model: 'openai/gpt-5.1-codex',
   instructions: `You are a pragmatic B2B sales qualifier. Read an inbound message from a prospect and return a structured qualification record.

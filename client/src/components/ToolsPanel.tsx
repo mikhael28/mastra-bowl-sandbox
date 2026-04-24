@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function ToolsPanel({ globalTools, agents, onTeach }: Props) {
-  const [agentId, setAgentId] = useState<string>('openclaw-agent');
+  const [agentId, setAgentId] = useState<string>('mastraclaw-agent');
   const [agentTools, setAgentTools] = useState<ToolSummary[]>([]);
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
   const [dataJson, setDataJson] = useState('{}');

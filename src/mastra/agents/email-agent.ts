@@ -14,7 +14,7 @@ export const emailAgent = new Agent({
   name: 'Email',
   description:
     'Handles all AgentMail operations: create/list inboxes, list threads and messages, read messages, draft and send emails, and reply within threads. Sending and replying require user approval. Delegate to this agent for anything email-related.',
-  instructions: `You are the Email specialist. You manage AgentMail inboxes and email conversations on behalf of OpenClaw.
+  instructions: `You are the Email specialist. You manage AgentMail inboxes and email conversations on behalf of MastraClaw.
 
 ## Tools
 - \`agentmail-create-inbox\`: create a new inbox (pass \`clientId\` for idempotent creation).

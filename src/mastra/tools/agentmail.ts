@@ -17,7 +17,7 @@ export const createInbox = createTool({
   inputSchema: z.object({
     username: z.string().optional().describe('Username part of the email address (randomly generated if omitted)'),
     domain: z.string().optional().describe('Domain for the inbox (defaults to agentmail.to)'),
-    displayName: z.string().optional().describe('Display name, e.g. "OpenClaw Agent"'),
+    displayName: z.string().optional().describe('Display name, e.g. "MastraClaw Agent"'),
     clientId: z.string().optional().describe('Client ID for idempotent inbox creation'),
   }),
   outputSchema: z.object({
