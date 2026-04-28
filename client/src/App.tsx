@@ -11,6 +11,8 @@ import {
 import { PrimitiveId } from './lib/education';
 import { Sidebar, Tab } from './components/Sidebar';
 import { Chat } from './components/Chat';
+import { ArtifactPanel } from './components/ArtifactPanel';
+import { WorkspacesPanel } from './components/WorkspacesPanel';
 import { WorkflowPanel } from './components/WorkflowPanel';
 import { ToolsPanel } from './components/ToolsPanel';
 import { MemoryPanel } from './components/MemoryPanel';
@@ -119,6 +121,18 @@ export default function App() {
               }}
             />
           )}
+          {!loadError && tab === 'artifact' && (
+            <ArtifactPanel
+              agent={selectedAgent}
+              onTeach={setTeaching}
+            />
+          )}
+          {!loadError && tab === 'workspaces' && (
+            <WorkspacesPanel
+              agent={selectedAgent}
+              onTeach={setTeaching}
+            />
+          )}
           {!loadError && tab === 'workflows' && (
             <WorkflowPanel
               workflows={workflows}
@@ -166,9 +180,9 @@ function TopBar({ onTeach }: { onTeach: (id: PrimitiveId) => void }) {
   return (
     <header className="border-b border-slate-800 bg-slate-950 px-4 h-12 flex items-center gap-4 text-sm">
       <div className="font-semibold">
-        Mastra Bowl Sandbox
+        MastraClaw Sandbox
         <span className="text-slate-500 ml-2 text-xs font-normal">
-          building an MastraClaw, lego by lego
+          built with Mastra primitives
         </span>
       </div>
       <div className="ml-auto flex items-center gap-2">

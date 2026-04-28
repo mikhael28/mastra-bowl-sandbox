@@ -4,6 +4,8 @@ import { PrimitiveBadge } from './PrimitiveBadge';
 
 export type Tab =
   | 'chat'
+  | 'artifact'
+  | 'workspaces'
   | 'workflows'
   | 'tools'
   | 'memory'
@@ -25,6 +27,8 @@ interface Props {
 
 const TABS: Array<{ id: Tab; label: string; primitive: PrimitiveId }> = [
   { id: 'chat', label: 'Chat', primitive: 'agent' },
+  { id: 'artifact', label: 'Artifact', primitive: 'workspace' },
+  { id: 'workspaces', label: 'Workspaces', primitive: 'workspace' },
   { id: 'workflows', label: 'Workflows', primitive: 'workflow' },
   { id: 'tools', label: 'Tools', primitive: 'tool' },
   { id: 'memory', label: 'Memory', primitive: 'memory' },
@@ -52,8 +56,7 @@ export function Sidebar({
             M
           </div>
           <div>
-            <div className="text-sm font-semibold">Mastra Bowl</div>
-            <div className="text-xs text-slate-400">MastraClaw sandbox</div>
+            <div className="text-sm font-semibold">MastraClaw</div>
           </div>
         </div>
         <div className="mt-3 flex items-center gap-2 text-xs">

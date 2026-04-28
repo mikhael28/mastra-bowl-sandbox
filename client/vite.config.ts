@@ -23,6 +23,12 @@ export default defineConfig({
         target: MASTRA_URL,
         changeOrigin: true,
       },
+      // Static file server for the Artifact tab — serves files written
+      // by the agent under workspace/artifacts/<sessionId>/.
+      '/artifacts': {
+        target: MASTRA_URL,
+        changeOrigin: true,
+      },
     },
   },
 });

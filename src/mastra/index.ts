@@ -32,6 +32,7 @@ import { ragWorkflow } from './workflows/rag-workflow';
 // Custom routes
 import { voiceSpeakRoute } from './routes/voice-speak-route';
 import { workingMemoryRoute } from './routes/working-memory-route';
+import { artifactFilesRoute } from './routes/artifact-files-route';
 
 // Scorers
 import { basedScorer } from './scorers/based-scorer';
@@ -70,7 +71,7 @@ export const mastra = new Mastra({
   },
   storage,
   server: {
-    apiRoutes: [voiceSpeakRoute, workingMemoryRoute],
+    apiRoutes: [voiceSpeakRoute, workingMemoryRoute, artifactFilesRoute],
   },
   logger: new PinoLogger({
     name: 'Mastra',

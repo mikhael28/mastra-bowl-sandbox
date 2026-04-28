@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mastra Playbook: Offensive Primitives</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0d1117;
+      --card: #161b22;
+      --accent: #ff6b35;
+      --accent-2: #ffd166;
+      --text: #f5f7fb;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, rgba(255, 107, 53, 0.25), transparent 45%), var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 2.5rem 1rem 4rem;
+    }
+    main {
+      width: min(1100px, 100%);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      letter-spacing: 0.04em;
+    }
+    .subhead {
+      margin-top: 0.75rem;
+      color: rgba(245, 247, 251, 0.8);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    article {
+      background: color-mix(in srgb, rgba(255, 107, 53, 0.12), var(--card) 70%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 1.5rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    article::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(255, 209, 102, 0.08));
+      pointer-events: none;
+    }
+    .position {
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      color: var(--accent-2);
+      margin-bottom: 0.4rem;
+    }
+    h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.35rem;
+    }
+    p {
+      margin: 0 0 0.9rem;
+      line-height: 1.6;
+    }
+    ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: rgba(245, 247, 251, 0.85);
+      font-size: 0.95rem;
+    }
+    li {
+      margin-bottom: 0.4rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--accent-2);
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Mastra Offensive Depth Chart</h1>
+      <p class="subhead">
+        Think of Mastras primitives as the star players of an AI-powered offense. Each role turns raw model power into an orchestrated scoring drive.
+      </p>
+    </header>
+
+    <section class="grid">
+      <article>
+        <div class="position">Quarterback</div>
+        <h2>Agents</h2>
+        <p>
+          The field generals. Agents read the defense (your inputs), call audibles with routing logic, and deliver the ball to whatever capability scores fastest.
+        </p>
+        <ul>
+          <li>Reads context, goals, and guardrails in real time.</li>
+          <li>Hands off to tools, workflows, or other agents as needed.</li>
+          <li>Streams decisions so humans can override the play.</li>
+        </ul>
+        <span class="badge">Drives the huddle</span>
+      </article>
+
+      <article>
+        <div class="position">Offensive Line</div>
+        <h2>Workspaces</h2>
+        <p>
+          The protection unit. Workspaces give agents a controlled environment with storage, files, and execution sandboxes, letting plays develop safely.
+        </p>
+        <ul>
+          <li>Provides isolated sandboxes per task or customer.</li>
+          <li>Tracks artifacts, logs, and approvals in one place.</li>
+          <li>Absorbs heavy lifting so the QB can stay focused.</li>
+        </ul>
+        <span class="badge">Keeps pockets clean</span>
+      </article>
+
+      <article>
+        <div class="position">Playbook & Audible Memory</div>
+        <h2>Memory</h2>
+        <p>
+          The accumulated film study. Mastra memories capture prior drives, outcomes, and user preferences so every possession feels tailored.
+        </p>
+        <ul>
+          <li>Short-term recall for the current series.</li>
+          <li>Long-term storage for user profiles and outcomes.</li>
+          <li>Observational notes that improve future play-calling.</li>
+        </ul>
+        <span class="badge">Knows every blitz</span>
+      </article>
+
+      <article>
+        <div class="position">Skill Players</div>
+        <h2>Tools</h2>
+        <p>
+          The receivers and backs who actually rack up yardage. Tools run specialized routes  from API calls to code execution  whenever the agent delivers the ball.
+        </p>
+        <ul>
+          <li>Each tool is a discrete capability with clear inputs/outputs.</li>
+          <li>Configured with approval gates for risky plays.</li>
+          <li>Chain together for explosive trick plays (multi-step tasks).</li>
+        </ul>
+        <span class="badge">Moves the chains</span>
+      </article>
+
+      <article>
+        <div class="position">Coordinated Drives</div>
+        <h2>Workflows</h2>
+        <p>
+          The offensive coordinator's script. Workflows define multi-play sequences  research, draft, edit, send  so the team executes repeatable drives automatically.
+        </p>
+        <ul>
+          <li>Breaks big goals into callable phases.</li>
+          <li>Hands off between agents with explicit contracts.</li>
+          <li>Evaluates progress, then calls the next best play.</li>
+        </ul>
+        <span class="badge">Controls tempo</span>
+      </article>
+
+      <article>
+        <div class="position">Two-Minute Drill</div>
+        <h2>Tasks & Evaluations</h2>
+        <p>
+          Situational packages that keep everyone honest. Tasks pin down a discrete objective, while evaluators grade the result before the clock expires.
+        </p>
+        <ul>
+          <li>Atomic assignments that any agent or workflow can pick up.</li>
+          <li>Evaluation hooks flag when to rerun or escalate.</li>
+          <li>Keeps throughput high without sacrificing accuracy.</li>
+        </ul>
+        <span class="badge">Finishes drives</span>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

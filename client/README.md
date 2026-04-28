@@ -1,4 +1,4 @@
-# Mastra Bowl Sandbox — React client
+# MastraClaw Sandbox — React client
 
 A wire-it-all-up React + TypeScript + Tailwind UI for the parent Mastra project. It drives the Mastra dev server on `http://localhost:4111` through its documented HTTP API and surfaces every primitive this sandbox demonstrates — agents, tools, workflows, memory, RAG, scorers, processors, MCP, voice, workspace, observability.
 

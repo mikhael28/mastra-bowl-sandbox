@@ -153,7 +153,16 @@ export async function* streamAgent(
   agentId: string,
   body: {
     messages: string | Array<{ role: string; content: string }>;
-    memory?: { thread: string; resource: string };
+    memory?: {
+      thread: string;
+      resource: string;
+      options?: {
+        lastMessages?: number | false;
+        semanticRecall?: boolean | Record<string, unknown>;
+        workingMemory?: { enabled?: boolean } & Record<string, unknown>;
+        threads?: { generateTitle?: boolean };
+      };
+    };
     runId?: string;
     maxSteps?: number;
   },
@@ -712,6 +721,39 @@ export async function readWorkspaceFile(
     return null;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Write a file in the agent's workspace via the MCP filesystem `fs_write_file`
+ * tool. Same access rules as the agent — the MCP fs server is rooted at
+ * `workspace/`. Returns true on success.
+ */
+export async function writeWorkspaceFile(
+  agentId: string,
+  path: string,
+  content: string,
+): Promise<boolean> {
+  try {
+    await executeAgentTool(agentId, 'fs_write_file', { path, content });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Create a directory in the agent's workspace via `fs_create_directory`.
+ */
+export async function createWorkspaceDirectory(
+  agentId: string,
+  path: string,
+): Promise<boolean> {
+  try {
+    await executeAgentTool(agentId, 'fs_create_directory', { path });
+    return true;
+  } catch {
+    return false;
   }
 }
 

@@ -16,15 +16,29 @@
   {
     "id": "todo-1776954464914-au6ajl",
     "text": "Deploy v2 of the Mastra Vault on MacOS",
-    "completed": false,
+    "completed": true,
     "createdAt": "2026-04-23T14:27:44.914Z",
-    "completedAt": null
+    "completedAt": "2026-04-28T22:04:44.990Z"
   },
   {
     "id": "todo-1776959447718-94htts",
     "text": "Prepare and release a Windows version of the Mastra Vault",
     "completed": false,
     "createdAt": "2026-04-23T15:50:47.718Z",
+    "completedAt": null
+  },
+  {
+    "id": "todo-1777413888738-4pcs50",
+    "text": "Create a standalone Workspace view with a built-in file editor.",
+    "completed": false,
+    "createdAt": "2026-04-28T22:04:48.738Z",
+    "completedAt": null
+  },
+  {
+    "id": "todo-1777413894492-fkz5ya",
+    "text": "Build an internal Mastra agent that summarizes Pylon tasks and intelligently assigns them to the right users.",
+    "completed": false,
+    "createdAt": "2026-04-28T22:04:54.492Z",
     "completedAt": null
   }
 ]
