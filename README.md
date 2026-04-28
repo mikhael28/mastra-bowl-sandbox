@@ -12,9 +12,9 @@ Open [http://localhost:4111](http://localhost:4111) to access [Mastra Studio](ht
 
 ## What's Inside
 
-### AlmostOpenClaw — Autonomous General-Purpose Agent
+### AlmostMastraClaw — Autonomous General-Purpose Agent
 
-The flagship agent in this sandbox. OpenClaw (`src/mastra/agents/openclaw-agent.ts`) demonstrates the full breadth of what a Mastra agent can do:
+The flagship agent in this sandbox. MastraClaw (`src/mastra/agents/mastraclaw-agent.ts`) demonstrates the full breadth of what a Mastra agent can do:
 
 - **Workspace** — Read, write, and execute files in a sandboxed environment using `Workspace` with `LocalFilesystem` and `LocalSandbox` (swaps to [E2B](https://e2b.dev/) in production)
 - **Browser Automation** — Navigate websites, interact with page elements, and extract structured data via [`@mastra/stagehand`](https://mastra.ai/docs/agents/browsing-the-web) (uses [BrowserBase](https://browserbase.com/) in production, headless local browser in development)
@@ -101,7 +101,7 @@ Each agent highlights different Mastra patterns:
 npm run seed:mastra-docs
 ```
 
-Populates the `mastra-docs` collection with the contents of `https://mastra.ai/llms.txt` and `https://mastra.ai/.well-known/skills/index.json`. Requires `PINECONE_API_KEY` and `OPENAI_API_KEY`. Once seeded, OpenClaw can answer Mastra framework questions by calling `kb-search` against the `mastra-docs` collection.
+Populates the `mastra-docs` collection with the contents of `https://mastra.ai/llms.txt` and `https://mastra.ai/.well-known/skills/index.json`. Requires `PINECONE_API_KEY` and `OPENAI_API_KEY`. Once seeded, MastraClaw can answer Mastra framework questions by calling `kb-search` against the `mastra-docs` collection.
 
 ## Learn More
 

@@ -23,7 +23,7 @@ When responding:
 - If a calculation involves multiple operations, break it into sequential tool calls
 - Explain what each step does and why
 - Use clear mathematical notation in your explanations`,
-  model: 'openai/gpt-5-mini',
+  model: 'openai/gpt-5.1-codex',
   tools: {
     calculatorAdd,
     calculatorMultiply,

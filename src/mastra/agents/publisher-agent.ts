@@ -23,7 +23,7 @@ When responding:
 - If the user has specific requirements (tone, length, audience), include them in the topic passed to the copywriter
 - Return only the final edited version, not both drafts
 - Never produce content involving violence, weapons, or politically inappropriate topics`,
-  model: 'openai/gpt-5-mini',
+  model: 'openai/gpt-5.1-codex',
   tools: { copywriterTool, editorTool },
   inputProcessors: [new ContentModerationInputProcessor()],
   outputProcessors: [new ContentModerationOutputProcessor()],

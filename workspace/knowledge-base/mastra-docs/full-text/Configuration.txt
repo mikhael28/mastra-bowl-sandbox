@@ -71,7 +71,7 @@ Reference: Configuration | Mastra Docs
  Input/output processors for transforming agent inputs and outputs. Processors run at specific points in the agent's execution pipeline, allowing you to modify inputs before they reach the language model or outputs before they're returned. Use processors to add guardrails, detect prompt injection, moderate content, or apply custom business logic.
  Visit the Processors documentation to learn more.
  note Most users configure processors directly on agents. This top-level configuration is for defining reusable processor instances that can be shared across multiple agents.
- src/mastra/index.ts import { Mastra } from '@mastra/core' import { ModerationProcessor } from '@mastra/core/processors' export const mastra = new Mastra ( { processors : { moderation : new ModerationProcessor ( { model : 'openai/gpt-5-mini' , categories : [ 'hate' , 'harassment' , 'violence' ] , } ) , } , } )
+ src/mastra/index.ts import { Mastra } from '@mastra/core' import { ModerationProcessor } from '@mastra/core/processors' export const mastra = new Mastra ( { processors : { moderation : new ModerationProcessor ( { model : 'openai/gpt-5.1-codex' , categories : [ 'hate' , 'harassment' , 'violence' ] , } ) , } , } )
  pubsub Direct link to pubsub
  Type: PubSub
  Default: EventEmitterPubSub
@@ -83,7 +83,7 @@ Reference: Configuration | Mastra Docs
  Scorers assess the quality of agent responses and workflow outputs. They provide quantifiable metrics for measuring agent quality using model-graded, rule-based, and statistical methods. Use scorers to track performance, compare approaches, and identify areas for improvement.
  Visit the Scorers documentation to learn more.
  note Most users configure scorers directly on agents. This top-level configuration is for defining reusable scorer instances that can be shared across multiple agents.
- src/mastra/index.ts import { Mastra } from '@mastra/core' import { createToxicityScorer } from '@mastra/evals/scorers/prebuilt' export const mastra = new Mastra ( { scorers : { toxicity : createToxicityScorer ( { model : 'openai/gpt-5-mini' } ) , } , } )
+ src/mastra/index.ts import { Mastra } from '@mastra/core' import { createToxicityScorer } from '@mastra/evals/scorers/prebuilt' export const mastra = new Mastra ( { scorers : { toxicity : createToxicityScorer ( { model : 'openai/gpt-5.1-codex' } ) , } , } )
  storage Direct link to storage
  Type: MastraCompositeStore
  Storage provider for persisting application data. Used by memory, workflows, traces, and other components that require persistence. Mastra supports multiple database backends including PostgreSQL, MongoDB, libSQL, and more.

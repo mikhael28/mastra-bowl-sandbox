@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 const WORKSPACE_PATH = resolve(process.cwd(), 'workspace');
 
 export const filesystemMcp = new MCPClient({
-  id: 'openclaw-filesystem-mcp',
+  id: 'mastraclaw-filesystem-mcp',
   servers: {
     fs: {
       command: 'npx',

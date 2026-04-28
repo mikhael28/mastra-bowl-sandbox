@@ -11,13 +11,14 @@ import { copywriterAgent } from './agents/copywriter-agent';
 import { editorAgent } from './agents/editor-agent';
 import { publisherAgent } from './agents/publisher-agent';
 import { newsAgent } from './agents/news-agent';
-import { openclawAgent } from './agents/openclaw-agent';
+import { mastraclawAgent } from './agents/mastraclaw-agent';
 import { intentClarifierAgent } from './agents/intent-clarifier-agent';
 import { researchPlannerAgent } from './agents/research-planner-agent';
 import { searchResultEvaluatorAgent } from './agents/search-result-evaluator-agent';
 import { answererAgent } from './agents/answerer-agent';
 import { queryPlannerAgent } from './agents/query-planner-agent';
 import { retrievalEvaluatorAgent } from './agents/retrieval-evaluator-agent';
+import { emailAgent } from './agents/email-agent';
 import { voiceAgent } from './agents/voice-agent';
 import { hybridVoiceAgent } from './agents/hybrid-voice-agent';
 import { getKnowledgeBaseStore, VECTOR_STORE_NAME } from './tools/rag';
@@ -30,6 +31,7 @@ import { ragWorkflow } from './workflows/rag-workflow';
 
 // Custom routes
 import { voiceSpeakRoute } from './routes/voice-speak-route';
+import { workingMemoryRoute } from './routes/working-memory-route';
 
 // Scorers
 import { basedScorer } from './scorers/based-scorer';
@@ -46,13 +48,14 @@ export const mastra = new Mastra({
     editorAgent,
     publisherAgent,
     newsAgent,
-    openclawAgent,
+    mastraclawAgent,
     intentClarifierAgent,
     researchPlannerAgent,
     searchResultEvaluatorAgent,
     answererAgent,
     queryPlannerAgent,
     retrievalEvaluatorAgent,
+    emailAgent,
     voiceAgent,
     hybridVoiceAgent,
   },
@@ -67,7 +70,7 @@ export const mastra = new Mastra({
   },
   storage,
   server: {
-    apiRoutes: [voiceSpeakRoute],
+    apiRoutes: [voiceSpeakRoute, workingMemoryRoute],
   },
   logger: new PinoLogger({
     name: 'Mastra',

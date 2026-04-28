@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 font-sans;
+}
+
+/* Tiny scrollbar styling so the app doesn't feel like a raw prototype */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Prose tweaks for markdown inside message bubbles */
+.prose-chat p {
+  margin: 0.25rem 0;
+  line-height: 1.55;
+}
+.prose-chat code {
+  background: rgba(51, 65, 85, 0.55);
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+}
+.prose-chat pre {
+  background: rgb(15 23 42);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  font-size: 0.8em;
+}
+.prose-chat ul {
+  margin: 0.25rem 0 0.25rem 1.25rem;
+  list-style: disc;
+}
+.prose-chat ol {
+  margin: 0.25rem 0 0.25rem 1.25rem;
+  list-style: decimal;
+}
+.prose-chat h1,
+.prose-chat h2,
+.prose-chat h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 600;
+}
+.prose-chat a {
+  color: rgb(56 189 248);
+  text-decoration: underline;
+}
+.prose-chat blockquote {
+  border-left: 3px solid rgb(71 85 105);
+  padding-left: 0.75rem;
+  color: rgb(148 163 184);
+  margin: 0.5rem 0;
+}
+
+/* Thinking indicator — Claude Code-style shimmer on a rotating verb. */
+@keyframes thinkingShimmer {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
+}
+.thinking-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.55) 0%,
+    rgba(226, 232, 240, 1) 50%,
+    rgba(148, 163, 184, 0.55) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: thinkingShimmer 2.4s linear infinite;
+}
+
+@keyframes thinkingDot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+.thinking-dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgb(148 163 184);
+  margin: 0 1px;
+  animation: thinkingDot 1.2s ease-in-out infinite both;
+}
+.thinking-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.thinking-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}

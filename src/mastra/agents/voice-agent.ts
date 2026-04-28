@@ -14,7 +14,7 @@ Guidelines:
 - Avoid markdown, lists, code blocks, or symbols that do not read well aloud.
 - Spell out numbers and acronyms only when clarity would suffer otherwise.
 - When the user asks a question, answer directly before adding context.`,
-  model: 'openai/gpt-5-mini',
+  model: 'openai/gpt-5.1-codex',
   voice: new ElevenLabsVoice({
     speechModel: {
       name: 'eleven_multilingual_v2',

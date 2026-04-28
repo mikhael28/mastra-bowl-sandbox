@@ -12,5 +12,19 @@
     "completed": false,
     "createdAt": "2026-04-22T00:37:17.254Z",
     "completedAt": null
+  },
+  {
+    "id": "todo-1776954464914-au6ajl",
+    "text": "Deploy v2 of the Mastra Vault on MacOS",
+    "completed": false,
+    "createdAt": "2026-04-23T14:27:44.914Z",
+    "completedAt": null
+  },
+  {
+    "id": "todo-1776959447718-94htts",
+    "text": "Prepare and release a Windows version of the Mastra Vault",
+    "completed": false,
+    "createdAt": "2026-04-23T15:50:47.718Z",
+    "completedAt": null
   }
 ]

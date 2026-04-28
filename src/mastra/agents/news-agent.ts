@@ -19,6 +19,6 @@ When formatting reports:
 - Group related stories together
 - Include publication dates when available
 - Keep summaries concise but informative`,
-  model: 'openai/gpt-5-mini',
+  model: 'openai/gpt-5.1-codex',
   tools: { tavilySearch, exaSearch },
 });
