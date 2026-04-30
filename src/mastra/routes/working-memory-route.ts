@@ -1,5 +1,25 @@
 import { registerApiRoute } from '@mastra/core/server';
 
+async function getAgentMemory(
+  mastra: any,
+  agentId: string,
+): Promise<any | null> {
+  let agent;
+  try {
+    agent = mastra.getAgentById(agentId);
+  } catch {
+    return null;
+  }
+  if (!agent) return null;
+  try {
+    return typeof (agent as any).getMemory === 'function'
+      ? await (agent as any).getMemory()
+      : (agent as any).memory ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Custom route: GET /api/working-memory/:agentId?resourceId=...
  *
@@ -91,3 +111,61 @@ export const workingMemoryRoute = registerApiRoute('/working-memory/:agentId', {
     });
   },
 });
+
+/**
+ * POST /api/working-memory/:agentId
+ *
+ * Body: { resourceId?, threadId?, workingMemory: string }
+ *
+ * Replaces the agent's working-memory block. The Memory class signature is
+ * `updateWorkingMemory({ threadId, resourceId, workingMemory, memoryConfig })`,
+ * but resource-scoped working memory only requires `resourceId`. We pass both
+ * when present.
+ */
+export const updateWorkingMemoryRoute = registerApiRoute(
+  '/working-memory/:agentId',
+  {
+    method: 'POST',
+    handler: async (c) => {
+      const agentId = c.req.param('agentId');
+      let body: any = {};
+      try {
+        body = await c.req.json();
+      } catch {
+        return c.json({ error: 'Body must be JSON' }, 400);
+      }
+      const workingMemory = body?.workingMemory;
+      if (typeof workingMemory !== 'string') {
+        return c.json(
+          { error: 'workingMemory (string) is required' },
+          400,
+        );
+      }
+
+      const mastra = c.get('mastra');
+      const memory = await getAgentMemory(mastra, agentId);
+      if (!memory) {
+        return c.json({ error: `Unknown agent: ${agentId}` }, 404);
+      }
+      if (typeof memory.updateWorkingMemory !== 'function') {
+        return c.json(
+          { error: 'Memory does not support updateWorkingMemory' },
+          400,
+        );
+      }
+      try {
+        await memory.updateWorkingMemory({
+          resourceId: body.resourceId,
+          threadId: body.threadId,
+          workingMemory,
+        });
+        return c.json({ ok: true });
+      } catch (err: any) {
+        return c.json(
+          { error: String(err?.message ?? err) },
+          500,
+        );
+      }
+    },
+  },
+);

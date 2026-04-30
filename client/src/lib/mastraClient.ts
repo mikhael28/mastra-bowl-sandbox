@@ -851,6 +851,60 @@ export async function getWorkingMemory(
   }
 }
 
+export async function updateWorkingMemory(
+  agentId: string,
+  body: { resourceId?: string; threadId?: string; workingMemory: string },
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch(`/working-memory/${agentId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, error: data?.error ?? `HTTP ${res.status}` };
+    return { ok: true };
+  } catch (err: any) {
+    return { ok: false, error: String(err?.message ?? err) };
+  }
+}
+
+export async function deleteMemoryThread(threadId: string): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/memory/threads/${threadId}`, {
+      method: 'DELETE',
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Local model status (LM Studio detection)
+// ---------------------------------------------------------------------------
+
+export type LocalModelStatus = {
+  selected: string;
+  source: 'override' | 'local' | 'cloud-default';
+  cloudDefault: string;
+  lmStudio: {
+    baseUrl: string;
+    running: boolean;
+    models: string[];
+    suggested: string | null;
+  };
+  override: string | null;
+};
+
+export async function getLocalModelStatus(): Promise<LocalModelStatus | null> {
+  try {
+    return await j<LocalModelStatus>('/local-model-status');
+  } catch {
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Workflow runs — used to render a completed workflow's step timeline after
 // the agent calls it as a tool. See Chat.tsx → WorkflowToolCard.

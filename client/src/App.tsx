@@ -16,10 +16,12 @@ import { WorkspacesPanel } from './components/WorkspacesPanel';
 import { WorkflowPanel } from './components/WorkflowPanel';
 import { ToolsPanel } from './components/ToolsPanel';
 import { MemoryPanel } from './components/MemoryPanel';
+import { BrowserMirrorPanel } from './components/BrowserMirrorPanel';
 import { McpPanel } from './components/McpPanel';
 import { ScorersPanel } from './components/ScorersPanel';
 import { ObservabilityPanel } from './components/ObservabilityPanel';
 import { EducationPanel } from './components/EducationPanel';
+import { ModelStatusPicker } from './components/ModelStatusPicker';
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('chat');
@@ -154,6 +156,9 @@ export default function App() {
           {!loadError && tab === 'memory' && (
             <MemoryPanel agents={agents} onTeach={setTeaching} />
           )}
+          {!loadError && tab === 'browser' && (
+            <BrowserMirrorPanel agent={selectedAgent} onTeach={setTeaching} />
+          )}
           {!loadError && tab === 'mcp' && <McpPanel onTeach={setTeaching} />}
           {!loadError && tab === 'scorers' && (
             <ScorersPanel onTeach={setTeaching} />
@@ -186,6 +191,7 @@ function TopBar({ onTeach }: { onTeach: (id: PrimitiveId) => void }) {
         </span>
       </div>
       <div className="ml-auto flex items-center gap-2">
+        <ModelStatusPicker />
         <button
           onClick={() => onTeach('observability')}
           className="text-xs text-slate-400 hover:text-slate-200 underline decoration-dotted"

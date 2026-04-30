@@ -9,6 +9,7 @@ export type Tab =
   | 'workflows'
   | 'tools'
   | 'memory'
+  | 'browser'
   | 'mcp'
   | 'scorers'
   | 'observability';
@@ -32,6 +33,7 @@ const TABS: Array<{ id: Tab; label: string; primitive: PrimitiveId }> = [
   { id: 'workflows', label: 'Workflows', primitive: 'workflow' },
   { id: 'tools', label: 'Tools', primitive: 'tool' },
   { id: 'memory', label: 'Memory', primitive: 'memory' },
+  { id: 'browser', label: 'Browser', primitive: 'browser' },
   { id: 'mcp', label: 'MCP', primitive: 'mcp' },
   { id: 'scorers', label: 'Scorers', primitive: 'scorer' },
   { id: 'observability', label: 'Observability', primitive: 'observability' },

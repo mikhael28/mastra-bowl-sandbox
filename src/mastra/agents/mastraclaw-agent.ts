@@ -52,6 +52,98 @@ import { filesystemMcp } from '../mcp/filesystem-client';
 // Detect environment: use E2B when deployed (production without MASTRA_DEV flag), local otherwise
 const isDeployed = process.env.NODE_ENV === 'production' && process.env.MASTRA_DEV !== 'true';
 
+// ---------------------------------------------------------------------------
+// Model selection — detect LM Studio at startup and prefer a local model when
+// it's running. Override with MASTRA_PREFERRED_MODEL ("openai/gpt-4o",
+// "lmstudio/qwen3-4b-instruct-2507", etc.). LM Studio exposes an
+// OpenAI-compatible server at http://127.0.0.1:1234/v1 by default.
+// ---------------------------------------------------------------------------
+
+const CLOUD_DEFAULT_MODEL = 'mastra/openai/gpt-5.1-codex';
+const LMSTUDIO_BASE_URL = process.env.LMSTUDIO_URL ?? 'http://127.0.0.1:1234';
+
+type LmStudioStatus = { running: boolean; models: string[] };
+
+async function probeLmStudio(timeoutMs = 600): Promise<LmStudioStatus> {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${LMSTUDIO_BASE_URL}/v1/models`, {
+      signal: ctl.signal,
+    });
+    if (!res.ok) return { running: false, models: [] };
+    const json = (await res.json()) as { data?: Array<{ id: string }> };
+    return { running: true, models: (json.data ?? []).map((m) => m.id) };
+  } catch {
+    return { running: false, models: [] };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Prefer Qwen3 → Qwen2.5 → anything that looks tool-capable. The user can
+// override entirely via MASTRA_PREFERRED_MODEL.
+function pickBestLocalModel(models: string[]): string | null {
+  if (models.length === 0) return null;
+  const ranked = [...models].sort((a, b) => score(b) - score(a));
+  return ranked[0];
+  function score(id: string): number {
+    const lower = id.toLowerCase();
+    if (lower.includes('qwen3')) return 10;
+    if (lower.includes('qwen2.5')) return 8;
+    if (lower.includes('hermes')) return 6;
+    if (lower.includes('llama-3')) return 5;
+    return 1;
+  }
+}
+
+const userOverrideModel = process.env.MASTRA_PREFERRED_MODEL?.trim() || null;
+const lmStudioStatus: LmStudioStatus = await probeLmStudio();
+const localPick = pickBestLocalModel(lmStudioStatus.models);
+
+let selectedModel: any = CLOUD_DEFAULT_MODEL;
+let selectedModelSource: 'override' | 'local' | 'cloud-default' = 'cloud-default';
+
+if (userOverrideModel) {
+  if (userOverrideModel.startsWith('lmstudio/')) {
+    selectedModel = {
+      id: userOverrideModel,
+      url: `${LMSTUDIO_BASE_URL}/v1`,
+      apiKey: process.env.LMSTUDIO_API_KEY ?? 'lm-studio',
+    };
+  } else {
+    selectedModel = userOverrideModel;
+  }
+  selectedModelSource = 'override';
+} else if (lmStudioStatus.running && localPick) {
+  selectedModel = {
+    id: `lmstudio/${localPick}`,
+    url: `${LMSTUDIO_BASE_URL}/v1`,
+    apiKey: process.env.LMSTUDIO_API_KEY ?? 'lm-studio',
+  };
+  selectedModelSource = 'local';
+}
+
+// Surfaced via /api/local-model-status so the client model picker can show the
+// current selection without re-probing. Re-export for reading-only use.
+export const modelSelectionInfo = {
+  selected:
+    typeof selectedModel === 'string' ? selectedModel : selectedModel.id,
+  source: selectedModelSource,
+  cloudDefault: CLOUD_DEFAULT_MODEL,
+  lmStudio: {
+    baseUrl: LMSTUDIO_BASE_URL,
+    running: lmStudioStatus.running,
+    models: lmStudioStatus.models,
+    suggested: localPick,
+  },
+  override: userOverrideModel,
+};
+
+console.info(
+  `[mastraclaw-agent] model = ${modelSelectionInfo.selected} (${selectedModelSource}); LM Studio ${lmStudioStatus.running ? 'detected' : 'not detected'} at ${LMSTUDIO_BASE_URL}`,
+);
+
 // Memoize tool-provider and MCP lookups: schemas are stable for the process
 // lifetime, and doing them on every agent turn adds a network round-trip to
 // first-token latency. Keyed on userId because Composio/Arcade scope tools per user.
@@ -113,6 +205,7 @@ const workspace = new Workspace({
   bm25: true,
   autoIndexPaths: ['.'],
   skills: ['.agents/skills'],
+  lsp: true,
 });
 
 // BrowserBase: use cloud when credentials are available, otherwise local
@@ -126,6 +219,10 @@ const browser = new StagehandBrowser({
   headless: useBrowserbase ? false : true,
   verbose: 0,
 });
+
+// Exported so the browser-mirror server route can attach a CDP screencast to
+// the same instance the agent is driving.
+export const mastraclawBrowser = browser;
 
 const elevenLabsApiKey = process.env.ELEVENLABS_API_KEY;
 const voice = elevenLabsApiKey
@@ -196,6 +293,8 @@ Each **collection** is an isolated namespace (e.g. \`mastra-docs\`, a client man
 ## Workspace
 Full read/execute access. Writes/edits/deletes and shell commands require approval — surface them clearly. Save drafts and deliverables to the workspace so users can review and iterate. Folder layout: \`/drafts\`, \`/research\`, \`/content\`, \`/business\`, \`/business/leads\`. Name files descriptively with dates when relevant. \`fs_*\` tools (MCP filesystem) complement the built-in workspace tools for read/write/search inside \`./workspace\`.
 
+LSP is enabled — use \`lsp_inspect\` for type info, diagnostics, and symbol lookups on TypeScript/JavaScript/Python/Go/Rust files in the workspace before editing code, so changes are grounded in the language server's view of the project.
+
 ## Lead qualification
 Use \`qualify-lead\` on any inbound prospect message. It returns fitScore, stage, budget/timeline signals, pain points, red flags, nextStep, suggestedReply. Save to \`business/leads/\` and surface fitScore + nextStep.
 
@@ -218,7 +317,7 @@ Persistent, resource-scoped profile block. Update whenever you learn something d
 
 ## Acknowledge before you act
 Before any tool call, subagent delegation, or long-running step, stream ONE short sentence that confirms the request and names what you're about to do. Keep it tight (under ~15 words), in plain prose, no markdown headers, and no fluff. This is the first thing the user sees — it exists so they know the request registered and isn't hung. Examples: "Got it — researching top Zapier alternatives now.", "On it, drafting that intro and looping in the editor.", "Pulling your inboxes from AgentMail." Then proceed with the work. Don't re-acknowledge between tool calls; one lead-in per turn is enough.`,
-  model: 'mastra/openai/gpt-5.1-codex',
+  model: selectedModel,
 
   agents: {
     copywriterAgent,

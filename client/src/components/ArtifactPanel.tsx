@@ -3,7 +3,10 @@ import Editor from '@monaco-editor/react';
 import {
   AgentSummary,
   Chunk,
+  MemoryMessage,
   WorkspaceEntry,
+  getMemoryThreadMessages,
+  listMemoryThreads,
   listWorkspace,
   readWorkspaceFile,
   resumeToolApproval,
@@ -38,6 +41,23 @@ type TerminalEntry = {
   status: 'running' | 'done' | 'error';
 };
 
+type FileVersion = {
+  ts: number;
+  content: string;
+  source: 'agent' | 'user';
+};
+
+type PastSession = {
+  sessionId: string;
+  threadId: string;
+  title?: string;
+  updatedAt?: string;
+};
+
+const ARTIFACT_THREAD_PREFIX = 'artifact-';
+const versionsStorageKey = (sid: string) => `artifact-versions:${sid}`;
+const MAX_VERSIONS_PER_FILE = 30;
+
 const WRITE_TOOLS = new Set([
   'mastra_workspace_write_file',
   'mastra_workspace_edit_file',
@@ -48,7 +68,7 @@ const EXEC_TOOLS = new Set([
 ]);
 
 export function ArtifactPanel({ agent, onTeach }: Props) {
-  const [sessionId, setSessionId] = useState(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -66,6 +86,11 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
   const [rightTab, setRightTab] = useState<'files' | 'terminal'>('files');
   const [iframeKey, setIframeKey] = useState(0);
   const [autoApproveBanner, setAutoApproveBanner] = useState<string | null>(null);
+  const [pastSessions, setPastSessions] = useState<PastSession[]>([]);
+  const [showSessionPicker, setShowSessionPicker] = useState(false);
+  const [loadingSession, setLoadingSession] = useState(false);
+  const [versionsByFile, setVersionsByFile] = useState<Record<string, FileVersion[]>>({});
+  const [showVersions, setShowVersions] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const currentAssistantIdRef = useRef<string | null>(null);
@@ -74,6 +99,14 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
   const pendingApprovalsRef = useRef<Array<{ toolCallId: string; toolName: string }>>([]);
   const filesRefreshNonceRef = useRef(0);
   const messagesScrollRef = useRef<HTMLDivElement>(null);
+  // Tracks the source of the next file-content refetch so we can tag the
+  // resulting version snapshot. 'agent' = the agent just wrote the file;
+  // 'user' = the user just saved.
+  const nextSnapshotSourceRef = useRef<'agent' | 'user' | null>(null);
+  // Keeps the latest saveActiveFile reachable from Monaco's addCommand binding,
+  // which only runs once at mount and would otherwise call a stale closure
+  // (writing back the originally-loaded buffer instead of current edits).
+  const saveActiveFileRef = useRef<() => void>(() => {});
 
   const sessionFolderPath = `artifacts/${sessionId}`;
 
@@ -111,6 +144,118 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
     refreshFiles();
   }, [refreshFiles]);
 
+  // -------------------------------------------------------------------------
+  // Past sessions (memory threads with the artifact- prefix)
+  // -------------------------------------------------------------------------
+
+  const refreshPastSessions = useCallback(async () => {
+    if (!agent) return;
+    const threads = await listMemoryThreads({
+      resourceId: RESOURCE_ID,
+      agentId: agent.id,
+    });
+    const artifactThreads = threads.filter((t) =>
+      t.id.startsWith(ARTIFACT_THREAD_PREFIX),
+    );
+    artifactThreads.sort((a, b) => {
+      const ta = a.updatedAt ? Date.parse(a.updatedAt) : 0;
+      const tb = b.updatedAt ? Date.parse(b.updatedAt) : 0;
+      return tb - ta;
+    });
+    setPastSessions(
+      artifactThreads.map((t) => ({
+        sessionId: t.id.slice(ARTIFACT_THREAD_PREFIX.length),
+        threadId: t.id,
+        title: t.title,
+        updatedAt: t.updatedAt,
+      })),
+    );
+  }, [agent?.id]);
+
+  useEffect(() => {
+    refreshPastSessions();
+  }, [refreshPastSessions]);
+
+  const loadSession = useCallback(
+    async (sid: string) => {
+      if (!agent || sid === sessionId) {
+        setShowSessionPicker(false);
+        return;
+      }
+      // Drop any in-flight stream / pending approvals before swapping context.
+      abortRef.current?.abort();
+      abortRef.current = null;
+      pendingApprovalsRef.current = [];
+      handledApprovalsRef.current = new Set();
+      currentRunIdRef.current = null;
+      currentAssistantIdRef.current = null;
+
+      setLoadingSession(true);
+      setShowSessionPicker(false);
+      setStreaming(false);
+      setSessionId(sid);
+      setMessages([]);
+      setActiveFile(null);
+      setActiveFileContent('');
+      setEditorBuffer('');
+      setTerminal([]);
+      setIframeKey(0);
+      setAutoApproveBanner(null);
+      setSaveBanner(null);
+      try {
+        const raw = await getMemoryThreadMessages(
+          `${ARTIFACT_THREAD_PREFIX}${sid}`,
+          { agentId: agent.id },
+        );
+        setMessages(memoryMessagesToLocal(raw));
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[artifact] load session failed:', err);
+      } finally {
+        setLoadingSession(false);
+      }
+    },
+    [agent?.id, sessionId],
+  );
+
+  // Load + persist version history for this session. Source of truth is
+  // localStorage so versions survive reloads and switching between past
+  // sessions.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(versionsStorageKey(sessionId));
+      setVersionsByFile(raw ? JSON.parse(raw) : {});
+    } catch {
+      setVersionsByFile({});
+    }
+  }, [sessionId]);
+
+  const recordVersion = useCallback(
+    (path: string, content: string, source: 'agent' | 'user') => {
+      setVersionsByFile((prev) => {
+        const existing = prev[path] ?? [];
+        const last = existing[existing.length - 1];
+        // Dedupe consecutive identical contents — covers the save → refetch
+        // round-trip and the manual reload button.
+        if (last && last.content === content) return prev;
+        const next = [...existing, { ts: Date.now(), content, source }].slice(
+          -MAX_VERSIONS_PER_FILE,
+        );
+        const merged = { ...prev, [path]: next };
+        try {
+          window.localStorage.setItem(
+            versionsStorageKey(sessionId),
+            JSON.stringify(merged),
+          );
+        } catch {
+          /* quota exceeded — drop silently */
+        }
+        return merged;
+      });
+    },
+    [sessionId],
+  );
+
   // Load contents of the active file when it changes. Prefer the HTTP route
   // (`/artifacts/<sid>/<rel>`) — the same one the preview iframe uses — so
   // the editor always sees exactly what the preview is rendering. Fall back
@@ -142,11 +287,16 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
       if (!alive) return;
       setActiveFileContent(content);
       setEditorBuffer(content);
+      // Default tag is 'agent' — first load + manual reloads count as the
+      // canonical on-disk version.
+      const source = nextSnapshotSourceRef.current ?? 'agent';
+      nextSnapshotSourceRef.current = null;
+      recordVersion(activeFile, content, source);
     })();
     return () => {
       alive = false;
     };
-  }, [agent?.id, activeFile, sessionId, iframeKey]);
+  }, [agent?.id, activeFile, sessionId, iframeKey, recordVersion]);
 
   useEffect(() => {
     messagesScrollRef.current?.scrollTo({
@@ -202,6 +352,7 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
         if (WRITE_TOOLS.has(toolName) && path) {
           if (isInsideArtifactSession(path, sessionId)) {
             setActiveFile(path);
+            nextSnapshotSourceRef.current = 'agent';
             setIframeKey((k) => k + 1);
             // Don't clobber the user's chosen view mode on subsequent writes —
             // only force `split` the first time so they see preview + code.
@@ -336,6 +487,7 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
         return;
       }
       setActiveFileContent(editorBuffer);
+      nextSnapshotSourceRef.current = 'user';
       setIframeKey((k) => k + 1);
       setSaveBanner('saved');
       window.setTimeout(() => setSaveBanner(null), 1500);
@@ -347,6 +499,10 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
       setSavingFile(false);
     }
   }, [agent?.id, activeFile, editorBuffer, savingFile]);
+
+  useEffect(() => {
+    saveActiveFileRef.current = saveActiveFile;
+  }, [saveActiveFile]);
 
   // -------------------------------------------------------------------------
   // Submit
@@ -452,6 +608,7 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
       setStreaming(false);
       abortRef.current = null;
       refreshFiles();
+      refreshPastSessions();
     }
   }
 
@@ -486,6 +643,10 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
     () => (activeFile ? previewModeFor(activeFile) : 'code'),
     [activeFile],
   );
+  const activeFileVersions = useMemo(
+    () => (activeFile ? versionsByFile[activeFile] ?? [] : []),
+    [activeFile, versionsByFile],
+  );
 
   if (!agent) {
     return (
@@ -503,16 +664,66 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
     <div className="flex-1 flex overflow-hidden bg-slate-950">
       {/* LEFT — chat */}
       <div className="w-[340px] border-r border-slate-800 flex flex-col">
-        <div className="p-3 border-b border-slate-800 flex items-center gap-2">
+        <div className="p-3 border-b border-slate-800 flex items-center gap-2 relative">
           <PrimitiveBadge primitive="workspace" onTeach={onTeach} compact />
           <div className="text-xs font-semibold text-slate-100">Artifact</div>
           <button
+            onClick={() => setShowSessionPicker((v) => !v)}
+            disabled={pastSessions.length === 0}
+            className="ml-auto text-[11px] px-2 py-0.5 rounded border border-slate-700 hover:bg-slate-800 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Switch to a past artifact session"
+          >
+            history{pastSessions.length > 0 ? ` (${pastSessions.length})` : ''} ▾
+          </button>
+          <button
             onClick={newArtifact}
-            className="ml-auto text-[11px] px-2 py-0.5 rounded border border-slate-700 hover:bg-slate-800 text-slate-300"
+            className="text-[11px] px-2 py-0.5 rounded border border-slate-700 hover:bg-slate-800 text-slate-300"
             title="Start a new artifact session"
           >
-            new
+            + new
           </button>
+          {showSessionPicker && (
+            <div className="absolute left-3 right-3 top-full mt-1 max-h-80 overflow-y-auto rounded border border-slate-700 bg-slate-900 shadow-lg z-20">
+              {pastSessions.length === 0 ? (
+                <div className="px-3 py-2 text-[11px] text-slate-500">
+                  No past sessions yet.
+                </div>
+              ) : (
+                pastSessions.map((s) => {
+                  const isCurrent = s.sessionId === sessionId;
+                  return (
+                    <button
+                      key={s.sessionId}
+                      onClick={() => loadSession(s.sessionId)}
+                      disabled={isCurrent || loadingSession}
+                      className={`w-full text-left px-3 py-2 text-[11px] border-b border-slate-800 last:border-b-0 ${
+                        isCurrent
+                          ? 'bg-slate-800/60 cursor-default'
+                          : 'hover:bg-slate-800'
+                      } disabled:opacity-60`}
+                    >
+                      <div className="text-slate-200 truncate">
+                        {s.title || `Session ${s.sessionId.slice(0, 8)}`}
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-0.5 font-mono">
+                        <span>{s.sessionId.slice(0, 8)}</span>
+                        {s.updatedAt && (
+                          <span className="ml-auto">
+                            {formatRelativeTime(Date.parse(s.updatedAt))}
+                          </span>
+                        )}
+                        {isCurrent && (
+                          <span className="ml-auto text-emerald-300">
+                            current
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          )}
         </div>
 
         <div className="px-3 py-2 border-b border-slate-800 text-[10px] font-mono text-slate-500 truncate">
@@ -526,7 +737,10 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
         )}
 
         <div ref={messagesScrollRef} className="flex-1 overflow-y-auto p-3 space-y-3">
-          {messages.length === 0 && (
+          {loadingSession && (
+            <div className="text-xs text-slate-400">Loading session…</div>
+          )}
+          {!loadingSession && messages.length === 0 && (
             <div className="text-xs text-slate-500 leading-relaxed">
               <div className="font-semibold text-slate-300 mb-1">Build something.</div>
               The agent writes code into{' '}
@@ -537,6 +751,10 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
                 <li>"Write a Node script that prints the title of example.com."</li>
                 <li>"Make a 200×200 SVG of a cat."</li>
               </ul>
+              <div className="mt-3 text-[11px] text-slate-500">
+                Tip: send follow-ups to refine the artifact — the agent
+                remembers the thread. ⌘S in the editor saves your edits.
+              </div>
             </div>
           )}
           {messages.map((m) => (
@@ -641,10 +859,65 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
               onClick={saveActiveFile}
               disabled={savingFile || editorBuffer === activeFileContent}
               className="text-[11px] px-2 py-0.5 rounded bg-emerald-600 text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-emerald-500"
-              title="Save edits to workspace"
+              title="Save edits to workspace (⌘S)"
             >
               {savingFile ? 'saving…' : editorBuffer === activeFileContent ? 'saved' : 'save'}
             </button>
+          )}
+          {activeFile && activeFileVersions.length > 1 && (
+            <div className="relative">
+              <button
+                onClick={() => setShowVersions((v) => !v)}
+                className="text-[11px] px-2 py-0.5 rounded border border-slate-700 text-slate-300 hover:bg-slate-800"
+                title="Earlier versions of this file"
+              >
+                history ({activeFileVersions.length})
+              </button>
+              {showVersions && (
+                <div className="absolute right-0 top-full mt-1 w-72 max-h-72 overflow-y-auto rounded border border-slate-700 bg-slate-900 shadow-lg z-10">
+                  {[...activeFileVersions].reverse().map((v, i) => {
+                    const reverseIndex = activeFileVersions.length - 1 - i;
+                    const isCurrent = v.content === editorBuffer;
+                    return (
+                      <button
+                        key={`${v.ts}-${reverseIndex}`}
+                        onClick={() => {
+                          setEditorBuffer(v.content);
+                          setShowVersions(false);
+                          setPreviewMode((m) =>
+                            m === 'preview' ? 'split' : m,
+                          );
+                        }}
+                        className={`w-full text-left px-2 py-1.5 text-[11px] border-b border-slate-800 last:border-b-0 hover:bg-slate-800 ${
+                          isCurrent ? 'bg-slate-800/60' : ''
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={
+                              v.source === 'user'
+                                ? 'text-emerald-300'
+                                : 'text-sky-300'
+                            }
+                          >
+                            {v.source === 'user' ? '✎ user' : '🤖 agent'}
+                          </span>
+                          <span className="text-slate-500">
+                            v{reverseIndex + 1}
+                          </span>
+                          <span className="ml-auto text-slate-500">
+                            {formatRelativeTime(v.ts)}
+                          </span>
+                        </div>
+                        <div className="text-slate-500 mt-0.5 truncate font-mono">
+                          {v.content.slice(0, 80) || '(empty)'}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           )}
           {saveBanner && (
             <span className="text-[10px] text-slate-400">{saveBanner}</span>
@@ -688,7 +961,7 @@ export function ArtifactPanel({ agent, onTeach }: Props) {
                   editor.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
                     () => {
-                      saveActiveFile();
+                      saveActiveFileRef.current();
                     },
                   );
                 }}
@@ -931,6 +1204,67 @@ function humanSize(n: number): string {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
   return `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
+/**
+ * Best-effort conversion of stored MemoryMessages back into the local Message
+ * shape used by the chat pane. Memory `content` may be a plain string or an
+ * array of structured parts ({type:'text'|'tool-call'|'tool-result', ...}).
+ * Past tool calls render with the 'done' status — we don't have live status
+ * info for completed runs we're replaying.
+ */
+function memoryMessagesToLocal(raw: MemoryMessage[]): Message[] {
+  type ToolCallStub = Message['toolCalls'][number];
+  const toolCallById = new Map<string, ToolCallStub>();
+  const out: Message[] = [];
+  for (const m of raw) {
+    if (m.role !== 'user' && m.role !== 'assistant') continue;
+    let text = '';
+    const toolCalls: ToolCallStub[] = [];
+    const parts = Array.isArray(m.content)
+      ? (m.content as any[])
+      : typeof m.content === 'string'
+        ? [{ type: 'text', text: m.content }]
+        : [];
+    for (const p of parts) {
+      if (!p || typeof p !== 'object') continue;
+      if (p.type === 'text' && typeof p.text === 'string') {
+        text += p.text;
+      } else if (p.type === 'tool-call' && p.toolCallId) {
+        const tc: ToolCallStub = {
+          toolCallId: p.toolCallId,
+          toolName: p.toolName ?? '',
+          args: p.args,
+          status: 'done',
+        };
+        toolCalls.push(tc);
+        toolCallById.set(p.toolCallId, tc);
+      } else if (p.type === 'tool-result' && p.toolCallId) {
+        const existing = toolCallById.get(p.toolCallId);
+        if (existing) existing.result = p.result;
+      }
+    }
+    out.push({
+      id: m.id,
+      role: m.role as 'user' | 'assistant',
+      text,
+      toolCalls,
+      finished: true,
+    });
+  }
+  return out;
+}
+
+function formatRelativeTime(ts: number): string {
+  const diff = Math.max(0, Date.now() - ts);
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
 }
 
 function monacoLanguageFor(filePath: string): string {
