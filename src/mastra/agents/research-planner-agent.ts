@@ -5,7 +5,7 @@ export const researchPlannerAgent = new Agent({
   name: 'Research Planner Agent',
   description:
     'Generates 3–5 high-quality web search queries for a research topic. Handles first-pass exploratory queries and gap-filling follow-ups. Delegate when a new research topic needs to be scoped into searchable queries.',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   instructions: `Today's date is ${new Date().toDateString()}.
 
 You write search queries for a research workflow.

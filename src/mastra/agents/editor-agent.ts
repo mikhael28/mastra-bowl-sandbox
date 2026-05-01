@@ -16,5 +16,5 @@ When editing:
 - Verify logical consistency and argument flow
 - Preserve the original author's voice while improving clarity
 - Return only the edited content without commentary about what you changed`,
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
 });

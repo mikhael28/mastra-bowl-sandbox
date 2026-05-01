@@ -84,6 +84,12 @@ export const mastra = new Mastra({
       localModelStatusRoute,
       browserMirrorRoute,
     ],
+    // cors: {
+    //   origin: ['http://localhost:4111'],
+    //   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    //   allowHeaders: ['Content-Type', 'Authorization', 'x-mastra-client-type'],
+    //   credentials: true,
+    // },
   },
   logger: new PinoLogger({
     name: 'Mastra',

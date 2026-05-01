@@ -59,7 +59,7 @@ const isDeployed = process.env.NODE_ENV === 'production' && process.env.MASTRA_D
 // OpenAI-compatible server at http://127.0.0.1:1234/v1 by default.
 // ---------------------------------------------------------------------------
 
-const CLOUD_DEFAULT_MODEL = 'mastra/openai/gpt-5.1-codex';
+const CLOUD_DEFAULT_MODEL = 'mastra/openai/gpt-5.3-codex';
 const LMSTUDIO_BASE_URL = process.env.LMSTUDIO_URL ?? 'http://127.0.0.1:1234';
 
 type LmStudioStatus = { running: boolean; models: string[] };
@@ -357,7 +357,7 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
       trim: true,
     }),
     new PromptInjectionDetector({
-      model: 'openai/gpt-5.1-codex',
+      model: 'openai/gpt-5.3-codex',
       detectionTypes: ['injection', 'jailbreak', 'system-override'],
       threshold: 0.8,
       strategy: 'rewrite',
@@ -367,11 +367,11 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
 
   scorers: {
     answerRelevancy: {
-      scorer: createAnswerRelevancyScorer({ model: 'openai/gpt-5.1-codex' }),
+      scorer: createAnswerRelevancyScorer({ model: 'openai/gpt-5.3-codex' }),
       sampling: { type: 'ratio', rate: 0.2 },
     },
     toxicity: {
-      scorer: createToxicityScorer({ model: 'openai/gpt-5.1-codex' }),
+      scorer: createToxicityScorer({ model: 'openai/gpt-5.3-codex' }),
       sampling: { type: 'ratio', rate: 0.2 },
     },
     based: {

@@ -3,7 +3,7 @@ import { Agent } from '@mastra/core/agent';
 export const searchResultEvaluatorAgent = new Agent({
   id: 'search-result-evaluator',
   name: 'Search Result Evaluator Agent',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   instructions: `Today's date is ${new Date().toDateString()}.
 
 You are an expert at evaluating research quality and completeness.

@@ -1129,7 +1129,7 @@ const deleteTool = createTool({
 const agent = new Agent({
   id: 'my-agent',
   name: 'My Agent',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   tools: { deleteTool },
 
 const stream = await agent.stream('Delete record abc-123')
@@ -1342,7 +1342,7 @@ const agent = new Agent({
   id: 'my-agent',
   name: 'My Agent',
   instructions: 'You are a helpful assistant',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   tools: { weatherTool },
   memory: new Memory(),
 
@@ -1468,7 +1468,7 @@ const dataAgent = new Agent({
   id: 'data-agent',
   name: 'Data Agent',
   description: 'Handles database queries and user data retrieval',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   tools: { findUserTool },
 
 const supervisorAgent = new Agent({
@@ -1785,13 +1785,13 @@ const researchAgent = new Agent({
   id: 'research-agent',
   // highlight-next-line
   description: 'Gathers factual information and returns bullet-point summaries.',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
 
 const writingAgent = new Agent({
   id: 'writing-agent',
   // highlight-next-line
   description: 'Transforms research into well-structured articles.',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
 
 // highlight-start
 const supervisor = new Agent({
@@ -2257,10 +2257,10 @@ Import and instantiate the processor, then pass it to the agent's `inputProcesso
 export const moderatedAgent = new Agent({
   name: 'moderated-agent',
   instructions: 'You are a helpful assistant',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   inputProcessors: [
     new ModerationProcessor({
-      model: 'openai/gpt-5.1-codex',
+      model: 'openai/gpt-5.3-codex',
       categories: ['hate', 'harassment', 'violence'],
       threshold: 0.7,
       strategy: 'block',
@@ -2347,7 +2347,7 @@ export class DynamicModelProcessor implements Processor {
   }: ProcessInputStepArgs): Promise {
     // Use a fast model for initial response
     if (stepNumber === 0) {
-      return { model: 'openai/gpt-5.1-codex' }
+      return { model: 'openai/gpt-5.3-codex' }
 
     // Disable tools after 5 steps to force completion
     if (stepNumber > 5) {
@@ -2371,7 +2371,7 @@ The `prepareStep()` callback on `generate()` or `stream()` is a shorthand for `p
 await agent.generate('Complex task', {
   prepareStep: async ({ stepNumber, model }) => {
     if (stepNumber === 0) {
-      return { model: 'openai/gpt-5.1-codex' }
+      return { model: 'openai/gpt-5.3-codex' }
 
     if (stepNumber > 5) {
       return { toolChoice: 'none' }
@@ -6443,7 +6443,7 @@ Enable `observationalMemory` in the memory options when creating your agent:
 export const agent = new Agent({
   name: 'my-agent',
   instructions: 'You are a helpful assistant.',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   memory: new Memory({
     options: {
       // highlight-next-line
@@ -7538,7 +7538,7 @@ export const agent = new Agent({
   memory: new Memory({
     options: {
       generateTitle: {
-        model: 'openai/gpt-5.1-codex',
+        model: 'openai/gpt-5.3-codex',
         instructions: 'Generate a 1 word title',
       },
     },
@@ -11242,11 +11242,11 @@ You can add built-in scorers to your agents to automatically evaluate their outp
 export const evaluatedAgent = new Agent({
   scorers: {
     relevancy: {
-      scorer: createAnswerRelevancyScorer({ model: 'openai/gpt-5.1-codex' }),
+      scorer: createAnswerRelevancyScorer({ model: 'openai/gpt-5.3-codex' }),
       sampling: { type: 'ratio', rate: 0.5 },
     },
     safety: {
-      scorer: createToxicityScorer({ model: 'openai/gpt-5.1-codex' }),
+      scorer: createToxicityScorer({ model: 'openai/gpt-5.3-codex' }),
       sampling: { type: 'ratio', rate: 1 },
     },
   },
@@ -11444,7 +11444,7 @@ const quoteSourcesScorer = createScorer({
   id: 'quote-sources',
   description: 'Check if the response includes sources',
   judge: {
-    model: 'openai/gpt-5.1-codex',
+    model: 'openai/gpt-5.3-codex',
     instructions: 'You are a strict evaluator.',
   },
 
@@ -11709,7 +11709,7 @@ export const glutenCheckerScorer = createScorer({
   id: 'gluten-checker',
   description: 'Check if the output contains any gluten',
   judge: {
-    model: 'openai/gpt-5.1-codex',
+    model: 'openai/gpt-5.3-codex',
     instructions: GLUTEN_INSTRUCTIONS,
   },
 
@@ -11744,7 +11744,7 @@ Sets up the LLM model and defines its role as a domain expert.
 
 ```typescript
 judge: {
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   instructions: GLUTEN_INSTRUCTIONS,
 
 ```

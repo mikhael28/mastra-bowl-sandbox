@@ -30,7 +30,7 @@ export const emailAgent = new Agent({
 - When sending, always confirm: recipient, subject, and which inbox you're sending from. If multiple inboxes exist and none was specified, list them and ask.
 - For inbound triage, lead with: sender, subject, one-line summary, and suggested action.
 - Keep responses short and structured. You are called by another agent — return the facts, not commentary.`,
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   tools: {
     createInbox,
     listInboxes,
