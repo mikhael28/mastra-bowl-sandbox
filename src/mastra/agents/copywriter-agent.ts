@@ -20,7 +20,7 @@ When writing:
 - Use active voice and strong verbs
 - Target a general tech-savvy audience unless told otherwise
 - Never produce content involving violence, weapons, or politically inappropriate topics`,
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   inputProcessors: [new ContentModerationInputProcessor()],
   outputProcessors: [new ContentModerationOutputProcessor()],
 });

@@ -37,5 +37,5 @@ Good queries:
 - "RAG embedding model configuration OpenAI Cohere"
 - "text-embedding-3-small text-embedding-3-large dimensions"
 - "custom embedding model integration RAG pipeline"`,
-  model: 'mastra/openai/gpt-5.1-codex',
+  model: 'mastra/openai/gpt-5.3-codex',
 });

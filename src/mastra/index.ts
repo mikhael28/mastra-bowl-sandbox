@@ -31,8 +31,13 @@ import { ragWorkflow } from './workflows/rag-workflow';
 
 // Custom routes
 import { voiceSpeakRoute } from './routes/voice-speak-route';
-import { workingMemoryRoute } from './routes/working-memory-route';
+import {
+  workingMemoryRoute,
+  updateWorkingMemoryRoute,
+} from './routes/working-memory-route';
 import { artifactFilesRoute } from './routes/artifact-files-route';
+import { localModelStatusRoute } from './routes/local-model-route';
+import { browserMirrorRoute } from './routes/browser-mirror-route';
 
 // Scorers
 import { basedScorer } from './scorers/based-scorer';
@@ -71,7 +76,20 @@ export const mastra = new Mastra({
   },
   storage,
   server: {
-    apiRoutes: [voiceSpeakRoute, workingMemoryRoute, artifactFilesRoute],
+    apiRoutes: [
+      voiceSpeakRoute,
+      workingMemoryRoute,
+      updateWorkingMemoryRoute,
+      artifactFilesRoute,
+      localModelStatusRoute,
+      browserMirrorRoute,
+    ],
+    // cors: {
+    //   origin: ['http://localhost:4111'],
+    //   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    //   allowHeaders: ['Content-Type', 'Authorization', 'x-mastra-client-type'],
+    //   credentials: true,
+    // },
   },
   logger: new PinoLogger({
     name: 'Mastra',
@@ -98,3 +116,23 @@ export const mastra = new Mastra({
     },
   }),
 });
+
+// Defensive wrapper: Mastra's built-in `/browser/:agentId/stream` websocket
+// (registered automatically when any agent has a `.browser`) calls
+// `mastra.getAgentById(agentId)` which throws on unknown agents. A stale
+// browser tab opening a WS for an agent that no longer exists in this
+// project (e.g. `weather-agent` from a prior demo) takes the whole process
+// down because the error isn't caught upstream. Downstream code already
+// handles `null` correctly (`if (!toolset) return;`), so swallowing the
+// throw is safe and just avoids the crash.
+const _origGetAgentById = (mastra as any).getAgentById.bind(mastra);
+(mastra as any).getAgentById = function (agentId: string) {
+  try {
+    return _origGetAgentById(agentId);
+  } catch (err: any) {
+    console.warn(
+      `[mastra] getAgentById("${agentId}") returned null (was: ${err?.message ?? err})`,
+    );
+    return null;
+  }
+};

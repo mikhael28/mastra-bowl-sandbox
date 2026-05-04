@@ -29,6 +29,14 @@ export default defineConfig({
         target: MASTRA_URL,
         changeOrigin: true,
       },
+      '/local-model-status': {
+        target: MASTRA_URL,
+        changeOrigin: true,
+      },
+      '/browser-mirror': {
+        target: MASTRA_URL,
+        changeOrigin: true,
+      },
     },
   },
 });

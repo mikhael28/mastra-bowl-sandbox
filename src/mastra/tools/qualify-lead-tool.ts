@@ -37,7 +37,7 @@ const qualificationSchema = z.object({
 const qualifierAgent = new Agent({
   id: 'mastraclaw-lead-qualifier',
   name: 'Lead Qualifier',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   instructions: `You are a pragmatic B2B sales qualifier. Read an inbound message from a prospect and return a structured qualification record.
 
 - Never invent facts: if a field is unclear from the message, mark it as unknown / empty array / "not stated".

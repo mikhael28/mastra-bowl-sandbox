@@ -9,7 +9,7 @@ import {
 export const answererAgent = new Agent({
   id: 'answerer-agent',
   name: 'Answerer Agent',
-  model: 'openai/gpt-5.1-codex',
+  model: 'openai/gpt-5.3-codex',
   instructions: `You answer questions based on web search results and save the finalized artifact to the research session workspace.
 
 Focus on what the user actually asked for. If they clarified their needs (e.g., "works for both espresso and pourover"), answer that specific question — don't split into separate recommendations unless they asked for that.

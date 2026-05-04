@@ -29,7 +29,7 @@ export const basedScorer = createScorer({
   name: 'Based',
   description: 'Scores blog post output from 0 to 10 on how based (real, dope, badass) it is',
   judge: {
-    model: 'openai/gpt-5.1-codex',
+    model: 'openai/gpt-5.3-codex',
     instructions: BASED_INSTRUCTIONS,
   },
 })

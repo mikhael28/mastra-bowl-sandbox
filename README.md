@@ -1,4 +1,4 @@
-# Mastra Bowl Sandbox
+# MastraClaw Sandbox
 
 A sandbox showcase of [Mastra's](https://mastra.ai/) agent framework capabilities, battle-tested with the new Studio & Server. This sandbox demonstrates how to build autonomous agents with tools, workflows, evals, memory, browser automation, email, content moderation, MCP servers, and more.
 
