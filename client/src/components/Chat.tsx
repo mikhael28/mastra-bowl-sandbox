@@ -8,11 +8,14 @@ import {
   listMemoryThreads,
   listVoiceSpeakers,
   getMemoryThreadMessages,
+  deleteMemoryThread,
+  renameMemoryThread,
   MemoryThreadSummary,
   MemoryMessage,
   Chunk,
   TokenUsage,
 } from '../lib/mastraClient';
+import { describeError, logError } from '../lib/errorLog';
 import { PrimitiveId } from '../lib/education';
 import { PrimitiveBadge } from './PrimitiveBadge';
 import { VoiceControls } from './VoiceControls';
@@ -23,6 +26,7 @@ import { WorkspaceExplorer } from './side-panels/WorkspaceExplorer';
 import { TodosRail } from './side-panels/TodosRail';
 import { WorkingMemoryView } from './side-panels/WorkingMemoryView';
 import { ToolCatalogDrawer } from './side-panels/ToolCatalogDrawer';
+import { ArtifactRail } from './side-panels/ArtifactRail';
 import {
   addBreakdown,
   breakdownFromUsage,
@@ -49,7 +53,39 @@ interface Props {
 const RESOURCE_ID = 'mastra-bowl-demo-user';
 
 /** Right-rail panel selection. `null` = rail collapsed. */
-type RailPanel = 'files' | 'todos' | 'memory' | null;
+type RailPanel = 'files' | 'todos' | 'memory' | 'build' | null;
+
+/** Preamble injected when the user toggles "Build" mode in the input — same
+ * one the standalone Artifact tab used to use. The thread id doubles as the
+ * artifact session id, so files land under workspace/artifacts/<sid>/. */
+function buildArtifactPreamble(sessionId: string): string {
+  const folder = `artifacts/${sessionId}`;
+  return [
+    'You are running in **Build (artifact) mode**.',
+    `Build the user's request as a self-contained artifact in this thread's artifact folder.`,
+    '',
+    `**Path rules — read carefully:**`,
+    `- The session's artifact folder is \`${folder}/\` (relative to the workspace root).`,
+    `- Every file-touching tool (\`fs_write_file\`, \`fs_read_text_file\`, \`fs_edit_file\`, \`mastra_workspace_write_file\`, \`mastra_workspace_edit_file\`, etc.) is rooted at the workspace directory. Pass paths WITHOUT a leading \`workspace/\` segment.`,
+    `- ✅ Correct:   \`${folder}/index.html\``,
+    `- ❌ Incorrect: \`workspace/${folder}/index.html\``,
+    `- For \`mastra_workspace_execute_command\`, the cwd is the workspace root, so refer to files the same way: \`${folder}/index.html\`.`,
+    '',
+    'Conventions:',
+    '- For visual artifacts prefer a single self-contained `index.html` (no build step, only CDN <script src> tags) so the in-rail iframe can render it directly.',
+    `- For Node scripts, write \`${folder}/main.js\` and run with \`node ${folder}/main.js\`. For Python, \`${folder}/main.py\` run with \`python3 ${folder}/main.py\`.`,
+    '- After writing, run / verify the artifact with `mastra_workspace_execute_command` when applicable.',
+    '- Keep prose output concise — the right-rail is showing the file/preview live.',
+    '',
+    'User request:',
+    '',
+  ].join('\n');
+}
+
+/** Map a chat thread id to a stable artifact session id. */
+function sessionIdFromThread(threadId: string): string {
+  return threadId.replace(/^t-/, '').replace(/^artifact-/, '');
+}
 
 export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -69,10 +105,22 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
   const [memoryRefreshNonce, setMemoryRefreshNonce] = useState(0);
   const [evalRefreshNonce, setEvalRefreshNonce] = useState(0);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  // "Build" (artifact) mode: when on, prepends the artifact preamble to user
+  // messages so the agent writes into workspace/artifacts/<thread-id>/.
+  const [buildMode, setBuildMode] = useState(false);
+  // Bumped after every finished turn so the ArtifactRail re-fetches its file
+  // listing — the agent may have just written new files.
+  const [artifactRefreshNonce, setArtifactRefreshNonce] = useState(0);
 
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const currentAssistantIdRef = useRef<string | null>(null);
+  const currentRunIdRef = useRef<string | null>(null);
+  // Approvals fired during a stream are queued here and drained sequentially
+  // after the active stream finishes — the resume call cannot run concurrently
+  // with the suspended outer stream or the run terminates early.
+  const pendingApprovalsRef = useRef<Array<{ toolCallId: string }>>([]);
+  const handledApprovalsRef = useRef<Set<string>>(new Set());
 
   // Known subagents + workflows for this agent — fed into the router so
   // subagent/workflow tool calls get the right specialized card.
@@ -173,13 +221,91 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
     setCurrentThreadId(id);
   }
 
+  async function deleteThread(threadId: string) {
+    if (!agent || streaming) return;
+    if (
+      !window.confirm(
+        'Delete this thread and all of its messages? This cannot be undone.',
+      )
+    ) {
+      return;
+    }
+    const ok = await deleteMemoryThread(threadId);
+    if (!ok) {
+      logError({
+        source: 'mastra',
+        message: `Failed to delete thread ${threadId}`,
+        agentId: agent.id,
+        threadId,
+      });
+      return;
+    }
+    setThreads((prev) => prev.filter((t) => t.id !== threadId));
+    if (currentThreadId === threadId) {
+      setMessages([]);
+      setCurrentThreadId(null);
+    }
+    refreshThreads();
+  }
+
+  async function deleteAllThreads() {
+    if (!agent || streaming) return;
+    if (threads.length === 0) return;
+    if (
+      !window.confirm(
+        `Delete ALL ${threads.length} threads for ${agent.name ?? agent.id}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+    const results = await Promise.all(
+      threads.map((t) =>
+        deleteMemoryThread(t.id).then((ok) => ({ id: t.id, ok })),
+      ),
+    );
+    const failed = results.filter((r) => !r.ok);
+    if (failed.length) {
+      logError({
+        source: 'mastra',
+        message: `Failed to delete ${failed.length}/${results.length} threads`,
+        agentId: agent.id,
+      });
+    }
+    setMessages([]);
+    setCurrentThreadId(null);
+    refreshThreads();
+  }
+
+  async function renameThread(threadId: string, current: string | undefined) {
+    if (!agent || streaming) return;
+    const next = window.prompt('Rename thread', current ?? '');
+    if (next == null) return;
+    const trimmed = next.trim();
+    if (!trimmed || trimmed === current) return;
+    const ok = await renameMemoryThread(threadId, trimmed);
+    if (!ok) {
+      logError({
+        source: 'mastra',
+        message: `Failed to rename thread ${threadId}`,
+        agentId: agent.id,
+        threadId,
+      });
+      return;
+    }
+    setThreads((prev) =>
+      prev.map((t) => (t.id === threadId ? { ...t, title: trimmed } : t)),
+    );
+  }
+
   async function consumeStream(
     stream: AsyncGenerator<Chunk, void, void>,
     assistantId: string,
+    threadId: string | null,
   ): Promise<string> {
     let accumulated = '';
     for await (const chunk of stream) {
       if (chunk.runId) {
+        currentRunIdRef.current = chunk.runId;
         setMessages((m) =>
           m.map((msg) =>
             msg.id === assistantId && !msg.runId
@@ -191,15 +317,86 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
       if (chunk.type === 'text-delta') {
         accumulated += chunk.payload?.text ?? '';
       }
-      applyChunkToMessage(chunk, assistantId, setMessages, onTeach);
+      // Auto-approve every tool-call-approval — the user has opted out of
+      // per-call gating in this UI. The resume call must run sequentially
+      // after the suspended outer stream drains, so queue and drain below.
+      if (
+        chunk.type === 'tool-call-approval' ||
+        chunk.type === 'data-tool-call-approval'
+      ) {
+        const toolCallId =
+          chunk.payload?.toolCallId ?? chunk.data?.toolCallId;
+        if (toolCallId && !handledApprovalsRef.current.has(toolCallId)) {
+          handledApprovalsRef.current.add(toolCallId);
+          pendingApprovalsRef.current.push({ toolCallId });
+        }
+      }
+      applyChunkToMessage(chunk, assistantId, setMessages, onTeach, {
+        agentId: agent?.id,
+        threadId: threadId ?? undefined,
+      });
+    }
+    while (pendingApprovalsRef.current.length > 0) {
+      const next = pendingApprovalsRef.current.shift()!;
+      await runResume(next.toolCallId, true, assistantId, threadId);
     }
     return accumulated;
+  }
+
+  async function runResume(
+    toolCallId: string,
+    approved: boolean,
+    assistantId: string,
+    threadId: string | null,
+  ) {
+    if (!agent) return;
+    const runId = currentRunIdRef.current;
+    if (!runId) return;
+    setMessages((m) =>
+      m.map((msg) => {
+        if (msg.id !== assistantId) return msg;
+        return {
+          ...msg,
+          toolCalls: msg.toolCalls.map((t) =>
+            t.toolCallId === toolCallId
+              ? { ...t, status: approved ? 'calling' : 'declined' }
+              : t,
+          ),
+        };
+      }),
+    );
+    const ctl = new AbortController();
+    try {
+      const stream = resumeToolApproval(
+        agent.id,
+        { runId, toolCallId, approved },
+        ctl.signal,
+      );
+      await consumeStream(stream, assistantId, threadId);
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return;
+      const e = describeError(err);
+      logError({
+        source: 'approval',
+        message: `auto-approve resume failed: ${e.message}`,
+        detail: e.detail,
+        agentId: agent.id,
+        threadId: threadId ?? undefined,
+        runId,
+      });
+    }
   }
 
   async function sendText(userText: string) {
     const trimmed = userText.trim();
     if (!trimmed || !agent || streaming) return;
     const threadId = ensureThreadId();
+    const sessionId = sessionIdFromThread(threadId);
+    // In Build mode the agent gets the artifact preamble prepended to its
+    // input. We keep the user-visible bubble showing only the user's prompt.
+    const agentInput = buildMode
+      ? buildArtifactPreamble(sessionId) + trimmed
+      : trimmed;
     const userMsg: Message = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -216,6 +413,9 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
       runId,
     };
     currentAssistantIdRef.current = assistantId;
+    currentRunIdRef.current = runId;
+    handledApprovalsRef.current = new Set();
+    pendingApprovalsRef.current = [];
     setMessages((m) => [...m, userMsg, assistantMsg]);
     setStreaming(true);
 
@@ -227,17 +427,37 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
       const stream = streamAgent(
         agent.id,
         {
-          messages: trimmed,
-          memory: { thread: threadId, resource: RESOURCE_ID },
+          messages: agentInput,
+          memory: {
+            thread: threadId,
+            resource: RESOURCE_ID,
+            // Disable working-memory writes in Build mode — same rationale as
+            // the old Artifact tab: the agent was burning a step on
+            // updateWorkingMemory and stopping early, and per-thread artifact
+            // sessions don't need a persisted user profile.
+            ...(buildMode
+              ? { options: { workingMemory: { enabled: false } } }
+              : {}),
+          },
           runId,
+          ...(buildMode ? { maxSteps: 25 } : {}),
         },
         ctl.signal,
       );
-      finalText = await consumeStream(stream, assistantId);
+      finalText = await consumeStream(stream, assistantId, threadId);
     } catch (err: any) {
       if (err?.name === 'AbortError') {
         finalText = '';
       } else {
+        const e = describeError(err);
+        logError({
+          source: 'stream',
+          message: e.message,
+          detail: e.detail,
+          agentId: agent.id,
+          threadId,
+          runId,
+        });
         setMessages((m) =>
           m.map((msg) =>
             msg.id === assistantId
@@ -263,6 +483,7 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
       setTodoRefreshNonce((n) => n + 1);
       setMemoryRefreshNonce((n) => n + 1);
       setEvalRefreshNonce((n) => n + 1);
+      setArtifactRefreshNonce((n) => n + 1);
       onTurnFinished?.();
     }
   }
@@ -281,6 +502,7 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
     approved: boolean,
   ) {
     if (!agent || streaming) return;
+    currentRunIdRef.current = runId;
     setMessages((m) =>
       m.map((msg) => {
         if (msg.id !== assistantId) return msg;
@@ -304,9 +526,18 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
         { runId, toolCallId, approved },
         ctl.signal,
       );
-      deltaText = await consumeStream(stream, assistantId);
+      deltaText = await consumeStream(stream, assistantId, currentThreadId);
     } catch (err: any) {
       if (err?.name !== 'AbortError') {
+        const e = describeError(err);
+        logError({
+          source: 'approval',
+          message: `approval resume failed: ${e.message}`,
+          detail: e.detail,
+          agentId: agent.id,
+          threadId: currentThreadId ?? undefined,
+          runId,
+        });
         setMessages((m) =>
           m.map((msg) =>
             msg.id === assistantId
@@ -331,6 +562,7 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
       setTodoRefreshNonce((n) => n + 1);
       setMemoryRefreshNonce((n) => n + 1);
       setEvalRefreshNonce((n) => n + 1);
+      setArtifactRefreshNonce((n) => n + 1);
       onTurnFinished?.();
     }
   }
@@ -393,6 +625,9 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
             setCurrentThreadId(id);
           }}
           onNew={newThread}
+          onDelete={deleteThread}
+          onDeleteAll={deleteAllThreads}
+          onRename={renameThread}
           onCollapse={() => setThreadPanelOpen(false)}
           streaming={streaming}
         />
@@ -519,8 +754,14 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
                 }
               }}
               rows={2}
-              placeholder={`Message ${agent.name ?? agent.id}...  (Enter to send · Shift+Enter for newline)`}
-              className="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm resize-none focus:outline-none focus:border-indigo-500/60"
+              placeholder={`${
+                buildMode ? '🎨 Build mode — describe an artifact… ' : `Message ${agent.name ?? agent.id}... `
+              }(Enter to send · Shift+Enter for newline)`}
+              className={`flex-1 bg-slate-950 border rounded px-3 py-2 text-sm resize-none focus:outline-none ${
+                buildMode
+                  ? 'border-purple-500/60 focus:border-purple-400'
+                  : 'border-slate-800 focus:border-indigo-500/60'
+              }`}
             />
             {streaming ? (
               <button
@@ -533,10 +774,41 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
               <button
                 onClick={send}
                 disabled={!input.trim()}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 rounded text-sm font-medium"
+                className={`px-4 py-2 disabled:opacity-40 rounded text-sm font-medium ${
+                  buildMode
+                    ? 'bg-purple-600 hover:bg-purple-500'
+                    : 'bg-indigo-600 hover:bg-indigo-500'
+                }`}
               >
-                Send
+                {buildMode ? 'Build' : 'Send'}
               </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-[11px]">
+            <button
+              onClick={() => {
+                setBuildMode((v) => {
+                  const next = !v;
+                  // When turning Build mode on, surface the rail so the user
+                  // can see what they're about to construct.
+                  if (next) setRailPanel('build');
+                  return next;
+                });
+              }}
+              className={`px-2 py-1 rounded border ${
+                buildMode
+                  ? 'bg-purple-500/15 border-purple-500/40 text-purple-200'
+                  : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+              }`}
+              title="Prepend the artifact preamble — agent writes files into workspace/artifacts/<thread>/"
+            >
+              {buildMode ? '🎨 Build mode: on' : '🎨 Build mode'}
+            </button>
+            {buildMode && currentThreadId && (
+              <span className="text-[10px] font-mono text-slate-500 truncate">
+                workspace/artifacts/
+                {sessionIdFromThread(currentThreadId).slice(0, 8)}/
+              </span>
             )}
           </div>
         </div>
@@ -548,7 +820,11 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
         onChange={setRailPanel}
       />
       {railPanel && (
-        <aside className="w-[340px] border-l border-slate-800 bg-slate-950 flex flex-col min-h-0">
+        <aside
+          className={`${
+            railPanel === 'build' ? 'w-[480px]' : 'w-[340px]'
+          } border-l border-slate-800 bg-slate-950 flex flex-col min-h-0`}
+        >
           {railPanel === 'files' && (
             <WorkspaceExplorer
               agentId={agent.id}
@@ -572,6 +848,19 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
               onTeach={onTeach}
               refreshNonce={memoryRefreshNonce}
             />
+          )}
+          {railPanel === 'build' && currentThreadId && (
+            <ArtifactRail
+              agentId={agent.id}
+              sessionId={sessionIdFromThread(currentThreadId)}
+              messages={messages}
+              refreshNonce={artifactRefreshNonce}
+            />
+          )}
+          {railPanel === 'build' && !currentThreadId && (
+            <div className="p-3 text-[11px] text-slate-500">
+              Start or pick a thread to build artifacts in.
+            </div>
           )}
         </aside>
       )}
@@ -602,6 +891,7 @@ function RightRail({
   onChange: (p: RailPanel) => void;
 }) {
   const tabs: Array<{ id: Exclude<RailPanel, null>; label: string; icon: string; title: string }> = [
+    { id: 'build', label: 'Build', icon: '🎨', title: 'Artifact preview / files / terminal for this thread' },
     { id: 'files', label: 'Files', icon: '📁', title: "Browse the agent's workspace" },
     { id: 'todos', label: 'Todos', icon: '☑', title: 'workspace/todo.json' },
     { id: 'memory', label: 'Memory', icon: '🧠', title: 'What the agent remembers about you' },
@@ -637,6 +927,9 @@ function ThreadRail({
   currentThreadId,
   onSelect,
   onNew,
+  onDelete,
+  onDeleteAll,
+  onRename,
   onCollapse,
   streaming,
 }: {
@@ -645,6 +938,9 @@ function ThreadRail({
   currentThreadId: string | null;
   onSelect: (id: string) => void;
   onNew: () => void;
+  onDelete: (id: string) => void;
+  onDeleteAll: () => void;
+  onRename: (id: string, current: string | undefined) => void;
   onCollapse: () => void;
   streaming: boolean;
 }) {
@@ -662,13 +958,23 @@ function ThreadRail({
           ⟨
         </button>
       </div>
-      <button
-        onClick={onNew}
-        disabled={streaming}
-        className="mx-3 mt-3 mb-1 px-2 py-1.5 text-xs rounded border border-indigo-500/40 text-indigo-200 hover:bg-indigo-500/10 disabled:opacity-40"
-      >
-        + New thread
-      </button>
+      <div className="mx-3 mt-3 mb-1 flex gap-1">
+        <button
+          onClick={onNew}
+          disabled={streaming}
+          className="flex-1 px-2 py-1.5 text-xs rounded border border-indigo-500/40 text-indigo-200 hover:bg-indigo-500/10 disabled:opacity-40"
+        >
+          + New thread
+        </button>
+        <button
+          onClick={onDeleteAll}
+          disabled={streaming || threads.length === 0}
+          title="Delete every thread for this agent"
+          className="px-2 py-1.5 text-xs rounded border border-rose-500/40 text-rose-300 hover:bg-rose-500/10 disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          Clear all
+        </button>
+      </div>
       <ul className="flex-1 overflow-y-auto py-1">
         {threads.length === 0 && !loading && (
           <li className="px-3 py-4 text-[11px] text-slate-500">
@@ -679,11 +985,11 @@ function ThreadRail({
           const active = t.id === currentThreadId;
           const updated = t.updatedAt ?? t.createdAt;
           return (
-            <li key={t.id}>
+            <li key={t.id} className="group relative">
               <button
                 onClick={() => onSelect(t.id)}
                 disabled={streaming && !active}
-                className={`w-full text-left px-3 py-2 text-xs border-l-2 ${
+                className={`w-full text-left pl-3 pr-8 py-2 text-xs border-l-2 ${
                   active
                     ? 'bg-indigo-500/10 border-l-indigo-500'
                     : 'border-l-transparent hover:bg-slate-800/40'
@@ -701,6 +1007,30 @@ function ThreadRail({
                   </div>
                 )}
               </button>
+              <div className="absolute top-1.5 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRename(t.id, t.title);
+                  }}
+                  disabled={streaming}
+                  title="Rename this thread"
+                  className="text-slate-500 hover:text-indigo-300 disabled:opacity-30 disabled:cursor-not-allowed text-xs px-1 py-0.5 rounded hover:bg-indigo-500/10"
+                >
+                  ✎
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(t.id);
+                  }}
+                  disabled={streaming}
+                  title="Delete this thread"
+                  className="text-slate-500 hover:text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed text-xs px-1 py-0.5 rounded hover:bg-rose-500/10"
+                >
+                  ✕
+                </button>
+              </div>
             </li>
           );
         })}
@@ -737,15 +1067,8 @@ function EmptyState({
       'Add "follow up with Acme" to my todos, then list pending todos.',
       'Save the research into workspace/research/zapier/ and open it for me.',
     ],
-    'math-agent': [
-      'What is 17 * 23 + 4^3?',
-      "Compute the compound interest on $5,000 at 4.5% for 7 years.",
-    ],
     'news-agent': [
       'What are the top AI startup funding rounds this week?',
-    ],
-    'publisher-agent': [
-      'Write a short blog post about the rise of local-first software.',
     ],
     'voice-agent': [
       'Say hello and tell me a short joke about frameworks.',

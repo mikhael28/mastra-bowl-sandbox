@@ -1,10 +1,100 @@
 /**
- * Thin wrapper around the Mastra dev server HTTP API on localhost:4111.
- * The Vite dev server proxies /api and /voice-speak through, so we can use
- * relative paths in the browser.
+ * Thin wrapper around the Mastra HTTP API. In dev the Vite proxy forwards
+ * /api, /voice-speak, /working-memory, /artifacts, /local-model-status and
+ * /browser-mirror to MASTRA_SERVER_URL (default http://localhost:4111), so
+ * relative paths Just Work and CORS is avoided. Production builds bake the
+ * configured MASTRA_SERVER_URL into VITE_API_BASE_URL and call it directly.
  *
  * Docs: node_modules/@mastra/server/dist/docs/references/reference-server-routes.md
  */
+
+// ---------------------------------------------------------------------------
+// Server target picker
+//
+// Vite exposes five build-time vars (see client/vite.config.ts):
+//   VITE_API_BASE_URL    — '' in dev (proxy), absolute URL in prod build
+//   VITE_LOCAL_URL       — 'http://localhost:4111' constant
+//   VITE_REMOTE_URL      — MASTRA_SERVER_URL normalized (or '')
+//   VITE_STUDIO_URL      — MASTRA_STUDIO_URL normalized (or '')
+//   VITE_DEFAULT_TARGET  — 'local' | 'remote' (env-driven default)
+//
+// The picker writes the user's choice to localStorage. apiUrl() reads it on
+// every call so requests immediately hit the right server. In dev we route
+// through Vite-proxy prefixes (/__local, /__remote, /__studio) to dodge CORS.
+// ---------------------------------------------------------------------------
+
+const ENV =
+  ((import.meta as any).env as Record<string, string | undefined>) ?? {};
+
+const API_BASE: string = ENV.VITE_API_BASE_URL ?? '';
+export const LOCAL_URL: string = ENV.VITE_LOCAL_URL ?? 'http://localhost:4111';
+export const REMOTE_URL: string = ENV.VITE_REMOTE_URL ?? '';
+export const STUDIO_URL: string = ENV.VITE_STUDIO_URL ?? '';
+export const DEFAULT_TARGET: 'local' | 'remote' =
+  ENV.VITE_DEFAULT_TARGET === 'remote' ? 'remote' : 'local';
+
+export type ServerTargetChoice = 'default' | 'local' | 'remote' | 'studio';
+export type ServerTarget = 'local' | 'remote' | 'studio';
+const TARGET_KEY = 'mastra-server-target';
+
+export function getServerTargetChoice(): ServerTargetChoice {
+  if (typeof localStorage === 'undefined') return 'default';
+  const v = localStorage.getItem(TARGET_KEY);
+  if (v === 'local') return 'local';
+  if (v === 'remote' && REMOTE_URL) return 'remote';
+  if (v === 'studio' && STUDIO_URL) return 'studio';
+  return 'default';
+}
+
+export function setServerTargetChoice(choice: ServerTargetChoice) {
+  if (typeof localStorage === 'undefined') return;
+  if (choice === 'default') localStorage.removeItem(TARGET_KEY);
+  else localStorage.setItem(TARGET_KEY, choice);
+}
+
+/** The resolved target after collapsing 'default' → env-configured side. */
+export function getActiveServerTarget(): ServerTarget {
+  const c = getServerTargetChoice();
+  if (c === 'local') return 'local';
+  if (c === 'remote' && REMOTE_URL) return 'remote';
+  if (c === 'studio' && STUDIO_URL) return 'studio';
+  return DEFAULT_TARGET;
+}
+
+/** Human-friendly URL for "where requests are going right now". */
+export function getActiveServerUrl(): string {
+  switch (getActiveServerTarget()) {
+    case 'remote':
+      return REMOTE_URL || LOCAL_URL;
+    case 'studio':
+      return STUDIO_URL || LOCAL_URL;
+    default:
+      return LOCAL_URL;
+  }
+}
+
+export function apiUrl(path: string): string {
+  // Production build: API_BASE is the env-default absolute URL. The picker
+  // overrides it with explicit absolute URLs for any pinned target.
+  if (API_BASE) {
+    switch (getActiveServerTarget()) {
+      case 'local':
+        return `${LOCAL_URL}${path}`;
+      case 'remote':
+        return REMOTE_URL ? `${REMOTE_URL}${path}` : `${API_BASE}${path}`;
+      case 'studio':
+        return STUDIO_URL ? `${STUDIO_URL}${path}` : `${API_BASE}${path}`;
+    }
+  }
+  // Dev mode: route through Vite proxy. /__local, /__remote, /__studio each
+  // forward to a fixed upstream; the no-prefix path is the env-driven
+  // default — so "default" preserves prior behavior.
+  const c = getServerTargetChoice();
+  if (c === 'local') return `/__local${path}`;
+  if (c === 'remote' && REMOTE_URL) return `/__remote${path}`;
+  if (c === 'studio' && STUDIO_URL) return `/__studio${path}`;
+  return path;
+}
 
 export type AgentSummary = {
   id: string;
@@ -73,7 +163,7 @@ export type Chunk = {
 };
 
 async function j<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetch(apiUrl(path), {
     ...init,
     headers: {
       'Content-Type': 'application/json',
@@ -168,7 +258,7 @@ export async function* streamAgent(
   },
   signal?: AbortSignal,
 ): AsyncGenerator<Chunk, void, void> {
-  const res = await fetch(`/api/agents/${agentId}/stream`, {
+  const res = await fetch(apiUrl(`/api/agents/${agentId}/stream`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -245,7 +335,7 @@ export async function* resumeToolApproval(
   signal?: AbortSignal,
 ): AsyncGenerator<Chunk, void, void> {
   const path = opts.approved ? 'approve-tool-call' : 'decline-tool-call';
-  const res = await fetch(`/api/agents/${agentId}/${path}`, {
+  const res = await fetch(apiUrl(`/api/agents/${agentId}/${path}`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ runId: opts.runId, toolCallId: opts.toolCallId }),
@@ -322,7 +412,7 @@ export async function* streamWorkflow(
   },
   signal?: AbortSignal,
 ): AsyncGenerator<Chunk, void, void> {
-  const res = await fetch(`/api/workflows/${workflowId}/stream`, {
+  const res = await fetch(apiUrl(`/api/workflows/${workflowId}/stream`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -485,7 +575,7 @@ export async function listMcpServerTools(serverId: string): Promise<McpToolSumma
 
 export async function pingServer(): Promise<boolean> {
   try {
-    const res = await fetch('/api/agents');
+    const res = await fetch(apiUrl('/api/agents'));
     return res.ok;
   } catch {
     return false;
@@ -510,7 +600,7 @@ export async function speakText(
   text: string,
   speakerId?: string,
 ): Promise<Blob> {
-  const res = await fetch(`/voice-speak/${agentId}`, {
+  const res = await fetch(apiUrl(`/voice-speak/${agentId}`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(speakerId ? { text, speakerId } : { text }),
@@ -539,7 +629,7 @@ export async function transcribeAudio(
   const fd = new FormData();
   fd.append('audio', audio, `recording.${filetype}`);
   fd.append('options', JSON.stringify({ filetype }));
-  const res = await fetch(`/api/agents/${agentId}/voice/listen`, {
+  const res = await fetch(apiUrl(`/api/agents/${agentId}/voice/listen`), {
     method: 'POST',
     body: fd,
   });
@@ -856,7 +946,7 @@ export async function updateWorkingMemory(
   body: { resourceId?: string; threadId?: string; workingMemory: string },
 ): Promise<{ ok: boolean; error?: string }> {
   try {
-    const res = await fetch(`/working-memory/${agentId}`, {
+    const res = await fetch(apiUrl(`/working-memory/${agentId}`), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -871,8 +961,24 @@ export async function updateWorkingMemory(
 
 export async function deleteMemoryThread(threadId: string): Promise<boolean> {
   try {
-    const res = await fetch(`/api/memory/threads/${threadId}`, {
+    const res = await fetch(apiUrl(`/api/memory/threads/${threadId}`), {
       method: 'DELETE',
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function renameMemoryThread(
+  threadId: string,
+  title: string,
+): Promise<boolean> {
+  try {
+    const res = await fetch(apiUrl(`/api/memory/threads/${threadId}`), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
     });
     return res.ok;
   } catch {

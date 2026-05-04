@@ -37,12 +37,9 @@ import {
 import { todoAdd, todoList, todoComplete } from '../tools/todo-tools';
 import { qualifyLead } from '../tools/qualify-lead-tool';
 import { basedScorer } from '../scorers/based-scorer';
-import { copywriterAgent } from './copywriter-agent';
-import { editorAgent } from './editor-agent';
 import { researchPlannerAgent } from './research-planner-agent';
 import { retrievalEvaluatorAgent } from './retrieval-evaluator-agent';
 import { emailAgent } from './email-agent';
-import { blogPostWorkflow } from '../workflows/blog-post-workflow';
 import { techTouchdownWorkflow } from '../workflows/tech-touchdown-workflow';
 import { deepSearch } from '../workflows/deep-search-workflow';
 import { ragWorkflow } from '../workflows/rag-workflow';
@@ -255,7 +252,7 @@ export const mastraclawAgent = new Agent({
   id: 'mastraclaw-agent',
   name: 'MastraClaw',
   description:
-    'General-purpose autonomous assistant for business development and content. Coordinates specialist subagents (copywriter, editor, research planner, retrieval evaluator), runs research + RAG, drafts and sends email with approval, and maintains a persistent todo list.',
+    'General-purpose autonomous assistant for business development and content. Coordinates specialist subagents (research planner, retrieval evaluator), runs research + RAG, drafts and sends email with approval, and maintains a persistent todo list.',
   instructions: `You are MastraClaw, an autonomous assistant for business development and content.
 
 ## Scope
@@ -263,13 +260,11 @@ export const mastraclawAgent = new Agent({
 - **Content**: blog posts, social copy, newsletters, marketing emails, press releases, case studies, whitepapers.
 
 ## Delegate to specialists — don't do their work yourself
-- **copywriter-agent**: first drafts of prose (blog, newsletter, email, landing copy).
-- **editor-agent**: polish any draft for grammar/flow/tone.
 - **research-planner**: turn a topic into 3–5 well-formed search queries.
 - **retrieval-evaluator**: judge RAG chunk quality and synthesize grounded answers with citations.
-- **email-agent**: all AgentMail operations — create/list inboxes, list threads, read messages, send, reply. Sending/replying requires user approval. Draft prose yourself (or via copywriter-agent) and hand the finished body to email-agent.
+- **email-agent**: all AgentMail operations — create/list inboxes, list threads, read messages, send, reply. Sending/replying requires user approval. Draft prose yourself and hand the finished body to email-agent.
 
-Standard content flow: research-planner → search (or deep-research) → copywriter-agent → editor-agent → present.
+Standard content flow: research-planner → search (or deep-research) → draft → present.
 
 ## Search & browse
 - \`tavily-search\`: fast web search (general/news, time-range filters).
@@ -278,7 +273,6 @@ Standard content flow: research-planner → search (or deep-research) → copywr
 - Browser (Stagehand): \`stagehand_navigate\` → URL, \`stagehand_observe\` → discover actions, \`stagehand_act\` → natural-language interactions, \`stagehand_extract\` → structured data. Always \`stagehand_close\` when done.
 
 ## Workflows — prefer when they fit
-- \`blogPostWorkflow\`: research → draft → edit → score.
 - \`techTouchdownWorkflow\`: tech-update digest.
 - \`deepSearch\`: multi-agent deep research with human-in-the-loop clarification.
 - \`ragWorkflow\`: agentic RAG with a clarification step before searching.
@@ -321,8 +315,6 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
   model: selectedModel,
 
   agents: {
-    copywriterAgent,
-    editorAgent,
     researchPlannerAgent,
     retrievalEvaluatorAgent,
     emailAgent,
@@ -389,7 +381,6 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
   },
 
   workflows: {
-    blogPostWorkflow,
     techTouchdownWorkflow,
     deepSearch,
     ragWorkflow,

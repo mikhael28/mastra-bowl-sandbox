@@ -1,3 +1,5 @@
+import { apiUrl } from './mastraClient';
+
 /**
  * Decides how to render an artifact file in the preview pane:
  *  - HTML  → iframe
@@ -19,7 +21,8 @@ export function previewModeFor(filePath: string): PreviewMode {
 /**
  * Build an absolute (proxied) URL the iframe / <img> can load. The Vite dev
  * server proxies `/artifacts/*` to the Mastra server, which serves files
- * from `workspace/artifacts/<sessionId>/`.
+ * from `workspace/artifacts/<sessionId>/`. In production the bundled
+ * VITE_API_BASE_URL is prepended so the asset is fetched directly.
  */
 export function artifactUrl(sessionId: string, relPath: string): string {
   // `relPath` may come back from the agent as `workspace/artifacts/<sid>/foo`
@@ -30,10 +33,12 @@ export function artifactUrl(sessionId: string, relPath: string): string {
   const prefixB = `artifacts/${sessionId}/`;
   if (p.startsWith(prefixA)) p = p.slice(prefixA.length);
   else if (p.startsWith(prefixB)) p = p.slice(prefixB.length);
-  return `/artifacts/${encodeURIComponent(sessionId)}/${p
-    .split('/')
-    .map(encodeURIComponent)
-    .join('/')}`;
+  return apiUrl(
+    `/artifacts/${encodeURIComponent(sessionId)}/${p
+      .split('/')
+      .map(encodeURIComponent)
+      .join('/')}`,
+  );
 }
 
 /**

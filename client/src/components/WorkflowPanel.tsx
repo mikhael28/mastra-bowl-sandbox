@@ -39,11 +39,6 @@ type RunState = {
 };
 
 const INPUT_TEMPLATES: Record<string, string> = {
-  'blog-post-workflow': JSON.stringify(
-    { topic: 'why local-first software beats SaaS for devs', tone: 'bold' },
-    null,
-    2,
-  ),
   'tech-touchdown-workflow': JSON.stringify(
     { sportsTopic: 'NBA playoffs', aiTopic: 'open source LLMs' },
     null,

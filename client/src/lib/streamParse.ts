@@ -2,6 +2,12 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { Chunk, TokenUsage } from './mastraClient';
 import type { ToolCallState } from '../components/tool-cards/types';
 import { type PrimitiveId, educationForChunk } from './education';
+import { describeError, logError } from './errorLog';
+
+export type StreamContext = {
+  agentId?: string;
+  threadId?: string;
+};
 
 export type Message = {
   id: string;
@@ -29,11 +35,57 @@ export function applyChunkToMessage(
   assistantId: string,
   setMessages: Dispatch<SetStateAction<Message[]>>,
   onTeach: (id: PrimitiveId) => void,
+  ctx?: StreamContext,
 ) {
   const type = chunk.type;
   const eduId = educationForChunk(type);
   if (eduId && (type === 'tool-call' || type === 'tripwire')) {
     void onTeach;
+  }
+
+  if (type === 'tool-error') {
+    const e = describeError(chunk.payload?.error);
+    logError({
+      source: 'tool',
+      message: e.message,
+      detail: e.detail,
+      agentId: ctx?.agentId,
+      threadId: ctx?.threadId,
+      runId: chunk.runId,
+      toolName: chunk.payload?.toolName,
+    });
+  } else if (type === 'tool-result' && chunk.payload?.isError) {
+    const e = describeError(chunk.payload?.result);
+    logError({
+      source: 'tool',
+      message: `tool returned error: ${e.message}`,
+      detail: e.detail,
+      agentId: ctx?.agentId,
+      threadId: ctx?.threadId,
+      runId: chunk.runId,
+      toolName: chunk.payload?.toolName,
+    });
+  } else if (type === 'error') {
+    const e = describeError(chunk.payload?.error);
+    logError({
+      source: 'stream',
+      message: e.message,
+      detail: e.detail,
+      agentId: ctx?.agentId,
+      threadId: ctx?.threadId,
+      runId: chunk.runId,
+    });
+  } else if (type === 'tripwire') {
+    logError({
+      source: 'mastra',
+      message: `tripwire: ${chunk.payload?.reason ?? 'blocked'}`,
+      detail: chunk.payload?.processorId
+        ? `processor: ${chunk.payload.processorId}`
+        : undefined,
+      agentId: ctx?.agentId,
+      threadId: ctx?.threadId,
+      runId: chunk.runId,
+    });
   }
 
   setMessages((msgs) =>

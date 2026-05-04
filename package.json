@@ -40,6 +40,7 @@
     "@mastra/stagehand": "0.2.1",
     "@mastra/voice-elevenlabs": "0.12.0",
     "@mastra/voice-openai": "0.12.1",
+    "ai": "5.0.179",
     "agentmail": "^0.4.18",
     "mammoth": "1.12.0",
     "pdf-parse": "2.4.5",

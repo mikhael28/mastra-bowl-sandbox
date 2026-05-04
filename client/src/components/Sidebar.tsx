@@ -4,7 +4,6 @@ import { PrimitiveBadge } from './PrimitiveBadge';
 
 export type Tab =
   | 'chat'
-  | 'artifact'
   | 'workspaces'
   | 'workflows'
   | 'tools'
@@ -28,7 +27,6 @@ interface Props {
 
 const TABS: Array<{ id: Tab; label: string; primitive: PrimitiveId }> = [
   { id: 'chat', label: 'Chat', primitive: 'agent' },
-  { id: 'artifact', label: 'Artifact', primitive: 'workspace' },
   { id: 'workspaces', label: 'Workspaces', primitive: 'workspace' },
   { id: 'workflows', label: 'Workflows', primitive: 'workflow' },
   { id: 'tools', label: 'Tools', primitive: 'tool' },

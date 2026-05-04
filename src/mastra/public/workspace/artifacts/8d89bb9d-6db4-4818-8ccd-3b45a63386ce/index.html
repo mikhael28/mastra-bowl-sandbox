@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mastra AI Framework — Build Reliable AI Products Faster</title>
+  <meta name="description" content="A modern overview page highlighting the power of the Mastra AI framework for building production-grade AI agents, workflows, and knowledge systems." />
+  <style>
+    :root {
+      --bg: #081327;
+      --panel: #0f1f3d;
+      --panel-2: #0b1a34;
+      --text: #eaf2ff;
+      --muted: #a9bfe6;
+      --brand: #4f8cff;
+      --brand-2: #6bd3ff;
+      --accent: #8ba7ff;
+      --border: rgba(180, 205, 255, 0.22);
+      --shadow: 0 20px 50px rgba(5, 12, 34, 0.55);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1000px 500px at 10% -10%, rgba(79, 140, 255, 0.25), transparent 60%),
+        radial-gradient(800px 500px at 95% -15%, rgba(107, 211, 255, 0.2), transparent 60%),
+        linear-gradient(180deg, #070f21 0%, #050a16 100%);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(1120px, 92%);
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 72px 0 36px;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      color: var(--brand-2);
+      background: rgba(107, 211, 255, 0.12);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      letter-spacing: .01em;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 4rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 900px;
+    }
+
+    .gradient {
+      background: linear-gradient(90deg, var(--brand), var(--brand-2), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subhead {
+      margin-top: 18px;
+      color: var(--muted);
+      max-width: 760px;
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
+    }
+
+    .cta-row {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 16px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      transition: .2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, rgba(79,140,255,0.25), rgba(107,211,255,0.25));
+      border-color: rgba(107,211,255,0.45);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    section {
+      padding: 22px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      grid-column: span 4;
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .97rem;
+    }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      background: rgba(107, 211, 255, 0.14);
+      border: 1px solid rgba(107, 211, 255, 0.36);
+      font-size: 20px;
+    }
+
+    .feature-panel {
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(13, 29, 63, 0.88), rgba(8, 18, 42, 0.94));
+      box-shadow: var(--shadow);
+    }
+
+    .feature-row {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feature-row:last-child { border-bottom: 0; }
+
+    .feature-key {
+      padding: 18px 20px;
+      color: #d7e6ff;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .feature-value {
+      padding: 18px 20px;
+      color: var(--muted);
+    }
+
+    .quote {
+      margin: 26px 0 6px;
+      padding: 22px;
+      border-left: 4px solid var(--brand-2);
+      background: rgba(107, 211, 255, 0.1);
+      border-radius: 0 14px 14px 0;
+      color: #e7f5ff;
+      font-size: 1.04rem;
+    }
+
+    footer {
+      padding: 34px 0 54px;
+      color: #93aedc;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 920px) {
+      .card { grid-column: span 6; }
+      .feature-row { grid-template-columns: 1fr; }
+      .feature-key { border-bottom: 1px solid var(--border); }
+    }
+
+    @media (max-width: 640px) {
+      header { padding-top: 56px; }
+      .card { grid-column: span 12; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <header class="container">
+    <div class="badge">⚡ Framework Spotlight</div>
+    <h1>
+      The power of <span class="gradient">Mastra AI</span> is turning AI ideas into production systems — fast.
+    </h1>
+    <p class="subhead">
+      Mastra gives teams a practical, scalable foundation for building agentic applications with workflows, memory,
+      retrieval, tool integrations, and deployment-ready structure — all in one framework.
+    </p>
+    <div class="cta-row">
+      <a class="btn primary" href="#power">Explore Capabilities</a>
+      <a class="btn" href="#why">Why Teams Choose Mastra</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="power">
+      <div class="grid">
+        <article class="card">
+          <div class="icon">🤖</div>
+          <h3>Agent-Oriented by Design</h3>
+          <p>
+            Build purpose-specific AI agents that can plan, reason, and act through tools. Mastra helps you define
+            behavior cleanly so agents stay useful, consistent, and testable.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="icon">🧠</div>
+          <h3>Memory + Context Management</h3>
+          <p>
+            Preserve relevant user context and conversation history across sessions. That means more personalized,
+            accurate interactions instead of stateless, repetitive responses.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="icon">🔎</div>
+          <h3>Built-In Retrieval Workflows</h3>
+          <p>
+            Connect documents and knowledge bases to ground answers in trusted information. From quick lookups to
+            deep iterative RAG, Mastra supports reliable, source-backed outputs.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="icon">🛠️</div>
+          <h3>Tooling and Integrations</h3>
+          <p>
+            Enable agents to take action across real systems — email, CRM, docs, internal APIs, and more.
+            Mastra bridges AI logic with business workflows.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="icon">🧩</div>
+          <h3>Composable Workflows</h3>
+          <p>
+            Combine planning, search, generation, and evaluation into reusable workflows. This composability helps
+            teams ship repeatable AI processes instead of one-off demos.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="icon">🚀</div>
+          <h3>Production-Ready Velocity</h3>
+          <p>
+            Move from prototype to deployable product quickly. Mastra’s structure supports iteration speed without
+            sacrificing reliability, observability, or maintainability.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="why">
+      <div class="feature-panel">
+        <div class="feature-row">
+          <div class="feature-key">From Prompting to Products</div>
+          <div class="feature-value">Mastra helps teams graduate from isolated prompts to complete AI applications with architecture, lifecycle, and control.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-key">Grounded, Trustworthy Outputs</div>
+          <div class="feature-value">With retrieval and evaluator patterns, responses can be tied to real sources, reducing hallucination risk in business-critical use cases.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-key">Faster Cross-Functional Execution</div>
+          <div class="feature-value">Engineers, product teams, and operators can collaborate around a shared framework instead of fragmented AI experiments.</div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-key">Designed for Iteration</div>
+          <div class="feature-value">As models, tools, and requirements evolve, Mastra workflows can evolve with them — without rebuilding from scratch.</div>
+        </div>
+      </div>
+
+      <p class="quote">
+        “Mastra’s biggest advantage is leverage: it turns complex AI orchestration into a system teams can actually build,
+        test, and scale with confidence.”
+      </p>
+    </section>
+  </main>
+
+  <footer class="container">
+    Built as a self-contained artifact page • Mastra AI Framework overview
+  </footer>
+</body>
+</html>

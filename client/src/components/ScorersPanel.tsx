@@ -10,11 +10,11 @@ const SCORERS = [
     id: 'based-scorer',
     name: 'Based',
     description:
-      'Grades blog post output 0-10 on authenticity, boldness, originality, personality, and impact. Weighted average with Based highlights + cringe extraction.',
+      'Grades text output 0-10 on authenticity, boldness, originality, personality, and impact. Weighted average with Based highlights + cringe extraction.',
     dimensions: ['authenticity', 'boldness', 'originality', 'personality', 'impact'],
     file: 'src/mastra/scorers/based-scorer.ts',
     usage:
-      'Called directly from blog-post-workflow (`basedScorer.run({ output: { text } })`) and sampled 10% on mastraclaw-agent.',
+      'Sampled 10% on mastraclaw-agent responses.',
   },
   {
     id: 'answer-relevancy',
@@ -88,9 +88,9 @@ export function ScorersPanel({ onTeach }: Props) {
           </div>
         ))}
         <div className="text-xs text-slate-500 pt-2">
-          Tip: run the <code className="font-mono">blog-post-workflow</code> in
-          the Workflows tab — you&apos;ll see the Based scorer branch deciding
-          whether to finalize the post or rewrite it bolder.
+          Tip: chat with <code className="font-mono">mastraclaw-agent</code> —
+          the Based scorer samples 10% of responses to grade voice and
+          authenticity.
         </div>
       </div>
     </div>

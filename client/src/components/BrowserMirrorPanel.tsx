@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AgentSummary } from '../lib/mastraClient';
+import { AgentSummary, apiUrl } from '../lib/mastraClient';
 import { PrimitiveId } from '../lib/education';
 import { PrimitiveBadge } from './PrimitiveBadge';
 
@@ -39,7 +39,7 @@ export function BrowserMirrorPanel({ agent, onTeach }: Props) {
     setErrMsg(null);
     setFrameCount(0);
 
-    const es = new EventSource(`/browser-mirror/${agent.id}`);
+    const es = new EventSource(apiUrl(`/browser-mirror/${agent.id}`));
 
     es.onopen = () => {
       setStatus((s) => (s === 'connecting' ? 'inactive' : s));

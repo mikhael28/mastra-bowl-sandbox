@@ -49,7 +49,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
       'Agents are the decision-makers of Mastra: give them a goal plus some tools, and they plan, call the tools, and keep going until the job is done. This is what turns a plain chat into an MastraClaw.',
     howHere: [
       'MastraClaw is the flagship agent — instructions scope it to BD & content work, and it orchestrates specialist sub-agents.',
-      'Each specialist (copywriter, editor, email, news, math) is a standalone Agent registered in src/mastra/index.ts.',
+      'Each specialist (research-planner, retrieval-evaluator, email, news) is a standalone Agent registered in src/mastra/index.ts.',
       'This chat streams from POST /api/agents/:id/stream and renders text-delta + tool-call chunks live.',
     ],
     details: [
@@ -67,8 +67,7 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       'Mastra lets you expose a specialist agent to a supervisor agent as if it were just another tool. The supervisor plans, delegates, and composes — no custom orchestration layer needed.',
     howHere: [
-      'MastraClaw lists copywriter, editor, research-planner, retrieval-evaluator, and email-agent in its `agents` option.',
-      'publisher-agent also does this — it calls copywriter-agent and editor-agent via content-tools.ts.',
+      'MastraClaw lists research-planner, retrieval-evaluator, and email-agent in its `agents` option.',
       'When the supervisor calls one, you see the nested tool-call chunk in the stream below.',
     ],
     details: [
@@ -85,8 +84,8 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       "Tools are how agents reach beyond their context window: web search, email, filesystem writes, Pinecone RAG, calculators. They're just typed functions.",
     howHere: [
-      'This project ships tavily, exa, AgentMail (7 tools), calculators, workspace todo, qualify-lead, and RAG ingestion/search.',
-      'Tools defined in src/mastra/tools/ and attached per-agent (e.g. math-agent gets the calculator set).',
+      'This project ships tavily, exa, AgentMail (7 tools), workspace todo, qualify-lead, and RAG ingestion/search.',
+      'Tools defined in src/mastra/tools/ and attached per-agent (e.g. mastraclaw-agent gets the workspace + research set).',
       'You can execute any tool directly via POST /api/tools/:toolId/execute — the "Tools" panel here does exactly that.',
     ],
     details: [
@@ -104,7 +103,6 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       'When you need a structured process — not an autonomous loop — use a workflow. Each step has a Zod schema in and out, so TypeScript keeps the pipeline honest.',
     howHere: [
-      'blog-post-workflow demonstrates branch() — score the post and either finalize or rewrite.',
       'tech-touchdown-workflow runs two searches in parallel(), then assembles.',
       'deep-search and rag-workflow use dountil() for iterative research with a satisfaction check.',
       'Streaming workflow execution via POST /api/workflows/:id/stream shows each step as it completes.',
@@ -208,9 +206,8 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       'Once agents are in production you need to measure output quality over time. Scorers analyze outputs on custom rubrics and can be run inline with sampling, or in CI.',
     howHere: [
-      'basedScorer grades blog posts 0-10 on authenticity, boldness, originality, personality, impact.',
+      'basedScorer grades text output 0-10 on authenticity, boldness, originality, personality, impact.',
       'MastraClaw attaches answerRelevancy, toxicity, and based scorers at low sampling rates.',
-      'blog-post-workflow calls basedScorer.run() directly and branches on score.',
     ],
     details: [
       'A scorer has preprocess → analyze → generateScore → generateReason steps. Each step output is retained, so you can trace *why* a reply got a score.',
@@ -228,7 +225,6 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
       "Processors let you intercept agent I/O without changing instructions. Think of them as the agent's firewall.",
     howHere: [
       'MastraClaw uses UnicodeNormalizer + PromptInjectionDetector as input processors.',
-      'Copywriter + publisher use ContentModerationInputProcessor / OutputProcessor to block violent or political content.',
       'A tripped output processor emits a `tripwire` chunk in the stream.',
     ],
     details: [

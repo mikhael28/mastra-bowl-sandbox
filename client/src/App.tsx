@@ -11,7 +11,6 @@ import {
 import { PrimitiveId } from './lib/education';
 import { Sidebar, Tab } from './components/Sidebar';
 import { Chat } from './components/Chat';
-import { ArtifactPanel } from './components/ArtifactPanel';
 import { WorkspacesPanel } from './components/WorkspacesPanel';
 import { WorkflowPanel } from './components/WorkflowPanel';
 import { ToolsPanel } from './components/ToolsPanel';
@@ -22,6 +21,12 @@ import { ScorersPanel } from './components/ScorersPanel';
 import { ObservabilityPanel } from './components/ObservabilityPanel';
 import { EducationPanel } from './components/EducationPanel';
 import { ModelStatusPicker } from './components/ModelStatusPicker';
+import { ServerTargetPicker } from './components/ServerTargetPicker';
+import { getActiveServerUrl } from './lib/mastraClient';
+import {
+  ErrorLogSidebar,
+  ErrorLogToggleButton,
+} from './components/ErrorLogSidebar';
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('chat');
@@ -36,6 +41,7 @@ export default function App() {
   // trace list, and "view trace" from Chat deep-links into the right trace.
   const [traceRefreshNonce, setTraceRefreshNonce] = useState(0);
   const [focusRunId, setFocusRunId] = useState<string | null>(null);
+  const [errorLogOpen, setErrorLogOpen] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -45,7 +51,7 @@ export default function App() {
       setServerOnline(online);
       if (!online) {
         setLoadError(
-          'Could not reach the Mastra dev server on :4111. Start it with `npm run dev` in the project root.',
+          `Could not reach the Mastra server at ${getActiveServerUrl()}. Switch targets from the topbar, or start the local server with \`npm run dev\` in the project root.`,
         );
         return;
       }
@@ -82,14 +88,24 @@ export default function App() {
   const selectedAgent =
     agents.find((a) => a.id === selectedAgentId) ?? null;
 
+  const chatAgents = agents.filter((a) => a.id === 'mastraclaw-agent');
+
   return (
     <div className="h-screen flex flex-col">
-      <TopBar onTeach={setTeaching} />
+      <TopBar
+        onTeach={setTeaching}
+        errorLogOpen={errorLogOpen}
+        onToggleErrorLog={() => setErrorLogOpen((v) => !v)}
+      />
+      <ErrorLogSidebar
+        open={errorLogOpen}
+        onClose={() => setErrorLogOpen(false)}
+      />
       <div className="flex-1 flex overflow-hidden">
         <Sidebar
           tab={tab}
           onChangeTab={setTab}
-          agents={agents}
+          agents={chatAgents}
           selectedAgentId={selectedAgentId}
           onSelectAgent={(id) => {
             setSelectedAgentId(id);
@@ -121,12 +137,6 @@ export default function App() {
                 setFocusRunId(runId);
                 setTab('observability');
               }}
-            />
-          )}
-          {!loadError && tab === 'artifact' && (
-            <ArtifactPanel
-              agent={selectedAgent}
-              onTeach={setTeaching}
             />
           )}
           {!loadError && tab === 'workspaces' && (
@@ -181,7 +191,15 @@ export default function App() {
   );
 }
 
-function TopBar({ onTeach }: { onTeach: (id: PrimitiveId) => void }) {
+function TopBar({
+  onTeach,
+  errorLogOpen,
+  onToggleErrorLog,
+}: {
+  onTeach: (id: PrimitiveId) => void;
+  errorLogOpen: boolean;
+  onToggleErrorLog: () => void;
+}) {
   return (
     <header className="border-b border-slate-800 bg-slate-950 px-4 h-12 flex items-center gap-4 text-sm">
       <div className="font-semibold">
@@ -191,6 +209,11 @@ function TopBar({ onTeach }: { onTeach: (id: PrimitiveId) => void }) {
         </span>
       </div>
       <div className="ml-auto flex items-center gap-2">
+        <ErrorLogToggleButton
+          onClick={onToggleErrorLog}
+          active={errorLogOpen}
+        />
+        <ServerTargetPicker />
         <ModelStatusPicker />
         <button
           onClick={() => onTeach('observability')}
