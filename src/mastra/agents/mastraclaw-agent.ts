@@ -48,6 +48,7 @@ import { deepSearch } from '../workflows/deep-search-workflow';
 import { ragWorkflow } from '../workflows/rag-workflow';
 import { resolveIntegrationTools } from '../tool-providers';
 import { filesystemMcp } from '../mcp/filesystem-client';
+import { createSlackAdapter } from '@chat-adapter/slack';
 
 // Detect environment: use E2B when deployed (production without MASTRA_DEV flag), local otherwise
 const isDeployed = process.env.NODE_ENV === 'production' && process.env.MASTRA_DEV !== 'true';
@@ -383,6 +384,7 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
   channels: {
     adapters: {
       ...(isDeployed ? { telegram: createTelegramAdapter() } : {}),
+      slack: createSlackAdapter() 
     },
   },
 
