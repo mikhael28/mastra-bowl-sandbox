@@ -412,10 +412,29 @@ export async function* streamWorkflow(
   },
   signal?: AbortSignal,
 ): AsyncGenerator<Chunk, void, void> {
-  const res = await fetch(apiUrl(`/api/workflows/${workflowId}/stream`), {
+  // The server requires `runId` as a query parameter (validated with a
+  // non-optional ZodString). If the caller didn't supply one, create a run
+  // up-front so the stream attaches to a known id we can resume against.
+  let runId = body.runId;
+  if (!runId) {
+    const created = await createWorkflowRun(workflowId, {
+      resourceId: body.resourceId,
+    });
+    runId = created?.runId;
+  }
+  if (!runId) {
+    throw new Error('workflow stream: failed to create run');
+  }
+  // Surface the runId immediately so the UI can capture it before any chunks
+  // arrive — handy for "view trace" links and for resume after suspend.
+  yield { type: 'run-created', runId } as Chunk;
+
+  const { runId: _runId, ...rest } = body;
+  const path = `/api/workflows/${workflowId}/stream?runId=${encodeURIComponent(runId)}`;
+  const res = await fetch(apiUrl(path), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
+    body: JSON.stringify(rest),
     signal,
   });
   if (!res.ok || !res.body) {
@@ -449,9 +468,15 @@ export async function resumeWorkflow(
   workflowId: string,
   body: { step?: string | string[]; resumeData?: unknown; runId?: string },
 ): Promise<any> {
-  return j(`/api/workflows/${workflowId}/resume-async`, {
+  // Resume also takes runId via query string, matching the stream contract.
+  const { runId, ...rest } = body;
+  if (!runId) {
+    throw new Error('resumeWorkflow: runId is required');
+  }
+  const path = `/api/workflows/${workflowId}/resume-async?runId=${encodeURIComponent(runId)}`;
+  return j(path, {
     method: 'POST',
-    body: JSON.stringify(body),
+    body: JSON.stringify(rest),
   });
 }
 

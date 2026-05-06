@@ -20,6 +20,7 @@ import { McpPanel } from './components/McpPanel';
 import { ScorersPanel } from './components/ScorersPanel';
 import { ObservabilityPanel } from './components/ObservabilityPanel';
 import { EducationPanel } from './components/EducationPanel';
+import { TriagePanel } from './components/triage/TriagePanel';
 import { ModelStatusPicker } from './components/ModelStatusPicker';
 import { ServerTargetPicker } from './components/ServerTargetPicker';
 import { getActiveServerUrl } from './lib/mastraClient';
@@ -181,6 +182,7 @@ export default function App() {
               refreshNonce={traceRefreshNonce}
             />
           )}
+          {!loadError && tab === 'triage' && <TriagePanel />}
           <EducationPanel
             primitiveId={teaching}
             onClose={() => setTeaching(null)}

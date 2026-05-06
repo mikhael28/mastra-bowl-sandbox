@@ -54,6 +54,7 @@ const INPUT_TEMPLATES: Record<string, string> = {
     null,
     2,
   ),
+  'triage-workflow': JSON.stringify({ repo: 'mastra-ai/mastra' }, null, 2),
 };
 
 export function WorkflowPanel({

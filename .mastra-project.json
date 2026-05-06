@@ -2,5 +2,6 @@
   "projectId": "dcbfe22a-6c21-423a-b303-c9d52452036a",
   "projectName": "mastra-bowl-sandbox",
   "projectSlug": "mastra-bowl-sandbox-ee1a",
-  "organizationId": "org_01KN5E7DP4TNN9H6SYM2VGE2EF"
+  "organizationId": "org_01KN5E7DP4TNN9H6SYM2VGE2EF",
+  "disablePlatformObservability": false
 }

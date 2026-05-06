@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
 
 // MASTRA_SERVER_URL lives in the project-root .env (one level up from
@@ -38,6 +39,8 @@ export default defineConfig(({ mode }) => {
     '/artifacts',
     '/local-model-status',
     '/browser-mirror',
+    // Triage data + mutation routes (see triage-data-route.ts).
+    '/triage',
   ];
 
   // No-prefix routes preserve the existing default behavior — apiUrl()
@@ -69,7 +72,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
     define: {
       // Empty in dev so the browser uses relative paths and the Vite proxy
       // avoids CORS. In production builds the deployed bundle calls the

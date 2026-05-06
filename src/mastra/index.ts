@@ -17,12 +17,18 @@ import { retrievalEvaluatorAgent } from './agents/retrieval-evaluator-agent';
 import { emailAgent } from './agents/email-agent';
 import { voiceAgent } from './agents/voice-agent';
 import { hybridVoiceAgent } from './agents/hybrid-voice-agent';
+import { issueAnalyzerAgent } from './agents/issue-analyzer-agent';
+import { prAnalyzerAgent } from './agents/pr-analyzer-agent';
+import { prIssueLinkerAgent } from './agents/pr-issue-linker-agent';
+import { duplicateFinderAgent } from './agents/duplicate-finder-agent';
+import { triageChatAgent } from './agents/triage-chat-agent';
 import { getKnowledgeBaseStore, VECTOR_STORE_NAME } from './tools/rag';
 
 // Workflows
 import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
 import { deepSearch } from './workflows/deep-search-workflow';
 import { ragWorkflow } from './workflows/rag-workflow';
+import { triageWorkflow } from './workflows/triage-workflow';
 
 // Custom routes
 import { voiceSpeakRoute } from './routes/voice-speak-route';
@@ -33,6 +39,7 @@ import {
 import { artifactFilesRoute } from './routes/artifact-files-route';
 import { localModelStatusRoute } from './routes/local-model-route';
 import { browserMirrorRoute } from './routes/browser-mirror-route';
+import { triageDataRoute, triageHiddenRoute } from './routes/triage-data-route';
 
 // Scorers
 import { basedScorer } from './scorers/based-scorer';
@@ -42,7 +49,7 @@ import { docsMcpServer } from './mcp/docs-server';
 import { composioProvider, arcadeProvider } from './tool-providers';
 
 export const mastra = new Mastra({
-  workflows: { techTouchdownWorkflow, deepSearch, ragWorkflow },
+  workflows: { techTouchdownWorkflow, deepSearch, ragWorkflow, triageWorkflow },
   agents: {
     newsAgent,
     mastraclawAgent,
@@ -55,6 +62,11 @@ export const mastra = new Mastra({
     emailAgent,
     voiceAgent,
     hybridVoiceAgent,
+    issueAnalyzerAgent,
+    prAnalyzerAgent,
+    prIssueLinkerAgent,
+    duplicateFinderAgent,
+    triageChatAgent,
   },
   scorers: {
     basedScorer,
@@ -74,6 +86,8 @@ export const mastra = new Mastra({
       artifactFilesRoute,
       localModelStatusRoute,
       browserMirrorRoute,
+      triageDataRoute,
+      triageHiddenRoute,
     ],
     // cors: {
     //   origin: ['http://localhost:4111'],

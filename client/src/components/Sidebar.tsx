@@ -11,7 +11,8 @@ export type Tab =
   | 'browser'
   | 'mcp'
   | 'scorers'
-  | 'observability';
+  | 'observability'
+  | 'triage';
 
 interface Props {
   tab: Tab;
@@ -35,6 +36,7 @@ const TABS: Array<{ id: Tab; label: string; primitive: PrimitiveId }> = [
   { id: 'mcp', label: 'MCP', primitive: 'mcp' },
   { id: 'scorers', label: 'Scorers', primitive: 'scorer' },
   { id: 'observability', label: 'Observability', primitive: 'observability' },
+  { id: 'triage', label: 'Triage', primitive: 'workflow' },
 ];
 
 export function Sidebar({

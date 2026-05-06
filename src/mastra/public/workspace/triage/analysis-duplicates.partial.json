@@ -1,0 +1,10 @@
+[
+  {
+    "canonical": 16281,
+    "duplicates": [
+      16005,
+      16205
+    ],
+    "reason": "Both issues report that pricing/cost estimation fails for OpenRouter model IDs that include a vendor prefix like `google/gemini-2.5-flash` because the pricing lookup logic does not match those routes."
+  }
+]
