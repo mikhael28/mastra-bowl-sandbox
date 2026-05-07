@@ -52,10 +52,11 @@ export function EvalBadges({ runId, onTeach, nonce = 0 }: Props) {
     return (
       <button
         onClick={() => onTeach('scorer')}
-        className="text-[10px] text-slate-500 hover:text-slate-300 underline decoration-dotted"
+        className="text-[10px] holo-readout underline decoration-dotted"
+        style={{ color: 'rgba(108, 230, 248, 0.5)' }}
         title="Scorers are sampled — most turns don't get scored. Click to learn."
       >
-        no scorers sampled this turn
+        // NO SCORERS SAMPLED
       </button>
     );
   }
@@ -101,7 +102,7 @@ function ScoreChip({
     <div className="relative inline-block">
       <button
         onClick={() => setExpanded((x) => !x)}
-        className={`text-[10px] border rounded px-1.5 py-0.5 font-mono ${color} hover:brightness-125`}
+        className={`text-[10px] border px-1.5 py-0.5 font-mono uppercase tracking-wider ${color} hover:brightness-125`}
         title={`${score.scorerId} — click for details`}
       >
         {score.scorerId.replace(/-scorer$/i, '')} {prettyValue}

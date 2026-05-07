@@ -63,12 +63,21 @@ export function ToolsPanel({ globalTools, agents, onTeach }: Props) {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-w-0">
-      <header className="border-b border-slate-800 p-4 flex items-center gap-3">
-        <h2 className="font-semibold">Tools</h2>
+    <div className="flex-1 flex flex-col min-w-0 scan-lines">
+      <header
+        className="p-4 flex items-center gap-3"
+        style={{
+          borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+          background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+        }}
+      >
+        <div>
+          <div className="holo-eyebrow">// MODULE 04</div>
+          <h2 className="holo-title text-base mt-0.5">TOOLS</h2>
+        </div>
         <PrimitiveBadge primitive="tool" onTeach={onTeach} compact />
-        <div className="text-xs text-slate-400">
-          Call any tool directly — same endpoint the agent uses.
+        <div className="text-xs holo-readout" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+          // Call any tool directly — same endpoint the agent uses.
         </div>
       </header>
 
@@ -158,9 +167,14 @@ export function ToolsPanel({ globalTools, agents, onTeach }: Props) {
                 <button
                   onClick={run}
                   disabled={running}
-                  className="mt-2 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-sm rounded"
+                  className="holo-button mt-2 disabled:opacity-40"
+                  style={{
+                    background: 'rgba(54, 227, 168, 0.12)',
+                    borderColor: 'rgba(54, 227, 168, 0.55)',
+                    color: '#66f5c2',
+                  }}
                 >
-                  {running ? 'Running…' : 'Execute'}
+                  {running ? '◌ EXECUTING' : '▸ EXECUTE'}
                 </button>
               </div>
               {err && (

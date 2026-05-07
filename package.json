@@ -23,13 +23,12 @@
   "dependencies": {
     "@chat-adapter/slack": "^4.27.0",
     "@chat-adapter/telegram": "4.27.0",
-    "@mastra/clickhouse": "1.6.0",
-    "@mastra/core": "1.31.0",
+    "@mastra/core": "^1.32.1",
     "@mastra/duckdb": "1.2.0",
     "@mastra/e2b": "0.3.0",
     "@mastra/editor": "0.7.22",
     "@mastra/evals": "1.2.2",
-    "@mastra/libsql": "1.9.1",
+    "@mastra/libsql": "^1.10.0",
     "@mastra/loggers": "1.1.1",
     "@mastra/mcp": "1.6.0",
     "@mastra/memory": "1.17.4",
@@ -45,12 +44,14 @@
     "mammoth": "1.12.0",
     "octokit": "^5.0.5",
     "pdf-parse": "2.4.5",
+    "vscode-jsonrpc": "^8.2.1",
+    "vscode-languageserver-protocol": "^3.17.5",
     "xlsx": "0.18.5",
     "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
-    "mastra": "1.7.3",
+    "mastra": "^1.8.1",
     "tsx": "^4.20.0",
     "typescript": "^6.0.2"
   }

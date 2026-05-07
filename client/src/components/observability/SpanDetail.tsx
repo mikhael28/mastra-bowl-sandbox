@@ -26,28 +26,44 @@ export function SpanDetail({ span, onClose }: Props) {
   );
 
   return (
-    <aside className="w-[420px] border-l border-slate-800 bg-slate-950 flex flex-col min-h-0">
-      <div className="px-3 py-2 border-b border-slate-800 flex items-start gap-2">
+    <aside
+      className="w-[420px] flex flex-col min-h-0 scan-lines"
+      style={{
+        borderLeft: '1px solid rgba(108, 230, 248, 0.22)',
+        background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.85))',
+      }}
+    >
+      <div className="px-3 py-2 flex items-start gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span
-              className={`text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded ${meta.bg} ${meta.textOn}`}
+              className={`text-[9px] uppercase tracking-widest px-1.5 py-0.5 font-mono ${meta.bg} ${meta.textOn}`}
             >
               {meta.label}
             </span>
             {span.errorInfo?.message && (
-              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
-                error
+              <span
+                className="text-[9px] uppercase tracking-widest px-1.5 py-0.5 glow-red"
+                style={{
+                  background: 'rgba(255, 88, 116, 0.15)',
+                  color: '#ff859a',
+                  border: '1px solid rgba(255, 88, 116, 0.45)',
+                }}
+              >
+                ⚠ ERROR
               </span>
             )}
           </div>
-          <div className="text-sm font-medium text-slate-100 truncate" title={span.name}>
+          <div className="text-sm font-display tracking-wider uppercase truncate" title={span.name} style={{ color: '#aaf6ff' }}>
             {span.name}
           </div>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-500 hover:text-slate-200 text-xs leading-none p-1"
+          className="text-xs leading-none p-1 transition-colors"
+          style={{ color: 'rgba(108, 230, 248, 0.6)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#aaf6ff')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(108, 230, 248, 0.6)')}
           title="Close"
         >
           ✕

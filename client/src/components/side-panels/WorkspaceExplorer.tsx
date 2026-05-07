@@ -101,9 +101,9 @@ export function WorkspaceExplorer({ agentId, onTeach, openPath, onClearOpenPath 
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-slate-800 flex items-center gap-2">
+      <div className="p-3 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
         <PrimitiveBadge primitive="workspace" onTeach={onTeach} compact />
-        <div className="text-xs font-semibold text-slate-100">Workspace</div>
+        <div className="holo-title text-xs">WORKSPACE</div>
         <button
           onClick={() =>
             setTree({
@@ -115,14 +115,18 @@ export function WorkspaceExplorer({ agentId, onTeach, openPath, onClearOpenPath 
               expanded: true,
             })
           }
-          className="ml-auto text-[10px] text-slate-500 hover:text-slate-200 underline decoration-dotted"
+          className="ml-auto text-[10px] holo-readout underline decoration-dotted uppercase tracking-widest"
+          style={{ color: 'rgba(108, 230, 248, 0.6)' }}
           title="Re-list ./workspace from the agent's filesystem"
         >
-          refresh
+          ↻ REFRESH
         </button>
       </div>
       <div className="flex-1 overflow-hidden flex min-h-0">
-        <div className="w-48 border-r border-slate-800 overflow-y-auto p-2 text-[11px]">
+        <div
+          className="w-48 overflow-y-auto p-2 text-[11px]"
+          style={{ borderRight: '1px solid rgba(108, 230, 248, 0.18)' }}
+        >
           <TreeRow
             node={tree}
             depth={0}
@@ -133,28 +137,33 @@ export function WorkspaceExplorer({ agentId, onTeach, openPath, onClearOpenPath 
         </div>
         <div className="flex-1 overflow-y-auto p-3 min-w-0">
           {!selected && (
-            <div className="text-slate-500 text-xs">
-              Select a file to preview. Tree is served by{' '}
-              <span className="font-mono">mastra_workspace_list_files</span> —
+            <div className="text-xs holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+              // Select a file to preview. Tree is served by{' '}
+              <span className="font-mono" style={{ color: '#aaf6ff' }}>mastra_workspace_list_files</span> —
               the same tool the agent uses.
             </div>
           )}
           {selected && (
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <div className="text-[10px] font-mono text-slate-500 truncate flex-1 min-w-0">
-                  {selected}
+                <div className="text-[10px] font-mono truncate flex-1 min-w-0" style={{ color: '#aaf6ff' }}>
+                  &gt; {selected}
                 </div>
                 <button
                   onClick={() => setFullscreen(true)}
-                  className="shrink-0 text-[10px] text-slate-400 hover:text-slate-100 border border-slate-700 hover:border-slate-500 rounded px-2 py-0.5"
+                  className="shrink-0 text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 transition-all"
+                  style={{
+                    border: '1px solid rgba(108, 230, 248, 0.35)',
+                    color: '#88efff',
+                    background: 'rgba(108, 230, 248, 0.04)',
+                  }}
                   title="Open full screen (Esc to exit)"
                 >
-                  ⛶ full screen
+                  ⛶ FULLSCREEN
                 </button>
               </div>
               {fileLoading ? (
-                <div className="text-xs text-slate-500 italic">reading…</div>
+                <div className="text-xs italic holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>// reading...</div>
               ) : (
                 <FilePreview path={selected} content={fileContent ?? ''} />
               )}
@@ -162,35 +171,43 @@ export function WorkspaceExplorer({ agentId, onTeach, openPath, onClearOpenPath 
           )}
         </div>
       </div>
-      <div className="p-2 border-t border-slate-800 text-[10px] text-slate-500 leading-snug">
-        Reads go through{' '}
-        <span className="font-mono text-slate-300">
+      <div className="p-2 text-[10px] holo-readout leading-snug" style={{ borderTop: '1px solid rgba(108, 230, 248, 0.22)', color: 'rgba(108, 230, 248, 0.55)' }}>
+        // Reads go through{' '}
+        <span className="font-mono" style={{ color: '#aaf6ff' }}>
           POST /api/agents/{agentId}/tools/mastra_workspace_read_file/execute
         </span>
-        . No backend shortcut — the UI uses the primitive.
       </div>
       {fullscreen && selected &&
         createPortal(
-          <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-sm flex flex-col">
-            <div className="flex items-center gap-3 px-6 py-3 border-b border-slate-800">
-              <span className="text-slate-400">📄</span>
-              <div className="text-sm font-mono text-slate-200 truncate flex-1 min-w-0">
-                {selected}
+          <div
+            className="fixed inset-0 z-50 flex flex-col scan-lines"
+            style={{
+              background: 'rgba(2, 14, 20, 0.97)',
+              backdropFilter: 'blur(8px)',
+            }}
+          >
+            <div
+              className="flex items-center gap-3 px-6 py-3"
+              style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.35)' }}
+            >
+              <span className="glow-cyan" style={{ color: '#aaf6ff' }}>▤</span>
+              <div className="text-sm font-mono uppercase tracking-wider truncate flex-1 min-w-0" style={{ color: '#aaf6ff' }}>
+                &gt; {selected}
               </div>
-              <span className="text-[10px] text-slate-500 hidden sm:inline">
-                Esc to close
+              <span className="text-[10px] holo-readout hidden sm:inline" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+                ESC TO CLOSE
               </span>
               <button
                 onClick={() => setFullscreen(false)}
-                className="text-slate-400 hover:text-slate-100 border border-slate-700 hover:border-slate-500 rounded px-3 py-1 text-xs"
+                className="holo-button"
               >
-                ✕ exit full screen
+                ✕ EXIT
               </button>
             </div>
             <div className="flex-1 overflow-y-auto px-6 md:px-12 py-6">
               <div className="max-w-4xl mx-auto">
                 {fileLoading ? (
-                  <div className="text-sm text-slate-500 italic">reading…</div>
+                  <div className="text-sm italic holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>// reading...</div>
                 ) : (
                   <FilePreview
                     path={selected}
@@ -259,24 +276,36 @@ function TreeRow({
 }) {
   const isDir = node.type === 'directory';
   const pad = { paddingLeft: `${depth * 10}px` } as const;
+  const isSelected = selected === node.path;
   return (
     <div>
       <button
         onClick={() => (isDir ? onToggle(node.path) : onOpen(node.path))}
-        className={`w-full flex items-center gap-1 py-0.5 rounded hover:bg-slate-800/40 text-left ${
-          selected === node.path ? 'bg-indigo-500/10' : ''
-        }`}
-        style={pad}
+        className="w-full flex items-center gap-1 py-0.5 text-left transition-colors"
+        style={{
+          ...pad,
+          background: isSelected
+            ? 'linear-gradient(90deg, rgba(108, 230, 248, 0.18), transparent 90%)'
+            : 'transparent',
+          borderLeft: isSelected ? '2px solid #aaf6ff' : '2px solid transparent',
+          color: isSelected ? '#aaf6ff' : '#a8e0ec',
+        }}
+        onMouseEnter={(e) => {
+          if (!isSelected) e.currentTarget.style.background = 'rgba(108, 230, 248, 0.05)';
+        }}
+        onMouseLeave={(e) => {
+          if (!isSelected) e.currentTarget.style.background = 'transparent';
+        }}
       >
-        <span className="w-3 text-slate-500">
+        <span className="w-3" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
           {isDir ? (node.expanded ? '▾' : '▸') : ' '}
         </span>
-        <span className={isDir ? 'text-indigo-300' : 'text-slate-300'}>
-          {isDir ? '📁' : '📄'}
+        <span style={{ color: isDir ? '#88efff' : 'rgba(108, 230, 248, 0.7)' }}>
+          {isDir ? '▤' : '▢'}
         </span>
         <span className="truncate font-mono">{node.name}</span>
         {typeof node.size === 'number' && !isDir && (
-          <span className="ml-auto text-[9px] text-slate-600">
+          <span className="ml-auto text-[9px]" style={{ color: 'rgba(108, 230, 248, 0.4)' }}>
             {formatSize(node.size)}
           </span>
         )}
@@ -341,13 +370,19 @@ function FilePreview({
       /* leave as-is */
     }
     return (
-      <pre className={`bg-slate-950 rounded ${codeSize} whitespace-pre-wrap break-all font-mono overflow-auto`}>
+      <pre
+        className={`${codeSize} whitespace-pre-wrap break-all font-mono overflow-auto`}
+        style={{ background: 'rgba(2, 14, 20, 0.85)', border: '1px solid rgba(108, 230, 248, 0.18)', color: '#cdf2fb' }}
+      >
         {pretty}
       </pre>
     );
   }
   return (
-    <pre className={`bg-slate-950 rounded ${codeSize} whitespace-pre-wrap break-all font-mono overflow-auto`}>
+    <pre
+      className={`${codeSize} whitespace-pre-wrap break-all font-mono overflow-auto`}
+      style={{ background: 'rgba(2, 14, 20, 0.85)', border: '1px solid rgba(108, 230, 248, 0.18)', color: '#cdf2fb' }}
+    >
       {content || '(empty)'}
     </pre>
   );

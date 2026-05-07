@@ -95,22 +95,26 @@ export function TodoCard(props: ToolCardProps & { onRefreshTodos?: () => void })
   }, [tc.status, onRefreshTodos]);
 
   return (
-    <div className={`mt-2 border rounded p-2 text-xs ${statusColor(tc.status)}`}>
+    <div className={`mt-2 border p-2 text-xs ${statusColor(tc.status)}`}>
       <div className="flex items-center gap-2">
         <PrimitiveBadge primitive="workspace" onTeach={onTeach} compact />
-        <span className="font-mono text-slate-200">{tc.toolName}</span>
-        <span className="ml-auto text-[10px] text-slate-400">{tc.status}</span>
+        <span className="font-mono uppercase tracking-wider text-cyan-100 text-[11px]">{tc.toolName}</span>
+        <span className="ml-auto holo-eyebrow">[{tc.status.toUpperCase()}]</span>
       </div>
       <div className="mt-2">{body}</div>
-      <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-start gap-2 text-[10px] text-slate-500 leading-relaxed">
+      <div
+        className="mt-2 pt-2 flex items-start gap-2 text-[10px] holo-readout leading-relaxed"
+        style={{ borderTop: '1px solid rgba(108, 230, 248, 0.15)', color: 'rgba(108, 230, 248, 0.55)' }}
+      >
         <button
           onClick={() => onTeach('workspace')}
-          className="shrink-0 text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+          className="shrink-0 underline decoration-dotted uppercase tracking-widest"
+          style={{ color: '#88efff' }}
         >
-          learn →
+          ▸ LEARN
         </button>
         <span>
-          Persisted to <span className="font-mono">workspace/todo.json</span>.
+          Persisted to <span className="font-mono" style={{ color: '#aaf6ff' }}>workspace/todo.json</span>.
           No DB — the workspace is the store.
         </span>
       </div>

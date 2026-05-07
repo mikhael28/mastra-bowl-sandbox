@@ -9,38 +9,52 @@ interface Props {
   asStatic?: boolean;
 }
 
-const COLOR: Record<PrimitiveId, string> = {
-  agent: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-  'agent-as-tool': 'bg-violet-500/20 text-violet-300 border-violet-500/30',
-  tool: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-  workflow: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-  'workflow-suspend': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-  memory: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-  'working-memory': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
-  rag: 'bg-pink-500/20 text-pink-300 border-pink-500/30',
-  mcp: 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30',
-  scorer: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-  processor: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-  voice: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
-  browser: 'bg-lime-500/20 text-lime-300 border-lime-500/30',
-  workspace: 'bg-slate-500/30 text-slate-200 border-slate-500/30',
-  sandbox: 'bg-zinc-700/40 text-zinc-100 border-zinc-500/40',
-  approval: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-  stream: 'bg-indigo-500/15 text-indigo-200 border-indigo-500/30',
-  observability: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+/* iDroid badge palette: every primitive sits on the same cyan/amber/red HUD
+   scale. Each primitive gets a distinct hue tag so it stays differentiated
+   without breaking the iDroid color discipline. */
+const COLOR: Record<PrimitiveId, { bg: string; border: string; text: string }> = {
+  agent:           { bg: 'rgba(108, 230, 248, 0.10)', border: 'rgba(108, 230, 248, 0.45)', text: '#aaf6ff' },
+  'agent-as-tool': { bg: 'rgba(170, 246, 255, 0.10)', border: 'rgba(170, 246, 255, 0.45)', text: '#cdf2fb' },
+  tool:            { bg: 'rgba(54, 227, 168, 0.10)',  border: 'rgba(54, 227, 168, 0.45)',  text: '#66f5c2' },
+  workflow:        { bg: 'rgba(255, 184, 77, 0.10)',  border: 'rgba(255, 184, 77, 0.45)',  text: '#ffd082' },
+  'workflow-suspend':{bg: 'rgba(255, 144, 0, 0.10)',  border: 'rgba(255, 144, 0, 0.45)',   text: '#ffa820' },
+  memory:          { bg: 'rgba(108, 230, 248, 0.08)', border: 'rgba(108, 230, 248, 0.40)', text: '#88efff' },
+  'working-memory':{ bg: 'rgba(54, 212, 236, 0.10)',  border: 'rgba(54, 212, 236, 0.45)',  text: '#36d4ec' },
+  rag:             { bg: 'rgba(217, 108, 224, 0.10)', border: 'rgba(217, 108, 224, 0.45)', text: '#ec88f5' },
+  mcp:             { bg: 'rgba(185, 76, 196, 0.10)',  border: 'rgba(185, 76, 196, 0.45)',  text: '#d96ce0' },
+  scorer:          { bg: 'rgba(255, 88, 116, 0.10)',  border: 'rgba(255, 88, 116, 0.45)',  text: '#ff859a' },
+  processor:       { bg: 'rgba(255, 184, 77, 0.10)',  border: 'rgba(255, 184, 77, 0.45)',  text: '#ffc04d' },
+  voice:           { bg: 'rgba(20, 201, 138, 0.10)',  border: 'rgba(20, 201, 138, 0.45)',  text: '#36e3a8' },
+  browser:         { bg: 'rgba(154, 240, 112, 0.10)', border: 'rgba(154, 240, 112, 0.45)', text: '#9af070' },
+  workspace:       { bg: 'rgba(125, 195, 212, 0.10)', border: 'rgba(125, 195, 212, 0.45)', text: '#a8e0ec' },
+  sandbox:         { bg: 'rgba(83, 149, 168, 0.10)',  border: 'rgba(83, 149, 168, 0.45)',  text: '#7dc3d4' },
+  approval:        { bg: 'rgba(54, 212, 236, 0.10)',  border: 'rgba(54, 212, 236, 0.45)',  text: '#88efff' },
+  stream:          { bg: 'rgba(108, 230, 248, 0.08)', border: 'rgba(108, 230, 248, 0.35)', text: '#88efff' },
+  observability:   { bg: 'rgba(108, 230, 248, 0.10)', border: 'rgba(108, 230, 248, 0.45)', text: '#6ce6f8' },
 };
 
 export function PrimitiveBadge({ primitive, onTeach, compact, asStatic }: Props) {
   const entry = EDUCATION[primitive];
-  const className = `inline-flex items-center gap-1 border rounded-full font-mono transition ${
-    COLOR[primitive]
-  } ${compact ? 'text-[10px] px-1.5 py-px' : 'text-xs px-2 py-0.5'} ${
-    asStatic ? '' : 'hover:brightness-125'
+  const c = COLOR[primitive];
+  const baseStyle: React.CSSProperties = {
+    background: c.bg,
+    border: `1px solid ${c.border}`,
+    color: c.text,
+    fontFamily: 'var(--font-mono)',
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    boxShadow: `0 0 6px ${c.bg}, inset 0 0 6px ${c.bg}`,
+  };
+  const sizing = compact
+    ? 'text-[9px] px-1.5 py-px'
+    : 'text-[10px] px-2 py-0.5';
+  const className = `inline-flex items-center gap-1 ${sizing} ${
+    asStatic ? '' : 'hover:brightness-150'
   }`;
 
   if (asStatic) {
     return (
-      <span className={className} title={entry.title}>
+      <span className={className} style={baseStyle} title={entry.title}>
         <span>{entry.title}</span>
       </span>
     );
@@ -49,10 +63,11 @@ export function PrimitiveBadge({ primitive, onTeach, compact, asStatic }: Props)
     <button
       onClick={() => onTeach(primitive)}
       className={className}
+      style={baseStyle}
       title={`What is ${entry.title}? Click to learn →`}
     >
       <span>{entry.title}</span>
-      <span className="opacity-60">ⓘ</span>
+      <span style={{ opacity: 0.6 }}>?</span>
     </button>
   );
 }

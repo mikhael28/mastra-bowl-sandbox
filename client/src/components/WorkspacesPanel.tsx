@@ -234,25 +234,32 @@ export function WorkspacesPanel({ agent, onTeach }: Props) {
 
   if (!agent) {
     return (
-      <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
-        Pick an agent to browse its workspace.
+      <div className="flex-1 flex items-center justify-center scan-lines">
+        <div className="holo-frame px-8 py-6 holo-corners">
+          <div className="holo-eyebrow mb-2">// AWAITING SELECTION</div>
+          <div className="holo-title text-base">Select an agent</div>
+          <div className="text-xs mt-1" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+            Pick an agent to browse its workspace.
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex overflow-hidden bg-slate-950">
+    <div className="flex-1 flex overflow-hidden scan-lines">
       {/* LEFT — file tree */}
-      <div className="w-64 border-r border-slate-800 flex flex-col">
-        <div className="p-3 border-b border-slate-800 flex items-center gap-2">
+      <div className="w-64 flex flex-col" style={{ borderRight: '1px solid rgba(108, 230, 248, 0.22)' }}>
+        <div className="p-3 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
           <PrimitiveBadge primitive="workspace" onTeach={onTeach} compact />
-          <div className="text-xs font-semibold text-slate-100">Workspace</div>
+          <div className="holo-title text-xs">WORKSPACE</div>
           <button
             onClick={refreshTree}
-            className="ml-auto text-[10px] text-slate-500 hover:text-slate-200 underline decoration-dotted"
+            className="ml-auto text-[10px] holo-readout underline decoration-dotted uppercase tracking-widest"
+            style={{ color: 'rgba(108, 230, 248, 0.6)' }}
             title="Re-list ./workspace from the agent's filesystem"
           >
-            refresh
+            ↻ REFRESH
           </button>
         </div>
 

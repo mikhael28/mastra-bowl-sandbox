@@ -38,12 +38,21 @@ const SCORERS = [
 
 export function ScorersPanel({ onTeach }: Props) {
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      <header className="border-b border-slate-800 p-4 flex items-center gap-3">
-        <h2 className="font-semibold">Scorers</h2>
+    <div className="flex-1 flex flex-col overflow-hidden scan-lines">
+      <header
+        className="p-4 flex items-center gap-3"
+        style={{
+          borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+          background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+        }}
+      >
+        <div>
+          <div className="holo-eyebrow">// MODULE 08</div>
+          <h2 className="holo-title text-base mt-0.5">SCORERS</h2>
+        </div>
         <PrimitiveBadge primitive="scorer" onTeach={onTeach} compact />
-        <div className="text-xs text-slate-400">
-          LLM-as-judge + programmatic evals, sampled at runtime.
+        <div className="text-xs holo-readout" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+          // LLM-as-judge + programmatic evals, sampled at runtime.
         </div>
       </header>
 
@@ -51,20 +60,18 @@ export function ScorersPanel({ onTeach }: Props) {
         {SCORERS.map((s) => (
           <div
             key={s.id}
-            className="rounded border border-slate-800 bg-slate-900/40 p-4"
+            className="holo-frame-sm p-4"
           >
             <div className="flex items-baseline justify-between">
               <div>
-                <div className="text-sm font-semibold text-slate-100">
-                  {s.name}
-                </div>
-                <div className="text-[10px] font-mono text-slate-500">
-                  {s.id}
+                <div className="holo-title text-sm">{s.name}</div>
+                <div className="text-[10px] font-mono mt-0.5" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+                  &gt; {s.id}
                 </div>
               </div>
               <PrimitiveBadge primitive="scorer" onTeach={onTeach} compact />
             </div>
-            <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+            <p className="text-sm mt-2 leading-relaxed" style={{ color: '#cdf2fb' }}>
               {s.description}
             </p>
             {s.dimensions.length > 0 && (
@@ -72,25 +79,29 @@ export function ScorersPanel({ onTeach }: Props) {
                 {s.dimensions.map((d) => (
                   <span
                     key={d}
-                    className="text-[10px] font-mono bg-rose-500/10 border border-rose-500/30 text-rose-200 px-1.5 py-0.5 rounded"
+                    className="text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5"
+                    style={{
+                      background: 'rgba(255, 88, 116, 0.10)',
+                      border: '1px solid rgba(255, 88, 116, 0.4)',
+                      color: '#ff859a',
+                    }}
                   >
                     {d}
                   </span>
                 ))}
               </div>
             )}
-            <div className="mt-3 text-xs text-slate-400 leading-snug">
-              {s.usage}
+            <div className="mt-3 text-xs holo-readout leading-snug" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
+              // {s.usage}
             </div>
-            <div className="mt-2 text-[10px] font-mono text-slate-500">
-              {s.file}
+            <div className="mt-2 text-[10px] font-mono" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+              &gt; {s.file}
             </div>
           </div>
         ))}
-        <div className="text-xs text-slate-500 pt-2">
-          Tip: chat with <code className="font-mono">mastraclaw-agent</code> —
-          the Based scorer samples 10% of responses to grade voice and
-          authenticity.
+        <div className="text-xs holo-readout pt-2" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+          // Tip: chat with <code className="font-mono" style={{ color: '#aaf6ff' }}>mastraclaw-agent</code> —
+          the Based scorer samples 10% of responses to grade voice and authenticity.
         </div>
       </div>
     </div>

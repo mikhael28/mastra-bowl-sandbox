@@ -34,32 +34,39 @@ export function RagSearchCard(props: ToolCardProps) {
   const mode: string | undefined = args.mode ?? result?.mode;
 
   return (
-    <div className={`mt-2 border rounded p-2 text-xs ${statusColor(tc.status)}`}>
+    <div className={`mt-2 border p-2 text-xs ${statusColor(tc.status)}`}>
       <div className="flex items-center gap-2">
         <PrimitiveBadge primitive="rag" onTeach={onTeach} compact />
-        <span className="font-mono text-slate-200">{tc.toolName}</span>
+        <span className="font-mono uppercase tracking-wider text-cyan-100 text-[11px]">{tc.toolName}</span>
         {mode && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-pink-500/10 border border-pink-500/30 text-pink-200 font-mono">
+          <span
+            className="text-[10px] px-1.5 py-0.5 font-mono uppercase tracking-widest"
+            style={{
+              background: 'rgba(217, 108, 224, 0.10)',
+              border: '1px solid rgba(217, 108, 224, 0.45)',
+              color: '#ec88f5',
+            }}
+          >
             {mode}
           </span>
         )}
         {collection && (
-          <span className="text-[10px] text-slate-400 font-mono">
-            in {collection}
+          <span className="text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.65)' }}>
+            COLL: {collection}
           </span>
         )}
-        <span className="ml-auto text-[10px] text-slate-400">{tc.status}</span>
+        <span className="ml-auto holo-eyebrow">[{tc.status.toUpperCase()}]</span>
       </div>
 
       {query && (
-        <div className="mt-1 text-[11px] text-slate-300 italic truncate">
-          “{query}”
+        <div className="mt-1 text-[11px] italic truncate" style={{ color: 'rgba(170, 246, 255, 0.85)' }}>
+          ▸ "{query}"
         </div>
       )}
 
       {tc.status === 'calling' && chunks.length === 0 && (
-        <div className="mt-2 text-[11px] text-slate-500 italic">
-          searching the knowledge base…
+        <div className="mt-2 text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+          // SCANNING KB...
         </div>
       )}
 
@@ -69,23 +76,27 @@ export function RagSearchCard(props: ToolCardProps) {
             <ChunkRow key={c.id ?? i} chunk={c} rank={i + 1} />
           ))}
           {chunks.length > 8 && (
-            <div className="text-[10px] text-slate-500 italic">
-              … {chunks.length - 8} more chunks
+            <div className="text-[10px] holo-readout italic" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+              // ... {chunks.length - 8} more chunks
             </div>
           )}
         </div>
       )}
 
-      <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-start gap-2 text-[10px] text-slate-500 leading-relaxed">
+      <div
+        className="mt-2 pt-2 flex items-start gap-2 text-[10px] holo-readout leading-relaxed"
+        style={{ borderTop: '1px solid rgba(108, 230, 248, 0.15)', color: 'rgba(108, 230, 248, 0.55)' }}
+      >
         <button
           onClick={() => onTeach('rag')}
-          className="shrink-0 text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+          className="shrink-0 underline decoration-dotted uppercase tracking-widest"
+          style={{ color: '#88efff' }}
         >
-          learn →
+          ▸ LEARN
         </button>
         <span>
           Each chunk has a vector-similarity score. The agent decides which to
-          cite. <span className="font-mono">mode: auto</span> lets the planner
+          cite. <span className="font-mono" style={{ color: '#aaf6ff' }}>mode: auto</span> lets the planner
           pick between quick (single search) and deep (multi-query) retrieval.
         </span>
       </div>

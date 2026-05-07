@@ -56,7 +56,7 @@ export function getReactionCount(item: GitHubIssue | GitHubPullRequest): number 
 }
 
 export function labelColor(hex: string): { bg: string; text: string } {
-  if (!hex) return { bg: '#21262d', text: '#8b949e' };
+  if (!hex) return { bg: '#0a2b37', text: '#5395a8' };
   const r = parseInt(hex.slice(0, 2), 16);
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
@@ -115,7 +115,7 @@ export function highlightText(text: string, query: string) {
     regex.test(part)
       ? createElement(
           'mark',
-          { key: i, className: 'bg-[#58a6ff33] text-[#58a6ff] rounded px-0.5' },
+          { key: i, className: 'bg-[#aaf6ff33] text-[#aaf6ff] rounded px-0.5' },
           part,
         )
       : part,

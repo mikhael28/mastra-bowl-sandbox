@@ -21,21 +21,21 @@ export type ToolCardProps = {
 
 export function statusColor(status: ToolCallState['status']): string {
   if (status === 'error')
-    return 'bg-rose-500/15 border-rose-500/30';
+    return 'bg-rose-500/12 border-rose-500/45';
   if (status === 'awaiting-approval')
-    return 'bg-sky-500/10 border-sky-500/40';
+    return 'bg-sky-500/10 border-sky-500/55';
   if (status === 'declined')
     return 'bg-slate-700/30 border-slate-600/50';
-  if (status === 'calling') return 'bg-amber-500/10 border-amber-500/30';
-  return 'bg-emerald-500/10 border-emerald-500/30';
+  if (status === 'calling') return 'bg-amber-500/10 border-amber-500/45';
+  return 'bg-emerald-500/08 border-emerald-500/40';
 }
 
 export function statusText(status: ToolCallState['status']): string {
-  if (status === 'awaiting-approval') return 'awaiting approval';
-  if (status === 'declined') return 'declined';
-  if (status === 'calling') return '…';
-  if (status === 'error') return 'errored';
-  return 'done';
+  if (status === 'awaiting-approval') return '◇ AWAITING APPROVAL';
+  if (status === 'declined') return '✕ DECLINED';
+  if (status === 'calling') return '◌ EXECUTING';
+  if (status === 'error') return '⚠ ERROR';
+  return '✓ DONE';
 }
 
 export function safeStringify(v: unknown): string {

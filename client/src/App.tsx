@@ -121,12 +121,18 @@ export default function App() {
         />
         <main className="flex-1 flex overflow-hidden">
           {loadError && (
-            <div className="flex-1 p-6">
-              <div className="max-w-xl mx-auto mt-16 p-6 rounded-lg bg-rose-500/10 border border-rose-500/30 text-sm text-rose-200">
-                <div className="font-medium mb-2">Mastra server unavailable</div>
-                <div className="text-rose-100/80">{loadError}</div>
-                <div className="mt-4 text-xs text-slate-400 font-mono">
-                  cd /Users/michael/Mastra/testing/mastra-bowl-sandbox && npm run dev
+            <div className="flex-1 p-6 scan-lines">
+              <div className="max-w-xl mx-auto mt-16 holo-panel-red holo-frame p-6 text-sm">
+                <div className="holo-bracket-h text-[11px] mb-3 glow-red">
+                  <span style={{ color: '#ff859a' }}>SIGNAL LOST</span>
+                </div>
+                <div className="font-display uppercase tracking-widest text-base mb-2 glow-red"
+                     style={{ color: '#ff859a' }}>
+                  Mastra Server Unavailable
+                </div>
+                <div className="text-slate-200">{loadError}</div>
+                <div className="mt-4 text-xs holo-readout text-slate-400">
+                  &gt; cd /Users/michael/Mastra/testing/mastra-bowl-sandbox &amp;&amp; npm run dev
                 </div>
               </div>
             </div>
@@ -205,45 +211,75 @@ function TopBar({
   onToggleErrorLog: () => void;
 }) {
   return (
-    <header className="border-b border-slate-800 bg-slate-950 px-4 h-12 flex items-center gap-4 text-sm">
-      <div className="font-semibold">
-        MastraClaw Sandbox
-        <span className="text-slate-500 ml-2 text-xs font-normal">
-          built with Mastra primitives
-        </span>
+    <header
+      className="relative border-b px-4 h-14 flex items-center gap-4 text-sm scan-lines"
+      style={{
+        borderColor: 'rgba(108, 230, 248, 0.25)',
+        background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.6) 0%, rgba(2, 14, 20, 0.4) 100%)',
+        boxShadow: '0 1px 0 rgba(108, 230, 248, 0.15), 0 4px 18px rgba(0, 0, 0, 0.6)',
+      }}
+    >
+      {/* Top accent line */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px pointer-events-none"
+        style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(108, 230, 248, 0.6) 20%, rgba(170, 246, 255, 0.9) 50%, rgba(108, 230, 248, 0.6) 80%, transparent 100%)' }}
+      />
+      <div className="flex items-center gap-3 relative z-10">
+        <div
+          className="w-9 h-9 flex items-center justify-center holo-frame-sm box-glow-cyan"
+          style={{ clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))' }}
+        >
+          <span className="font-display font-bold text-lg glow-cyan-strong" style={{ color: '#aaf6ff' }}>
+            iD
+          </span>
+        </div>
+        <div className="leading-tight">
+          <div className="holo-title text-sm">MASTRACLAW</div>
+          <div className="holo-eyebrow">// iDroid Sandbox v2.6</div>
+        </div>
       </div>
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-2 relative z-10">
         <ErrorLogToggleButton
           onClick={onToggleErrorLog}
           active={errorLogOpen}
         />
         <ServerTargetPicker />
         <ModelStatusPicker />
-        <button
-          onClick={() => onTeach('observability')}
-          className="text-xs text-slate-400 hover:text-slate-200 underline decoration-dotted"
-        >
-          what is observability?
-        </button>
-        <button
-          onClick={() => onTeach('workspace')}
-          className="text-xs text-slate-400 hover:text-slate-200 underline decoration-dotted"
-        >
-          workspace
-        </button>
-        <button
-          onClick={() => onTeach('browser')}
-          className="text-xs text-slate-400 hover:text-slate-200 underline decoration-dotted"
-        >
-          browser
-        </button>
-        <button
-          onClick={() => onTeach('rag')}
-          className="text-xs text-slate-400 hover:text-slate-200 underline decoration-dotted"
-        >
-          RAG
-        </button>
+        <span aria-hidden className="mx-1 text-cyan-700">|</span>
+        <TopBarTeachLink label="OBS" onClick={() => onTeach('observability')} />
+        <TopBarTeachLink label="WKSP" onClick={() => onTeach('workspace')} />
+        <TopBarTeachLink label="BRWS" onClick={() => onTeach('browser')} />
+        <TopBarTeachLink label="RAG" onClick={() => onTeach('rag')} />
       </div>
     </header>
+  );
+}
+
+function TopBarTeachLink({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="text-[10px] font-mono tracking-widest px-2 py-1 transition-all"
+      style={{
+        color: 'rgba(108, 230, 248, 0.7)',
+        border: '1px solid rgba(108, 230, 248, 0.18)',
+        background: 'rgba(108, 230, 248, 0.04)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = '#aaf6ff';
+        e.currentTarget.style.borderColor = 'rgba(108, 230, 248, 0.55)';
+        e.currentTarget.style.boxShadow = '0 0 8px rgba(108, 230, 248, 0.3)';
+        e.currentTarget.style.textShadow = '0 0 4px rgba(108, 230, 248, 0.7)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = 'rgba(108, 230, 248, 0.7)';
+        e.currentTarget.style.borderColor = 'rgba(108, 230, 248, 0.18)';
+        e.currentTarget.style.boxShadow = '';
+        e.currentTarget.style.textShadow = '';
+      }}
+    >
+      ?{label}
+    </button>
   );
 }

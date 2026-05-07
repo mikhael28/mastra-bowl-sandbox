@@ -37,11 +37,11 @@ export function StatsBar({ issues, prs, metadata }: Props) {
   ];
 
   return (
-    <div className="border-b border-[#30363d] bg-[#161b22] px-6 py-4">
+    <div className="border-b border-[#143a48] bg-[#04141a] px-6 py-4">
       <div className="flex items-center justify-between mb-3">
         <h1 className="text-xl font-semibold text-white">Mastra OSS Triage</h1>
         {metadata && (
-          <span className="text-xs text-[#8b949e]">
+          <span className="text-xs text-[#5395a8]">
             {metadata.repo} · last fetched {new Date(metadata.fetchedAt).toLocaleString()}
           </span>
         )}
@@ -50,7 +50,7 @@ export function StatsBar({ issues, prs, metadata }: Props) {
         {stats.map((s) => (
           <div key={s.label} className="text-center">
             <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
-            <div className="text-xs text-[#8b949e]">{s.label}</div>
+            <div className="text-xs text-[#5395a8]">{s.label}</div>
           </div>
         ))}
       </div>

@@ -22,33 +22,33 @@ function FavoriteRow({
   const staleness = computeStaleness(item);
 
   return (
-    <div className="flex items-start gap-3 p-4 bg-[#0d1117] border border-[#21262d] rounded-lg hover:border-[#30363d] transition-colors group">
+    <div className="flex items-start gap-3 p-4 bg-[#020a0d] border border-[#0a2b37] rounded-lg hover:border-[#143a48] transition-colors group">
       <div className="flex-shrink-0 mt-0.5">
         {isPR ? (
           <span
             className={`text-base ${
               pr?.isDraft
-                ? 'text-[#8b949e]'
+                ? 'text-[#5395a8]'
                 : pr?.reviewDecision === 'APPROVED'
-                  ? 'text-[#3fb950]'
-                  : 'text-[#58a6ff]'
+                  ? 'text-[#36e3a8]'
+                  : 'text-[#aaf6ff]'
             }`}
           >
             ↗
           </span>
         ) : (
-          <span className="text-base text-[#3fb950]">●</span>
+          <span className="text-base text-[#36e3a8]">●</span>
         )}
       </div>
 
       <div className="flex-1 min-w-0 cursor-pointer" onClick={onSelect}>
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm text-[#e6edf3] group-hover:text-[#58a6ff] transition-colors">
+          <span className="font-medium text-sm text-[#cdf2fb] group-hover:text-[#aaf6ff] transition-colors">
             {item.title}
           </span>
-          <span className="text-xs text-[#484f58]">#{item.number}</span>
+          <span className="text-xs text-[#235e6f]">#{item.number}</span>
         </div>
-        <div className="flex items-center gap-3 mt-1 text-xs text-[#8b949e]">
+        <div className="flex items-center gap-3 mt-1 text-xs text-[#5395a8]">
           <span>@{item.author.login}</span>
           <span>updated {timeAgo(item.updatedAt)}</span>
           <span>staleness: {staleness}/100</span>
@@ -72,7 +72,7 @@ function FavoriteRow({
               );
             })}
             {item.labels.length > 5 && (
-              <span className="text-[10px] text-[#484f58]">+{item.labels.length - 5} more</span>
+              <span className="text-[10px] text-[#235e6f]">+{item.labels.length - 5} more</span>
             )}
           </div>
         )}
@@ -80,7 +80,7 @@ function FavoriteRow({
 
       <button
         onClick={onRemove}
-        className="flex-shrink-0 text-[#484f58] hover:text-[#f85149] transition-colors p-1"
+        className="flex-shrink-0 text-[#235e6f] hover:text-[#ff5874] transition-colors p-1"
         title="Remove from favorites"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -140,56 +140,56 @@ export function FavoritesPanel({ onClose, onSelectItem }: Props) {
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="w-[720px] max-w-full bg-[#0d1117] border-l border-[#30363d] flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#30363d] bg-[#161b22]">
+      <div className="w-[720px] max-w-full bg-[#020a0d] border-l border-[#143a48] flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#143a48] bg-[#04141a]">
           <div className="flex items-center gap-3">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#58a6ff" stroke="none">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#aaf6ff" stroke="none">
               <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
             </svg>
             <div>
               <h2 className="text-lg font-semibold text-white">Favorites</h2>
-              <p className="text-xs text-[#8b949e]">
+              <p className="text-xs text-[#5395a8]">
                 {favorites.length} item{favorites.length !== 1 ? 's' : ''}
                 {issueCount > 0 && ` · ${issueCount} issue${issueCount !== 1 ? 's' : ''}`}
                 {prCount > 0 && ` · ${prCount} PR${prCount !== 1 ? 's' : ''}`}
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-[#8b949e] hover:text-white text-xl leading-none">
+          <button onClick={onClose} className="text-[#5395a8] hover:text-white text-xl leading-none">
             ×
           </button>
         </div>
 
-        <div className="flex items-center gap-2 px-6 py-3 border-b border-[#21262d] flex-wrap">
+        <div className="flex items-center gap-2 px-6 py-3 border-b border-[#0a2b37] flex-wrap">
           <button
             onClick={exportMarkdown}
             disabled={favorites.length === 0}
-            className="flex items-center gap-2 px-3 py-2 text-xs text-[#e6edf3] border border-[#30363d] rounded-md hover:bg-[#21262d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-3 py-2 text-xs text-[#cdf2fb] border border-[#143a48] rounded-md hover:bg-[#0a2b37] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Markdown
           </button>
           <button
             onClick={exportUrls}
             disabled={favorites.length === 0}
-            className="flex items-center gap-2 px-3 py-2 text-xs text-[#e6edf3] border border-[#30363d] rounded-md hover:bg-[#21262d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-3 py-2 text-xs text-[#cdf2fb] border border-[#143a48] rounded-md hover:bg-[#0a2b37] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             URLs
           </button>
           <button
             onClick={exportStandup}
             disabled={favorites.length === 0}
-            className="flex items-center gap-2 px-3 py-2 text-xs text-[#e6edf3] border border-[#30363d] rounded-md hover:bg-[#21262d] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-3 py-2 text-xs text-[#cdf2fb] border border-[#143a48] rounded-md hover:bg-[#0a2b37] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Standup
           </button>
           {copyFeedback && (
-            <span className="text-xs text-[#3fb950] animate-pulse">{copyFeedback}</span>
+            <span className="text-xs text-[#36e3a8] animate-pulse">{copyFeedback}</span>
           )}
           <div className="flex-1" />
           {favorites.length > 0 && (
             <button
               onClick={clearFavorites}
-              className="text-xs text-[#f85149] hover:text-[#ff7b72] transition-colors"
+              className="text-xs text-[#ff5874] hover:text-[#ff859a] transition-colors"
             >
               Clear all
             </button>
@@ -199,11 +199,11 @@ export function FavoritesPanel({ onClose, onSelectItem }: Props) {
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
           {favorites.length === 0 ? (
             <div className="text-center py-16">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#30363d" strokeWidth="1" className="mx-auto mb-4">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#143a48" strokeWidth="1" className="mx-auto mb-4">
                 <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
               </svg>
-              <p className="text-[#8b949e] text-sm">No favorites yet</p>
-              <p className="text-[#484f58] text-xs mt-1">
+              <p className="text-[#5395a8] text-sm">No favorites yet</p>
+              <p className="text-[#235e6f] text-xs mt-1">
                 Click the checkbox on any issue or PR to add it here
               </p>
             </div>

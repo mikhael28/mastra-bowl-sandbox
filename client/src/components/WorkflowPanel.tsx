@@ -208,12 +208,23 @@ export function WorkflowPanel({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <header className="border-b border-slate-800 p-4 flex items-center gap-3">
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden scan-lines">
+      <header
+        className="p-4 flex items-center gap-3"
+        style={{
+          borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+          background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+        }}
+      >
+        <div>
+          <div className="holo-eyebrow">// MODULE 03</div>
+          <h2 className="holo-title text-base mt-0.5">WORKFLOW</h2>
+        </div>
         <select
           value={selectedId ?? ''}
           onChange={(e) => setSelectedId(e.target.value)}
-          className="bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-sm"
+          className="px-2 py-1.5 text-sm font-mono"
+          style={{ background: 'rgba(2, 14, 20, 0.7)', border: '1px solid rgba(108, 230, 248, 0.3)', color: '#cdf2fb' }}
         >
           {workflows.map((w) => (
             <option key={w.id} value={w.id}>
@@ -230,8 +241,8 @@ export function WorkflowPanel({
           />
         ) : null}
         {selected?.description && (
-          <div className="text-xs text-slate-400 truncate">
-            {selected.description}
+          <div className="text-xs holo-readout truncate" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
+            // {selected.description}
           </div>
         )}
       </header>

@@ -55,35 +55,55 @@ export function ErrorLogSidebar({ open, onClose }: Props) {
   }
 
   return (
-    <aside className="fixed top-12 right-0 bottom-0 z-40 w-[480px] border-l border-slate-800 bg-slate-950 shadow-2xl flex flex-col">
-      <div className="px-3 py-2 border-b border-slate-800 flex items-center gap-2">
-        <span className="text-rose-300">⚠</span>
-        <div className="text-sm font-semibold text-slate-100">Error log</div>
-        <span className="text-[10px] text-slate-500 font-mono">
-          {visible.length}
+    <aside
+      className="fixed top-14 right-0 bottom-0 z-40 w-[480px] flex flex-col scan-lines"
+      style={{
+        borderLeft: '1px solid rgba(255, 88, 116, 0.4)',
+        background: 'linear-gradient(180deg, rgba(40, 4, 12, 0.5), rgba(2, 14, 20, 0.85))',
+        boxShadow: '0 0 30px rgba(255, 88, 116, 0.15)',
+      }}
+    >
+      <div
+        className="px-3 py-2.5 flex items-center gap-2"
+        style={{ borderBottom: '1px solid rgba(255, 88, 116, 0.35)' }}
+      >
+        <span className="glow-red text-base" style={{ color: '#ff859a' }}>⚠</span>
+        <div className="holo-title text-sm glow-red" style={{ color: '#ff859a' }}>
+          ERROR LOG
+        </div>
+        <span className="text-[10px] holo-readout" style={{ color: 'rgba(255, 184, 200, 0.6)' }}>
+          [{visible.length.toString().padStart(2, '0')}
           {filter !== 'all' && entries.length > visible.length
-            ? `/${entries.length}`
-            : ''}
+            ? `/${entries.length.toString().padStart(2, '0')}`
+            : ''}]
         </span>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1.5">
           <button
             onClick={toggleAll}
             disabled={visible.length === 0}
-            className="text-[11px] px-2 py-0.5 rounded border border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="text-[10px] font-mono tracking-widest uppercase px-2 py-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{
+              border: '1px solid rgba(108, 230, 248, 0.25)',
+              color: 'rgba(108, 230, 248, 0.7)',
+              background: 'rgba(108, 230, 248, 0.04)',
+            }}
             title={allOpen ? 'Collapse all' : 'Expand all'}
           >
-            {allOpen ? 'collapse all' : 'expand all'}
+            {allOpen ? '◢ COLLAPSE' : '◣ EXPAND'}
           </button>
           <button
             onClick={clearErrors}
             disabled={entries.length === 0}
-            className="text-[11px] px-2 py-0.5 rounded border border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="holo-button holo-button-red disabled:opacity-40"
           >
-            clear
+            ✕ CLR
           </button>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-100 text-sm px-1"
+            className="text-base px-1 transition-colors"
+            style={{ color: 'rgba(255, 184, 200, 0.6)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#ff859a')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 184, 200, 0.6)')}
             title="Close error log"
           >
             ✕
@@ -117,15 +137,16 @@ export function ErrorLogSidebar({ open, onClose }: Props) {
 
       <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
         {entries.length === 0 && (
-          <div className="text-[11px] text-slate-500 px-2 py-3">
-            No errors logged. Stream, tool, approval and workspace failures
+          <div className="text-[10px] holo-readout px-2 py-3" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+            // SYSTEM NOMINAL
+            <br />
+            // No errors logged. Stream, tool, approval and workspace failures
             will surface here as they happen.
           </div>
         )}
         {entries.length > 0 && visible.length === 0 && (
-          <div className="text-[11px] text-slate-500 px-2 py-3">
-            No errors match the <span className="font-mono">{filter}</span>{' '}
-            filter.
+          <div className="text-[10px] holo-readout px-2 py-3" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+            // No errors match the <span style={{ color: '#aaf6ff' }}>{filter}</span> filter.
           </div>
         )}
         {visible.map((e) => (
@@ -295,13 +316,21 @@ export function ErrorLogToggleButton({
     <button
       onClick={onClick}
       title="Show recent errors"
-      className={`text-xs px-2 py-1 rounded border ${
-        count > 0
-          ? 'border-rose-500/40 text-rose-200 hover:bg-rose-500/10'
-          : 'border-slate-700 text-slate-300 hover:bg-slate-800'
-      } ${active ? 'bg-slate-800' : ''}`}
+      className="text-[10px] font-mono tracking-widest uppercase px-2 py-1 transition-all"
+      style={{
+        border: count > 0 ? '1px solid rgba(255, 88, 116, 0.5)' : '1px solid rgba(108, 230, 248, 0.25)',
+        color: count > 0 ? '#ff859a' : 'rgba(108, 230, 248, 0.7)',
+        background: active
+          ? count > 0
+            ? 'rgba(255, 88, 116, 0.12)'
+            : 'rgba(108, 230, 248, 0.12)'
+          : count > 0
+            ? 'rgba(255, 88, 116, 0.04)'
+            : 'rgba(108, 230, 248, 0.04)',
+        textShadow: count > 0 ? '0 0 5px rgba(255, 88, 116, 0.5)' : 'none',
+      }}
     >
-      ⚠ Errors{count > 0 && <span className="ml-1 font-mono">({count})</span>}
+      ⚠ ERR{count > 0 && <span className="ml-1">[{count.toString().padStart(2, '0')}]</span>}
     </button>
   );
 }

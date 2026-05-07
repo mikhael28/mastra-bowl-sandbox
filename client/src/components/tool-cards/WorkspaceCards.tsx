@@ -25,12 +25,16 @@ function EduStrip({ text, onTeach, primitive }: {
   primitive: 'workspace' | 'sandbox';
 }) {
   return (
-    <div className="mt-2 pt-2 border-t border-slate-800/70 flex items-start gap-2 text-[10px] text-slate-500 leading-relaxed">
+    <div
+      className="mt-2 pt-2 flex items-start gap-2 text-[10px] holo-readout leading-relaxed"
+      style={{ borderTop: '1px solid rgba(108, 230, 248, 0.15)', color: 'rgba(108, 230, 248, 0.55)' }}
+    >
       <button
         onClick={() => onTeach(primitive)}
-        className="shrink-0 text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+        className="shrink-0 underline decoration-dotted uppercase tracking-widest"
+        style={{ color: '#88efff' }}
       >
-        learn →
+        ▸ LEARN
       </button>
       <span>{text}</span>
     </div>
@@ -52,41 +56,41 @@ function CardShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`mt-2 border rounded p-2 text-xs ${statusColor(tc.status)}`}>
+    <div className={`mt-2 border p-2 text-xs ${statusColor(tc.status)}`}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <PrimitiveBadge primitive={primitive} onTeach={onTeach} compact />
-          <span className="font-mono text-slate-200 truncate">
+          <span className="font-mono uppercase tracking-wider text-cyan-100 truncate text-[11px]">
             {tc.toolName}
           </span>
-          <span className="text-slate-400 text-[10px]">{statusText(tc.status)}</span>
+          <span className="holo-eyebrow">{statusText(tc.status)}</span>
         </div>
       </div>
       {subtitle && (
-        <div className="text-[11px] text-slate-400 mt-1 font-mono truncate">
-          {subtitle}
+        <div className="text-[11px] mt-1 font-mono truncate" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
+          &gt; {subtitle}
         </div>
       )}
       <div className="mt-2">{children}</div>
       {tc.status === 'awaiting-approval' && (
-        <div className="mt-2 flex items-center gap-2 flex-wrap pt-2 border-t border-slate-800/60">
-          <div className="text-sky-200 text-[11px]">
-            Approval required before this runs.
+        <div className="mt-2 flex items-center gap-2 flex-wrap pt-2" style={{ borderTop: '1px solid rgba(108, 230, 248, 0.18)' }}>
+          <div className="holo-readout text-[10px]" style={{ color: '#88efff' }}>
+            // ◇ APPROVAL REQUIRED
           </div>
           <div className="ml-auto flex gap-2">
             <button
               onClick={onDecline}
               disabled={!canRespond}
-              className="px-2 py-1 rounded border border-slate-600 text-slate-200 hover:bg-slate-700/40 disabled:opacity-40"
+              className="holo-button holo-button-red disabled:opacity-40"
             >
-              Decline
+              ✕ DECLINE
             </button>
             <button
               onClick={onApprove}
               disabled={!canRespond}
-              className="px-2 py-1 rounded bg-sky-600 hover:bg-sky-500 text-white font-medium disabled:opacity-40"
+              className="holo-button disabled:opacity-40"
             >
-              Approve
+              ✓ APPROVE
             </button>
           </div>
         </div>

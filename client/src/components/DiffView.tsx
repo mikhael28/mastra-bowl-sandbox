@@ -67,44 +67,57 @@ export function DiffView({
   const isNewFile = !resolvedOld;
 
   return (
-    <div className="rounded border border-slate-800 overflow-hidden">
-      <div className="px-2 py-1 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between text-[10px] font-mono">
-        <span className="text-slate-400 truncate">{path}</span>
+    <div className="overflow-hidden" style={{ border: '1px solid rgba(108, 230, 248, 0.22)' }}>
+      <div
+        className="px-2 py-1 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest"
+        style={{ background: 'rgba(2, 14, 20, 0.85)', borderBottom: '1px solid rgba(108, 230, 248, 0.18)' }}
+      >
+        <span className="truncate" style={{ color: '#aaf6ff' }}>&gt; {path}</span>
         <span className="flex items-center gap-2 shrink-0">
           {isNewFile && (
-            <span className="text-indigo-300">new file</span>
+            <span style={{ color: '#aaf6ff' }}>NEW FILE</span>
           )}
-          <span className="text-emerald-400">+{totalAdd}</span>
-          <span className="text-rose-400">−{totalRm}</span>
+          <span style={{ color: '#66f5c2' }}>+{totalAdd}</span>
+          <span style={{ color: '#ff859a' }}>−{totalRm}</span>
         </span>
       </div>
-      <pre className="bg-slate-950 text-[11px] leading-relaxed font-mono overflow-auto max-h-72">
+      <pre
+        className="text-[11px] leading-relaxed font-mono overflow-auto max-h-72"
+        style={{ background: 'rgba(2, 14, 20, 0.85)' }}
+      >
         {limited.map((l, i) => (
           <div
             key={i}
-            className={
-              l.kind === 'add'
-                ? 'bg-emerald-900/30 text-emerald-200'
-                : l.kind === 'remove'
-                  ? 'bg-rose-900/30 text-rose-200'
-                  : 'text-slate-400'
-            }
+            style={{
+              background:
+                l.kind === 'add'
+                  ? 'rgba(54, 227, 168, 0.18)'
+                  : l.kind === 'remove'
+                    ? 'rgba(255, 88, 116, 0.18)'
+                    : 'transparent',
+              color:
+                l.kind === 'add'
+                  ? '#a8ffe0'
+                  : l.kind === 'remove'
+                    ? '#ffb8c5'
+                    : 'rgba(170, 246, 255, 0.7)',
+            }}
           >
-            <span className="inline-block w-10 pr-1 text-right text-slate-600 select-none">
+            <span className="inline-block w-10 pr-1 text-right select-none" style={{ color: 'rgba(108, 230, 248, 0.4)' }}>
               {l.oldNo ?? ''}
             </span>
-            <span className="inline-block w-10 pr-1 text-right text-slate-600 select-none">
+            <span className="inline-block w-10 pr-1 text-right select-none" style={{ color: 'rgba(108, 230, 248, 0.4)' }}>
               {l.newNo ?? ''}
             </span>
-            <span className="inline-block w-4 text-slate-500 select-none">
+            <span className="inline-block w-4 select-none" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
               {l.kind === 'add' ? '+' : l.kind === 'remove' ? '−' : ' '}
             </span>
             <span>{l.text || ' '}</span>
           </div>
         ))}
         {truncated > 0 && (
-          <div className="text-slate-500 italic px-3 py-1">
-            … {truncated} more lines
+          <div className="italic px-3 py-1 holo-readout" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+            // ... {truncated} more lines
           </div>
         )}
       </pre>

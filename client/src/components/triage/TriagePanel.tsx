@@ -205,8 +205,8 @@ function TriagePanelInner() {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl text-[#58a6ff] mb-2">Loading…</div>
-          <div className="text-sm text-[#8b949e]">Fetching triage data</div>
+          <div className="text-2xl text-[#aaf6ff] mb-2">Loading…</div>
+          <div className="text-sm text-[#5395a8]">Fetching triage data</div>
         </div>
       </div>
     );
@@ -216,9 +216,9 @@ function TriagePanelInner() {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center max-w-md p-6">
-          <div className="text-2xl text-[#f85149] mb-2">Error</div>
-          <div className="text-sm text-[#8b949e] mb-4">{error}</div>
-          <pre className="text-xs text-[#8b949e] bg-[#161b22] rounded p-4 text-left">
+          <div className="text-2xl text-[#ff5874] mb-2">Error</div>
+          <div className="text-sm text-[#5395a8] mb-4">{error}</div>
+          <pre className="text-xs text-[#5395a8] bg-[#04141a] rounded p-4 text-left">
             # Refresh data via the workflow:{'\n'}
             # 1. Open the Workflows tab{'\n'}
             # 2. Run "triage-workflow"{'\n'}
@@ -226,7 +226,7 @@ function TriagePanelInner() {
           </pre>
           <button
             onClick={() => reload()}
-            className="mt-4 px-4 py-2 text-sm bg-[#238636] text-white rounded-md hover:bg-[#2ea043]"
+            className="mt-4 px-4 py-2 text-sm bg-[#08a872] text-white rounded-md hover:bg-[#14c98a]"
           >
             Retry
           </button>
@@ -236,7 +236,7 @@ function TriagePanelInner() {
   }
 
   return (
-    <div className="flex-1 flex min-w-0 bg-[#0d1117]">
+    <div className="flex-1 flex min-w-0 bg-[#020a0d]">
       <div className="flex-1 flex flex-col min-w-0 relative">
         <StatsBar issues={issues} prs={pullRequests} metadata={metadata} />
         <FilterBar
@@ -260,7 +260,7 @@ function TriagePanelInner() {
 
         <div className="flex-1 overflow-y-auto" ref={listRef}>
           {filtered.length === 0 ? (
-            <div className="text-center py-12 text-[#8b949e]">
+            <div className="text-center py-12 text-[#5395a8]">
               No items match your filters
             </div>
           ) : (

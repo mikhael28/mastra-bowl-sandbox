@@ -1,7 +1,325 @@
+/* MGS5 iDroid display fonts. Share Tech Mono for terminals/data, Rajdhani as
+   the tech-sans body, Orbitron reserved for hero/heading flourishes.
+   Note: @import rules must precede all other rules; keep this above the
+   tailwindcss import. */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/*
+  --------------------------------------------------------------------------
+  iDroid theme tokens
+  --------------------------------------------------------------------------
+  We remap Tailwind's slate/indigo/sky/blue scales to a cyan-on-deep-teal
+  iDroid palette. Existing inline classes (bg-slate-950, border-slate-800,
+  bg-indigo-500/30, text-indigo-300, etc.) auto-shift to the new look without
+  touching every component. Amber/rose/yellow stay close to canon for
+  warnings and danger, slightly punched up.
+*/
 @theme {
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: 'Rajdhani', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: 'Orbitron', 'Rajdhani', ui-sans-serif, sans-serif;
+
+  /* Sharper corners — iDroid panels are nearly square with bracket flourishes. */
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 3px;
+  --radius-2xl: 4px;
+  --radius-3xl: 6px;
+
+  /* Backgrounds: deep teal-black through to dim cyan-blue */
+  --color-slate-50:  #e8fcff;
+  --color-slate-100: #cdf2fb;
+  --color-slate-200: #a8e0ec;
+  --color-slate-300: #7dc3d4;
+  --color-slate-400: #5395a8;
+  --color-slate-500: #387a8c;
+  --color-slate-600: #235e6f;
+  --color-slate-700: #133f4e;
+  --color-slate-800: #0a2b37;
+  --color-slate-900: #04141a;
+  --color-slate-950: #020a0d;
+
+  /* Mirror neutral grays to the same teal scale so zinc-/gray-/neutral- read consistent */
+  --color-zinc-50:  #e8fcff;
+  --color-zinc-100: #cdf2fb;
+  --color-zinc-200: #a8e0ec;
+  --color-zinc-300: #7dc3d4;
+  --color-zinc-400: #5395a8;
+  --color-zinc-500: #387a8c;
+  --color-zinc-600: #235e6f;
+  --color-zinc-700: #133f4e;
+  --color-zinc-800: #0a2b37;
+  --color-zinc-900: #04141a;
+  --color-zinc-950: #020a0d;
+
+  --color-gray-50:  #e8fcff;
+  --color-gray-100: #cdf2fb;
+  --color-gray-200: #a8e0ec;
+  --color-gray-300: #7dc3d4;
+  --color-gray-400: #5395a8;
+  --color-gray-500: #387a8c;
+  --color-gray-600: #235e6f;
+  --color-gray-700: #133f4e;
+  --color-gray-800: #0a2b37;
+  --color-gray-900: #04141a;
+  --color-gray-950: #020a0d;
+
+  --color-neutral-50:  #e8fcff;
+  --color-neutral-100: #cdf2fb;
+  --color-neutral-200: #a8e0ec;
+  --color-neutral-300: #7dc3d4;
+  --color-neutral-400: #5395a8;
+  --color-neutral-500: #387a8c;
+  --color-neutral-600: #235e6f;
+  --color-neutral-700: #133f4e;
+  --color-neutral-800: #0a2b37;
+  --color-neutral-900: #04141a;
+  --color-neutral-950: #020a0d;
+
+  --color-stone-50:  #e8fcff;
+  --color-stone-100: #cdf2fb;
+  --color-stone-200: #a8e0ec;
+  --color-stone-300: #7dc3d4;
+  --color-stone-400: #5395a8;
+  --color-stone-500: #387a8c;
+  --color-stone-600: #235e6f;
+  --color-stone-700: #133f4e;
+  --color-stone-800: #0a2b37;
+  --color-stone-900: #04141a;
+  --color-stone-950: #020a0d;
+
+  /* Primary cyan/teal — replaces indigo, sky, blue across the codebase */
+  --color-indigo-50:  #e0fdff;
+  --color-indigo-100: #b5f7ff;
+  --color-indigo-200: #88efff;
+  --color-indigo-300: #6ce6f8;
+  --color-indigo-400: #36d4ec;
+  --color-indigo-500: #14b8d4;
+  --color-indigo-600: #0997b1;
+  --color-indigo-700: #0c7a8f;
+  --color-indigo-800: #115b6c;
+  --color-indigo-900: #0c3e4a;
+  --color-indigo-950: #04222a;
+
+  --color-sky-50:  #e0fdff;
+  --color-sky-100: #b5f7ff;
+  --color-sky-200: #88efff;
+  --color-sky-300: #6ce6f8;
+  --color-sky-400: #36d4ec;
+  --color-sky-500: #14b8d4;
+  --color-sky-600: #0997b1;
+  --color-sky-700: #0c7a8f;
+  --color-sky-800: #115b6c;
+  --color-sky-900: #0c3e4a;
+  --color-sky-950: #04222a;
+
+  --color-blue-50:  #e0fdff;
+  --color-blue-100: #b5f7ff;
+  --color-blue-200: #88efff;
+  --color-blue-300: #6ce6f8;
+  --color-blue-400: #36d4ec;
+  --color-blue-500: #14b8d4;
+  --color-blue-600: #0997b1;
+  --color-blue-700: #0c7a8f;
+  --color-blue-800: #115b6c;
+  --color-blue-900: #0c3e4a;
+  --color-blue-950: #04222a;
+
+  --color-cyan-50:  #e0fdff;
+  --color-cyan-100: #b5f7ff;
+  --color-cyan-200: #88efff;
+  --color-cyan-300: #6ce6f8;
+  --color-cyan-400: #36d4ec;
+  --color-cyan-500: #14b8d4;
+  --color-cyan-600: #0997b1;
+  --color-cyan-700: #0c7a8f;
+  --color-cyan-800: #115b6c;
+  --color-cyan-900: #0c3e4a;
+  --color-cyan-950: #04222a;
+
+  --color-teal-50:  #e0fdff;
+  --color-teal-100: #b5f7ff;
+  --color-teal-200: #88efff;
+  --color-teal-300: #6ce6f8;
+  --color-teal-400: #36d4ec;
+  --color-teal-500: #14b8d4;
+  --color-teal-600: #0997b1;
+  --color-teal-700: #0c7a8f;
+  --color-teal-800: #115b6c;
+  --color-teal-900: #0c3e4a;
+  --color-teal-950: #04222a;
+
+  /* Secondary accents — purple/violet/fuchsia/pink fold into a single
+     muted magenta so the palette stays disciplined */
+  --color-purple-50:  #fce8ff;
+  --color-purple-100: #f7b5ff;
+  --color-purple-200: #ec88f5;
+  --color-purple-300: #d96ce0;
+  --color-purple-400: #b94cc4;
+  --color-purple-500: #8e2c98;
+  --color-purple-600: #6e1f78;
+  --color-purple-700: #511560;
+  --color-purple-800: #3a0e45;
+  --color-purple-900: #260830;
+  --color-purple-950: #16041d;
+
+  --color-violet-50:  #fce8ff;
+  --color-violet-100: #f7b5ff;
+  --color-violet-200: #ec88f5;
+  --color-violet-300: #d96ce0;
+  --color-violet-400: #b94cc4;
+  --color-violet-500: #8e2c98;
+  --color-violet-600: #6e1f78;
+  --color-violet-700: #511560;
+  --color-violet-800: #3a0e45;
+  --color-violet-900: #260830;
+  --color-violet-950: #16041d;
+
+  --color-fuchsia-50:  #fce8ff;
+  --color-fuchsia-100: #f7b5ff;
+  --color-fuchsia-200: #ec88f5;
+  --color-fuchsia-300: #d96ce0;
+  --color-fuchsia-400: #b94cc4;
+  --color-fuchsia-500: #8e2c98;
+  --color-fuchsia-600: #6e1f78;
+  --color-fuchsia-700: #511560;
+  --color-fuchsia-800: #3a0e45;
+  --color-fuchsia-900: #260830;
+  --color-fuchsia-950: #16041d;
+
+  --color-pink-50:  #fce8ff;
+  --color-pink-100: #f7b5ff;
+  --color-pink-200: #ec88f5;
+  --color-pink-300: #d96ce0;
+  --color-pink-400: #b94cc4;
+  --color-pink-500: #8e2c98;
+  --color-pink-600: #6e1f78;
+  --color-pink-700: #511560;
+  --color-pink-800: #3a0e45;
+  --color-pink-900: #260830;
+  --color-pink-950: #16041d;
+
+  /* Warning amber — punched and saturated, the iDroid alert color */
+  --color-amber-50:  #fff8e0;
+  --color-amber-100: #ffecb3;
+  --color-amber-200: #ffd97a;
+  --color-amber-300: #ffc04d;
+  --color-amber-400: #ffa820;
+  --color-amber-500: #ff9000;
+  --color-amber-600: #d67500;
+  --color-amber-700: #a85a00;
+  --color-amber-800: #7a4100;
+  --color-amber-900: #4d2900;
+  --color-amber-950: #2a1500;
+
+  --color-yellow-50:  #fff8e0;
+  --color-yellow-100: #ffecb3;
+  --color-yellow-200: #ffd97a;
+  --color-yellow-300: #ffc04d;
+  --color-yellow-400: #ffa820;
+  --color-yellow-500: #ff9000;
+  --color-yellow-600: #d67500;
+  --color-yellow-700: #a85a00;
+  --color-yellow-800: #7a4100;
+  --color-yellow-900: #4d2900;
+  --color-yellow-950: #2a1500;
+
+  --color-orange-50:  #fff0e0;
+  --color-orange-100: #ffd6b3;
+  --color-orange-200: #ffb37a;
+  --color-orange-300: #ff904d;
+  --color-orange-400: #ff6e20;
+  --color-orange-500: #f25400;
+  --color-orange-600: #c34200;
+  --color-orange-700: #913100;
+  --color-orange-800: #602100;
+  --color-orange-900: #3a1300;
+  --color-orange-950: #1f0900;
+
+  /* Danger red — kept hot but slightly desaturated to sit next to cyan */
+  --color-red-50:  #ffe6ec;
+  --color-red-100: #ffb8c5;
+  --color-red-200: #ff859a;
+  --color-red-300: #ff5874;
+  --color-red-400: #ff3056;
+  --color-red-500: #ed1840;
+  --color-red-600: #c20d31;
+  --color-red-700: #930a25;
+  --color-red-800: #66071a;
+  --color-red-900: #3d040f;
+  --color-red-950: #200207;
+
+  --color-rose-50:  #ffe6ec;
+  --color-rose-100: #ffb8c5;
+  --color-rose-200: #ff859a;
+  --color-rose-300: #ff5874;
+  --color-rose-400: #ff3056;
+  --color-rose-500: #ed1840;
+  --color-rose-600: #c20d31;
+  --color-rose-700: #930a25;
+  --color-rose-800: #66071a;
+  --color-rose-900: #3d040f;
+  --color-rose-950: #200207;
+
+  /* Success green — leans cyan-tinted, like a healthy iDroid telemetry tick */
+  --color-emerald-50:  #defff4;
+  --color-emerald-100: #a8ffe0;
+  --color-emerald-200: #66f5c2;
+  --color-emerald-300: #36e3a8;
+  --color-emerald-400: #14c98a;
+  --color-emerald-500: #08a872;
+  --color-emerald-600: #06865c;
+  --color-emerald-700: #056445;
+  --color-emerald-800: #034730;
+  --color-emerald-900: #022d1f;
+  --color-emerald-950: #011610;
+
+  --color-green-50:  #defff4;
+  --color-green-100: #a8ffe0;
+  --color-green-200: #66f5c2;
+  --color-green-300: #36e3a8;
+  --color-green-400: #14c98a;
+  --color-green-500: #08a872;
+  --color-green-600: #06865c;
+  --color-green-700: #056445;
+  --color-green-800: #034730;
+  --color-green-900: #022d1f;
+  --color-green-950: #011610;
+
+  --color-lime-50:  #ecffd6;
+  --color-lime-100: #c4ffa3;
+  --color-lime-200: #9af070;
+  --color-lime-300: #74dc4d;
+  --color-lime-400: #5cc132;
+  --color-lime-500: #44a01e;
+  --color-lime-600: #338015;
+  --color-lime-700: #245d10;
+  --color-lime-800: #173d0c;
+  --color-lime-900: #0c2407;
+  --color-lime-950: #061303;
+}
+
+/*
+  --------------------------------------------------------------------------
+  iDroid CSS variables — for utility classes and effects below
+  --------------------------------------------------------------------------
+*/
+:root {
+  --idroid-bg:        #020a0d;
+  --idroid-bg-deep:   #010608;
+  --idroid-bg-panel:  rgba(4, 30, 38, 0.55);
+  --idroid-bg-panel-2: rgba(8, 50, 62, 0.45);
+  --idroid-cyan:       #6ce6f8;
+  --idroid-cyan-bright: #aaf6ff;
+  --idroid-cyan-dim:   rgba(108, 230, 248, 0.55);
+  --idroid-cyan-line:  rgba(108, 230, 248, 0.30);
+  --idroid-cyan-faint: rgba(108, 230, 248, 0.10);
+  --idroid-amber:      #ffb84d;
+  --idroid-amber-bright: #ffd082;
+  --idroid-red:        #ff5874;
+  --idroid-grid:       rgba(108, 230, 248, 0.06);
 }
 
 html,
@@ -10,47 +328,157 @@ body,
   height: 100%;
 }
 
-body {
-  @apply bg-slate-950 text-slate-100 font-sans;
+html {
+  background: var(--idroid-bg-deep);
 }
 
-/* Tiny scrollbar styling so the app doesn't feel like a raw prototype */
+body {
+  background-color: var(--idroid-bg);
+  color: var(--idroid-cyan-bright);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  /* Subtle holographic grid + radial vignette */
+  background-image:
+    radial-gradient(ellipse at 50% -10%, rgba(108, 230, 248, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 110%, rgba(108, 230, 248, 0.08) 0%, transparent 55%),
+    linear-gradient(var(--idroid-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--idroid-grid) 1px, transparent 1px);
+  background-size: auto, auto, 32px 32px, 32px 32px;
+  background-attachment: fixed;
+  /* CRT-ish sub-pixel scan line over the whole viewport */
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(108, 230, 248, 0.025) 0,
+    rgba(108, 230, 248, 0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+/*
+  --------------------------------------------------------------------------
+  Scrollbars — terminal-thin cyan
+  --------------------------------------------------------------------------
+*/
 *::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
 }
 *::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(108, 230, 248, 0.04);
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 9999px;
+  background: rgba(108, 230, 248, 0.28);
+  border-radius: 0;
+  box-shadow: 0 0 4px rgba(108, 230, 248, 0.4);
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+  background: rgba(108, 230, 248, 0.55);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
-/* Prose tweaks for markdown inside message bubbles */
+/*
+  --------------------------------------------------------------------------
+  Selection — invert to amber for clear contrast
+  --------------------------------------------------------------------------
+*/
+::selection {
+  background: rgba(255, 184, 77, 0.40);
+  color: var(--idroid-cyan-bright);
+}
+
+/*
+  --------------------------------------------------------------------------
+  Form controls — match the iDroid panel look
+  --------------------------------------------------------------------------
+*/
+input,
+textarea,
+select {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline: 1px solid var(--idroid-cyan);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px rgba(108, 230, 248, 0.15);
+}
+
+/*
+  --------------------------------------------------------------------------
+  Markdown bubble — terminal-styled prose
+  --------------------------------------------------------------------------
+*/
 .prose-chat p {
   margin: 0.25rem 0;
   line-height: 1.55;
 }
 .prose-chat code {
-  background: rgba(51, 65, 85, 0.55);
+  background: rgba(108, 230, 248, 0.12);
+  color: var(--idroid-cyan-bright);
   padding: 0 0.25rem;
-  border-radius: 0.25rem;
+  border: 1px solid rgba(108, 230, 248, 0.2);
+  border-radius: 1px;
   font-size: 0.85em;
+  font-family: var(--font-mono);
 }
 .prose-chat pre {
-  background: rgb(15 23 42);
+  background: rgba(2, 14, 20, 0.85);
+  border: 1px solid rgba(108, 230, 248, 0.18);
   padding: 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: 2px;
   overflow-x: auto;
   font-size: 0.8em;
+  font-family: var(--font-mono);
+  position: relative;
+}
+.prose-chat pre::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--idroid-cyan), transparent);
 }
 .prose-chat ul {
   margin: 0.25rem 0 0.25rem 1.25rem;
-  list-style: disc;
+  list-style: none;
+}
+.prose-chat ul > li::before {
+  content: '▸ ';
+  color: var(--idroid-cyan);
+  margin-right: 0.25rem;
 }
 .prose-chat ol {
   margin: 0.25rem 0 0.25rem 1.25rem;
@@ -60,66 +488,430 @@ body {
 .prose-chat h2,
 .prose-chat h3 {
   margin: 0.5rem 0 0.25rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--idroid-cyan-bright);
+  text-shadow: 0 0 6px rgba(108, 230, 248, 0.3);
 }
 .prose-chat a {
-  color: rgb(56 189 248);
+  color: var(--idroid-cyan-bright);
   text-decoration: underline;
+  text-decoration-color: var(--idroid-cyan);
+  text-underline-offset: 2px;
+}
+.prose-chat a:hover {
+  text-shadow: 0 0 6px rgba(108, 230, 248, 0.6);
 }
 .prose-chat blockquote {
-  border-left: 3px solid rgb(71 85 105);
+  border-left: 2px solid var(--idroid-cyan);
   padding-left: 0.75rem;
-  color: rgb(148 163 184);
+  color: var(--idroid-cyan-dim);
   margin: 0.5rem 0;
+  font-style: italic;
+}
+.prose-chat strong {
+  color: var(--idroid-cyan-bright);
+  text-shadow: 0 0 4px rgba(108, 230, 248, 0.4);
 }
 
-/* Thinking indicator — Claude Code-style shimmer on a rotating verb. */
+/*
+  --------------------------------------------------------------------------
+  Thinking shimmer — cyan glow rotating
+  --------------------------------------------------------------------------
+*/
 @keyframes thinkingShimmer {
-  0% {
-    background-position: 200% 50%;
-  }
-  100% {
-    background-position: -200% 50%;
-  }
+  0% { background-position: 200% 50%; }
+  100% { background-position: -200% 50%; }
 }
 .thinking-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(148, 163, 184, 0.55) 0%,
-    rgba(226, 232, 240, 1) 50%,
-    rgba(148, 163, 184, 0.55) 100%
+    rgba(108, 230, 248, 0.4) 0%,
+    rgba(170, 246, 255, 1) 50%,
+    rgba(108, 230, 248, 0.4) 100%
   );
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   animation: thinkingShimmer 2.4s linear infinite;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 @keyframes thinkingDot {
-  0%,
-  80%,
-  100% {
-    opacity: 0.25;
-    transform: translateY(0);
-  }
-  40% {
-    opacity: 1;
-    transform: translateY(-2px);
-  }
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
 }
 .thinking-dot {
   display: inline-block;
   width: 4px;
   height: 4px;
   border-radius: 9999px;
-  background: rgb(148 163 184);
+  background: var(--idroid-cyan);
   margin: 0 1px;
   animation: thinkingDot 1.2s ease-in-out infinite both;
+  box-shadow: 0 0 4px var(--idroid-cyan);
 }
-.thinking-dot:nth-child(2) {
-  animation-delay: 0.15s;
+.thinking-dot:nth-child(2) { animation-delay: 0.15s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/*
+  --------------------------------------------------------------------------
+  iDroid panel chrome — corner brackets + scan lines
+  --------------------------------------------------------------------------
+  .holo-frame    — 4 cyan corner brackets + thin border + faint inner glow
+  .holo-frame-sm — same, smaller bracket length, subtler border
+  .holo-panel    — flat panel with faint cyan border + bg
+  .scan-lines    — overlays sub-pixel horizontal scanlines on the element
+  .scan-beam     — a slow vertical scan beam sweeping the element
+  .glow-cyan     — cyan text glow
+  .glow-amber    — amber text glow (warnings/alerts)
+  .glow-red      — red text glow (danger)
+  .holo-bracket-h — horizontal "[ TITLE ]" wrapper with cyan brackets
+*/
+
+.holo-frame,
+.holo-frame-sm {
+  position: relative;
+  border: 1px solid rgba(108, 230, 248, 0.22);
+  background:
+    linear-gradient(135deg, rgba(4, 30, 38, 0.6), rgba(2, 14, 20, 0.4));
+  box-shadow:
+    inset 0 0 24px rgba(108, 230, 248, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.4);
 }
-.thinking-dot:nth-child(3) {
-  animation-delay: 0.3s;
+
+.holo-frame::before,
+.holo-frame::after,
+.holo-frame-sm::before,
+.holo-frame-sm::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--idroid-cyan);
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgba(108, 230, 248, 0.7));
+}
+.holo-frame-sm::before,
+.holo-frame-sm::after {
+  width: 8px;
+  height: 8px;
+}
+
+.holo-frame::before,
+.holo-frame-sm::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--idroid-cyan);
+  border-left: 2px solid var(--idroid-cyan);
+}
+.holo-frame::after,
+.holo-frame-sm::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid var(--idroid-cyan);
+  border-right: 2px solid var(--idroid-cyan);
+}
+
+/* When you also want the other two corners, wrap inner content with .holo-corners */
+.holo-corners {
+  position: relative;
+}
+.holo-corners::before,
+.holo-corners::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 3px rgba(108, 230, 248, 0.7));
+}
+.holo-corners::before {
+  top: -1px;
+  right: -1px;
+  border-top: 2px solid var(--idroid-cyan);
+  border-right: 2px solid var(--idroid-cyan);
+}
+.holo-corners::after {
+  bottom: -1px;
+  left: -1px;
+  border-bottom: 2px solid var(--idroid-cyan);
+  border-left: 2px solid var(--idroid-cyan);
+}
+
+.holo-panel {
+  position: relative;
+  border: 1px solid rgba(108, 230, 248, 0.18);
+  background:
+    linear-gradient(180deg, rgba(4, 30, 38, 0.45), rgba(2, 14, 20, 0.3));
+  box-shadow:
+    inset 0 1px 0 rgba(108, 230, 248, 0.08),
+    inset 0 0 24px rgba(108, 230, 248, 0.03);
+}
+
+.holo-panel-amber {
+  position: relative;
+  border: 1px solid rgba(255, 184, 77, 0.30);
+  background:
+    linear-gradient(180deg, rgba(40, 24, 4, 0.45), rgba(20, 12, 2, 0.3));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 184, 77, 0.12),
+    inset 0 0 24px rgba(255, 184, 77, 0.04);
+}
+
+.holo-panel-red {
+  position: relative;
+  border: 1px solid rgba(255, 88, 116, 0.30);
+  background:
+    linear-gradient(180deg, rgba(40, 4, 12, 0.45), rgba(20, 2, 6, 0.3));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 88, 116, 0.12),
+    inset 0 0 24px rgba(255, 88, 116, 0.04);
+}
+
+.scan-lines {
+  position: relative;
+}
+.scan-lines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(108, 230, 248, 0.04) 0,
+    rgba(108, 230, 248, 0.04) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+}
+
+@keyframes scanBeam {
+  0% { transform: translateY(-30%); opacity: 0; }
+  10% { opacity: 0.7; }
+  60% { opacity: 0.5; }
+  100% { transform: translateY(130%); opacity: 0; }
+}
+.scan-beam {
+  position: relative;
+  overflow: hidden;
+}
+.scan-beam::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 18%;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(108, 230, 248, 0.18) 50%,
+    rgba(170, 246, 255, 0.05) 100%
+  );
+  animation: scanBeam 5.5s linear infinite;
+}
+
+.glow-cyan {
+  text-shadow:
+    0 0 6px rgba(108, 230, 248, 0.6),
+    0 0 12px rgba(108, 230, 248, 0.3);
+}
+.glow-cyan-strong {
+  text-shadow:
+    0 0 8px rgba(170, 246, 255, 0.9),
+    0 0 18px rgba(108, 230, 248, 0.55),
+    0 0 30px rgba(108, 230, 248, 0.3);
+}
+.glow-amber {
+  text-shadow:
+    0 0 6px rgba(255, 184, 77, 0.7),
+    0 0 12px rgba(255, 144, 0, 0.4);
+}
+.glow-red {
+  text-shadow:
+    0 0 6px rgba(255, 88, 116, 0.8),
+    0 0 12px rgba(237, 24, 64, 0.4);
+}
+.box-glow-cyan {
+  box-shadow:
+    0 0 10px rgba(108, 230, 248, 0.35),
+    inset 0 0 12px rgba(108, 230, 248, 0.05);
+}
+
+/* Display / heading style — used across panel titles */
+.holo-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--idroid-cyan-bright);
+  text-shadow:
+    0 0 6px rgba(108, 230, 248, 0.5),
+    0 0 12px rgba(108, 230, 248, 0.25);
+}
+.holo-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--idroid-cyan-dim);
+}
+.holo-readout {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  color: var(--idroid-cyan-bright);
+}
+
+/* Bracketed inline label  ▸ [ TITLE ] ◂ */
+.holo-bracket-h {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--idroid-cyan-bright);
+}
+.holo-bracket-h::before {
+  content: '▸';
+  color: var(--idroid-cyan);
+  filter: drop-shadow(0 0 3px var(--idroid-cyan));
+}
+.holo-bracket-h::after {
+  content: '◂';
+  color: var(--idroid-cyan);
+  filter: drop-shadow(0 0 3px var(--idroid-cyan));
+}
+
+/* Diamond marker used for active/section indicators */
+.holo-diamond::before {
+  content: '◆';
+  color: var(--idroid-cyan);
+  margin-right: 0.35rem;
+  filter: drop-shadow(0 0 4px var(--idroid-cyan));
+}
+
+/* Pulsing status dot, used inline */
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px currentColor, 0 0 8px currentColor; }
+  50% { opacity: 0.6; box-shadow: 0 0 2px currentColor; }
+}
+.holo-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: pulseDot 1.8s ease-in-out infinite;
+}
+
+/* iDroid-style button — cyan outline with hover inversion */
+.holo-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(108, 230, 248, 0.06);
+  border: 1px solid rgba(108, 230, 248, 0.45);
+  color: var(--idroid-cyan-bright);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% 100%,
+    8px 100%,
+    0 calc(100% - 8px)
+  );
+}
+.holo-button:hover {
+  background: rgba(108, 230, 248, 0.18);
+  color: var(--idroid-cyan-bright);
+  text-shadow: 0 0 6px rgba(108, 230, 248, 0.7);
+  box-shadow: 0 0 10px rgba(108, 230, 248, 0.3);
+}
+.holo-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.holo-button-amber {
+  background: rgba(255, 184, 77, 0.06);
+  border-color: rgba(255, 184, 77, 0.45);
+  color: var(--idroid-amber-bright);
+}
+.holo-button-amber:hover {
+  background: rgba(255, 184, 77, 0.18);
+  text-shadow: 0 0 6px rgba(255, 184, 77, 0.7);
+  box-shadow: 0 0 10px rgba(255, 184, 77, 0.3);
+}
+.holo-button-red {
+  background: rgba(255, 88, 116, 0.06);
+  border-color: rgba(255, 88, 116, 0.45);
+  color: #ff859a;
+}
+.holo-button-red:hover {
+  background: rgba(255, 88, 116, 0.18);
+  text-shadow: 0 0 6px rgba(255, 88, 116, 0.7);
+  box-shadow: 0 0 10px rgba(255, 88, 116, 0.3);
+}
+
+/* Keep certain monospace mono-pitch readable but slightly green-cyan tinted */
+.font-mono { letter-spacing: 0.04em; }
+
+/* HUD-style number readout */
+.holo-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  color: var(--idroid-cyan-bright);
+  text-shadow: 0 0 4px rgba(108, 230, 248, 0.4);
+}
+
+/* Override sonner toast styling to fit theme */
+[data-sonner-toaster] {
+  --normal-bg: rgba(4, 30, 38, 0.95) !important;
+  --normal-border: rgba(108, 230, 248, 0.4) !important;
+  --normal-text: var(--idroid-cyan-bright) !important;
+  font-family: var(--font-mono) !important;
+}
+[data-sonner-toast] {
+  border: 1px solid rgba(108, 230, 248, 0.4) !important;
+  box-shadow:
+    0 0 12px rgba(108, 230, 248, 0.2),
+    inset 0 0 18px rgba(108, 230, 248, 0.05) !important;
+  border-radius: 2px !important;
+}
+
+/* Details/summary collapsibles */
+details > summary {
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before {
+  content: '▸';
+  color: var(--idroid-cyan);
+  margin-right: 0.4rem;
+  display: inline-block;
+  transition: transform 0.15s ease;
+  filter: drop-shadow(0 0 3px var(--idroid-cyan));
+}
+details[open] > summary::before {
+  transform: rotate(90deg);
 }

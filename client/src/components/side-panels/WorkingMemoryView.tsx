@@ -54,74 +54,79 @@ export function WorkingMemoryView({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-slate-800 flex items-center gap-2">
+      <div className="p-3 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
         <PrimitiveBadge primitive="working-memory" onTeach={onTeach} compact />
-        <div className="text-xs font-semibold text-slate-100">
-          Working memory
-        </div>
+        <div className="holo-title text-xs">WORKING MEMORY</div>
         {wm?.scope && (
-          <span className="text-[10px] font-mono text-cyan-300/80 bg-cyan-500/10 border border-cyan-500/20 px-1.5 py-0.5 rounded">
-            scope: {wm.scope}
+          <span
+            className="text-[10px] font-mono uppercase tracking-widest px-1.5 py-0.5"
+            style={{
+              background: 'rgba(54, 212, 236, 0.10)',
+              border: '1px solid rgba(54, 212, 236, 0.45)',
+              color: '#36d4ec',
+            }}
+          >
+            SCOPE: {wm.scope}
           </span>
         )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3 text-xs">
         <div>
-          <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
-            User / resource
-          </div>
-          <div className="font-mono text-slate-300 text-[11px]">
+          <div className="holo-eyebrow mb-1">// USER / RESOURCE</div>
+          <div className="font-mono text-[11px]" style={{ color: '#aaf6ff' }}>
             {resourceId}
           </div>
         </div>
 
         <div>
-          <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
-            What MastraClaw remembers
-          </div>
+          <div className="holo-eyebrow mb-1">// WHAT MASTRACLAW REMEMBERS</div>
           {loading ? (
-            <div className="text-slate-500 italic">loading…</div>
+            <div className="italic holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>// loading...</div>
           ) : current ? (
-            <div className="prose-chat text-[12px] p-2 rounded border border-cyan-500/20 bg-slate-900/60">
+            <div
+              className="prose-chat text-[12px] p-2"
+              style={{ border: '1px solid rgba(54, 212, 236, 0.35)', background: 'rgba(2, 14, 20, 0.7)' }}
+            >
               <ReactMarkdown>{current}</ReactMarkdown>
             </div>
           ) : (
-            <div className="text-slate-500 italic p-2 rounded border border-slate-800 bg-slate-900/40">
-              {wm?.error ??
-                'Empty. The agent has not learned anything about this user yet — send a message with identifying info (role, tone, project) and ask it to remember.'}
+            <div
+              className="italic p-2 holo-readout"
+              style={{ border: '1px solid rgba(108, 230, 248, 0.18)', background: 'rgba(4, 30, 38, 0.4)', color: 'rgba(108, 230, 248, 0.6)' }}
+            >
+              // {wm?.error ?? 'Empty. The agent has not learned anything about this user yet.'}
             </div>
           )}
           {wm?.updatedAt && (
-            <div className="mt-1 text-[10px] text-slate-500">
-              last updated {formatRelative(wm.updatedAt)}
+            <div className="mt-1 text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+              // last updated {formatRelative(wm.updatedAt)}
             </div>
           )}
         </div>
 
         {template && (
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
-              Template
-            </div>
-            <pre className="p-2 rounded border border-slate-800 bg-slate-950 text-[11px] whitespace-pre-wrap break-all font-mono text-slate-300">
+            <div className="holo-eyebrow mb-1">// TEMPLATE</div>
+            <pre
+              className="p-2 text-[11px] whitespace-pre-wrap break-all font-mono"
+              style={{ border: '1px solid rgba(108, 230, 248, 0.18)', background: 'rgba(2, 14, 20, 0.85)', color: '#cdf2fb' }}
+            >
               {template}
             </pre>
-            <div className="mt-1 text-[10px] text-slate-500 leading-relaxed">
-              The agent writes into this markdown template when it learns new
-              things. Fields it hasn't learned yet stay blank — instructions
-              forbid inventing values.
+            <div className="mt-1 text-[10px] holo-readout leading-relaxed" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+              // The agent writes into this markdown template when it learns
+              new things. Fields it hasn't learned yet stay blank.
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-2 border-t border-slate-800 text-[10px] text-slate-500 leading-snug">
-        Served by{' '}
-        <span className="font-mono text-slate-300">
+      <div className="p-2 text-[10px] holo-readout leading-snug" style={{ borderTop: '1px solid rgba(108, 230, 248, 0.22)', color: 'rgba(108, 230, 248, 0.55)' }}>
+        // Served by{' '}
+        <span className="font-mono" style={{ color: '#aaf6ff' }}>
           GET /working-memory/{agentId}
-        </span>{' '}
-        (custom route in src/mastra/routes/).
+        </span>
       </div>
     </div>
   );

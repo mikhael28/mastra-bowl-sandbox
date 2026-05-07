@@ -403,7 +403,7 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
   channels: {
     adapters: {
       ...(isDeployed ? { telegram: createTelegramAdapter() } : {}),
-      slack: createSlackAdapter() 
+      ...(isDeployed ? { slack: createSlackAdapter() } : {}),
     },
   },
 

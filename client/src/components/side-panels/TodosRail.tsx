@@ -50,78 +50,96 @@ export function TodosRail({ agentId, onTeach, refreshNonce }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-slate-800 flex items-center gap-2">
+      <div className="p-3 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
         <PrimitiveBadge primitive="workspace" onTeach={onTeach} compact />
-        <div className="text-xs font-semibold text-slate-100">Todos</div>
+        <div className="holo-title text-xs">TODOS</div>
         <button
           onClick={refresh}
-          className="ml-auto text-[10px] text-slate-500 hover:text-slate-200 underline decoration-dotted"
+          className="ml-auto text-[10px] holo-readout underline decoration-dotted uppercase tracking-widest"
+          style={{ color: 'rgba(108, 230, 248, 0.6)' }}
         >
-          {loading ? '…' : 'refresh'}
+          {loading ? '◌ SYNC' : '↻ REFRESH'}
         </button>
       </div>
 
-      <div className="p-2 border-b border-slate-800 flex gap-1 text-[10px]">
+      <div className="p-2 flex gap-1 text-[10px]" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
         {(['pending', 'all', 'completed'] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-2 py-0.5 rounded ${
+            className="px-2 py-0.5 font-mono uppercase tracking-widest"
+            style={
               filter === f
-                ? 'bg-indigo-500/20 text-indigo-200 border border-indigo-500/40'
-                : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-600'
-            }`}
+                ? {
+                    background: 'rgba(108, 230, 248, 0.15)',
+                    color: '#aaf6ff',
+                    border: '1px solid rgba(108, 230, 248, 0.55)',
+                    textShadow: '0 0 4px rgba(108, 230, 248, 0.5)',
+                  }
+                : {
+                    background: 'rgba(2, 14, 20, 0.55)',
+                    color: 'rgba(108, 230, 248, 0.6)',
+                    border: '1px solid rgba(108, 230, 248, 0.18)',
+                  }
+            }
           >
-            {f} (
+            {f} [
             {f === 'all'
               ? counts.total
               : f === 'pending'
                 ? counts.pending
                 : counts.completed}
-            )
+            ]
           </button>
         ))}
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {error && (
-          <div className="text-[11px] text-rose-300">{error}</div>
+          <div className="text-[11px] glow-red" style={{ color: '#ff859a' }}>⚠ {error}</div>
         )}
         {!loading && todos.length === 0 && (
-          <div className="text-[11px] text-slate-500 italic p-2">
-            No {filter === 'all' ? '' : filter} todos. Ask the agent to
+          <div className="text-[10px] holo-readout italic p-2" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+            // No {filter === 'all' ? '' : filter} todos. Ask the agent to
             "remember to…" and one will appear here.
           </div>
         )}
         {todos.map((t) => (
           <div
             key={t.id}
-            className="flex items-start gap-2 p-2 rounded border border-slate-800 bg-slate-900/40 text-[11px]"
+            className="flex items-start gap-2 p-2 text-[11px]"
+            style={{
+              border: '1px solid rgba(108, 230, 248, 0.15)',
+              background: 'rgba(4, 30, 38, 0.4)',
+            }}
           >
             <button
               onClick={() => !t.completed && handleComplete(t.id)}
               disabled={t.completed}
-              className={`w-4 h-4 rounded border shrink-0 mt-0.5 ${
+              className="w-4 h-4 shrink-0 mt-0.5 font-mono text-[10px] flex items-center justify-center"
+              style={
                 t.completed
-                  ? 'bg-emerald-500/30 border-emerald-500/60 text-emerald-200'
-                  : 'border-slate-600 hover:border-emerald-400'
-              }`}
+                  ? {
+                      background: 'rgba(54, 227, 168, 0.25)',
+                      color: '#66f5c2',
+                      border: '1px solid rgba(54, 227, 168, 0.6)',
+                      boxShadow: '0 0 4px rgba(54, 227, 168, 0.4)',
+                    }
+                  : {
+                      border: '1px solid rgba(108, 230, 248, 0.45)',
+                      background: 'transparent',
+                    }
+              }
               aria-label="Complete todo"
               title={t.completed ? 'Already completed' : 'Mark complete'}
             >
               {t.completed ? '✓' : ''}
             </button>
             <div className="min-w-0 flex-1">
-              <div
-                className={
-                  t.completed
-                    ? 'text-slate-500 line-through'
-                    : 'text-slate-200'
-                }
-              >
+              <div style={{ color: t.completed ? 'rgba(108, 230, 248, 0.5)' : '#cdf2fb', textDecoration: t.completed ? 'line-through' : 'none' }}>
                 {t.text}
               </div>
-              <div className="text-[9px] text-slate-600 font-mono truncate">
+              <div className="text-[9px] font-mono truncate" style={{ color: 'rgba(108, 230, 248, 0.4)' }}>
                 {new Date(t.createdAt).toLocaleString()}
               </div>
             </div>
@@ -129,10 +147,10 @@ export function TodosRail({ agentId, onTeach, refreshNonce }: Props) {
         ))}
       </div>
 
-      <div className="p-2 border-t border-slate-800 text-[10px] text-slate-500 leading-snug">
-        Backed by{' '}
-        <span className="font-mono text-slate-300">workspace/todo.json</span>.
-        The workspace IS the database for this primitive.
+      <div className="p-2 text-[10px] holo-readout leading-snug" style={{ borderTop: '1px solid rgba(108, 230, 248, 0.22)', color: 'rgba(108, 230, 248, 0.55)' }}>
+        // Backed by{' '}
+        <span className="font-mono" style={{ color: '#aaf6ff' }}>workspace/todo.json</span>.
+        The workspace IS the database.
       </div>
     </div>
   );

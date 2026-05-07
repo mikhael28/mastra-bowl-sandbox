@@ -31,12 +31,21 @@ export function McpPanel({ onTeach }: Props) {
   }, [selectedId]);
 
   return (
-    <div className="flex-1 flex flex-col min-w-0">
-      <header className="border-b border-slate-800 p-4 flex items-center gap-3">
-        <h2 className="font-semibold">MCP servers</h2>
+    <div className="flex-1 flex flex-col min-w-0 scan-lines">
+      <header
+        className="p-4 flex items-center gap-3"
+        style={{
+          borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+          background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+        }}
+      >
+        <div>
+          <div className="holo-eyebrow">// MODULE 07</div>
+          <h2 className="holo-title text-base mt-0.5">MCP SERVERS</h2>
+        </div>
         <PrimitiveBadge primitive="mcp" onTeach={onTeach} compact />
-        <div className="text-xs text-slate-400">
-          This Mastra instance both hosts and consumes MCP.
+        <div className="text-xs holo-readout" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+          // This Mastra instance both hosts and consumes MCP.
         </div>
       </header>
 

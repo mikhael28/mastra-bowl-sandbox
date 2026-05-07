@@ -55,13 +55,13 @@ interface ChatMessage {
 }
 
 const ACCENT_BADGE: Record<NonNullable<ChatMessage['workflowAccent']>, string> = {
-  blue: 'bg-[#58a6ff22] text-[#58a6ff] border-[#58a6ff44]',
-  orange: 'bg-[#d2992222] text-[#d29922] border-[#d2992244]',
-  purple: 'bg-[#bc8cff22] text-[#bc8cff] border-[#bc8cff44]',
-  green: 'bg-[#3fb95022] text-[#3fb950] border-[#3fb95044]',
-  pink: 'bg-[#f0509622] text-[#f05096] border-[#f0509644]',
-  yellow: 'bg-[#e3b34122] text-[#e3b341] border-[#e3b34144]',
-  cyan: 'bg-[#39d0d822] text-[#39d0d8] border-[#39d0d844]',
+  blue: 'bg-[#aaf6ff22] text-[#aaf6ff] border-[#aaf6ff44]',
+  orange: 'bg-[#ffb84d22] text-[#ffb84d] border-[#ffb84d44]',
+  purple: 'bg-[#ec88f522] text-[#ec88f5] border-[#ec88f544]',
+  green: 'bg-[#36e3a822] text-[#36e3a8] border-[#36e3a844]',
+  pink: 'bg-[#ec88f522] text-[#ec88f5] border-[#ec88f544]',
+  yellow: 'bg-[#ffc04d22] text-[#ffc04d] border-[#ffc04d44]',
+  cyan: 'bg-[#36d4ec22] text-[#36d4ec] border-[#36d4ec44]',
 };
 
 function buildItemContext(items: FavoriteItem[]): string {
@@ -261,10 +261,10 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
 
     if (collapsed) {
       return (
-        <div className="w-12 flex-shrink-0 border-l border-[#30363d] bg-[#161b22] flex flex-col items-center py-4 gap-3">
+        <div className="w-12 flex-shrink-0 border-l border-[#143a48] bg-[#04141a] flex flex-col items-center py-4 gap-3">
           <button
             onClick={onToggleCollapsed}
-            className="p-2 rounded-md border border-[#30363d] hover:border-[#bc8cff] text-[#bc8cff] transition-colors"
+            className="p-2 rounded-md border border-[#143a48] hover:border-[#ec88f5] text-[#ec88f5] transition-colors"
             title="Expand copilot"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -272,7 +272,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
             </svg>
           </button>
           {messages.length > 0 && (
-            <div className="text-[10px] text-[#8b949e] -rotate-90 origin-center mt-12 whitespace-nowrap">
+            <div className="text-[10px] text-[#5395a8] -rotate-90 origin-center mt-12 whitespace-nowrap">
               {messages.filter((m) => m.role === 'assistant').length} replies
             </div>
           )}
@@ -281,8 +281,8 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
     }
 
     return (
-      <div className="w-[440px] flex-shrink-0 border-l border-[#30363d] bg-[#0d1117] flex flex-col">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#30363d] bg-[#161b22]">
+      <div className="w-[440px] flex-shrink-0 border-l border-[#143a48] bg-[#020a0d] flex flex-col">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#143a48] bg-[#04141a]">
           <div className="flex items-center gap-2.5">
             <div className="relative">
               <svg
@@ -290,14 +290,14 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
                 height="22"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#bc8cff"
+                stroke="#ec88f5"
                 strokeWidth="1.8"
               >
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               <span
                 className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ${
-                  streaming ? 'bg-[#3fb950] animate-pulse' : 'bg-[#3fb950]'
+                  streaming ? 'bg-[#36e3a8] animate-pulse' : 'bg-[#36e3a8]'
                 }`}
               />
             </div>
@@ -305,7 +305,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
               <div className="text-sm font-semibold text-white leading-tight">
                 Triage Copilot
               </div>
-              <div className="text-[10px] text-[#8b949e] font-mono leading-tight">
+              <div className="text-[10px] text-[#5395a8] font-mono leading-tight">
                 mastraclaw-agent
                 {favorites.length > 0
                   ? ` · ${favorites.length} in scope`
@@ -327,7 +327,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
                   }
                   threadIdRef.current = fresh;
                 }}
-                className="text-[10px] text-[#8b949e] hover:text-white px-2 py-1 rounded hover:bg-[#21262d]"
+                className="text-[10px] text-[#5395a8] hover:text-white px-2 py-1 rounded hover:bg-[#0a2b37]"
                 title="Start a fresh conversation thread"
               >
                 clear
@@ -335,7 +335,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
             )}
             <button
               onClick={onToggleCollapsed}
-              className="text-[#8b949e] hover:text-white p-1 rounded hover:bg-[#21262d]"
+              className="text-[#5395a8] hover:text-white p-1 rounded hover:bg-[#0a2b37]"
               title="Collapse"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -347,15 +347,15 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
         </div>
 
         {favorites.length > 0 && (
-          <div className="px-4 py-2 border-b border-[#21262d] bg-[#0d1117]">
+          <div className="px-4 py-2 border-b border-[#0a2b37] bg-[#020a0d]">
             <div className="flex flex-wrap gap-1.5">
               {favorites.slice(0, 12).map((f) => (
                 <span
                   key={`${f._kind}-${f.number}`}
                   className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full border ${
                     f._kind === 'pr'
-                      ? 'border-[#58a6ff33] text-[#58a6ff] bg-[#58a6ff11]'
-                      : 'border-[#3fb95033] text-[#3fb950] bg-[#3fb95011]'
+                      ? 'border-[#aaf6ff33] text-[#aaf6ff] bg-[#aaf6ff11]'
+                      : 'border-[#36e3a833] text-[#36e3a8] bg-[#36e3a811]'
                   }`}
                   title={f.title}
                 >
@@ -363,7 +363,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
                 </span>
               ))}
               {favorites.length > 12 && (
-                <span className="text-[10px] text-[#8b949e]">
+                <span className="text-[10px] text-[#5395a8]">
                   +{favorites.length - 12} more
                 </span>
               )}
@@ -375,42 +375,42 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
           {messages.length === 0 && (
             <div className="space-y-4">
               <div className="text-center pt-4 pb-2">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#bc8cff15] border border-[#bc8cff33] mb-3">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#bc8cff" strokeWidth="1.5">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#ec88f515] border border-[#ec88f533] mb-3">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ec88f5" strokeWidth="1.5">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                   </svg>
                 </div>
-                <div className="text-sm text-[#e6edf3] font-medium">
+                <div className="text-sm text-[#cdf2fb] font-medium">
                   Your maintainer copilot
                 </div>
-                <p className="text-xs text-[#8b949e] mt-1 px-4 leading-relaxed">
+                <p className="text-xs text-[#5395a8] mt-1 px-4 leading-relaxed">
                   Click any workflow card on the left, ask about a specific
                   issue ("what's #1234?"), or paste a question.
                 </p>
               </div>
-              <div className="bg-[#161b22] border border-[#21262d] rounded-lg p-3">
-                <div className="text-[10px] uppercase tracking-wider text-[#8b949e] mb-2">
+              <div className="bg-[#04141a] border border-[#0a2b37] rounded-lg p-3">
+                <div className="text-[10px] uppercase tracking-wider text-[#5395a8] mb-2">
                   What I can do
                 </div>
-                <ul className="text-[11px] text-[#e6edf3] space-y-1 leading-relaxed">
+                <ul className="text-[11px] text-[#cdf2fb] space-y-1 leading-relaxed">
                   <li className="flex gap-2">
-                    <span className="text-[#3fb950]">●</span>
+                    <span className="text-[#36e3a8]">●</span>
                     Read & summarize the local triage bundle
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-[#58a6ff]">●</span>
+                    <span className="text-[#aaf6ff]">●</span>
                     Look up specific issues / PRs by number
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-[#bc8cff]">●</span>
+                    <span className="text-[#ec88f5]">●</span>
                     Run the full triage workflow against GitHub
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-[#d29922]">●</span>
+                    <span className="text-[#ffb84d]">●</span>
                     Re-run developer assignment on AI-suggested labels
                   </li>
                   <li className="flex gap-2">
-                    <span className="text-[#f05096]">●</span>
+                    <span className="text-[#ec88f5]">●</span>
                     Draft pings, close-as-stale notes, and PR review nudges
                   </li>
                 </ul>
@@ -426,8 +426,8 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
               <div
                 className={`max-w-[92%] rounded-lg px-3 py-2 text-[13px] leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-[#58a6ff15] text-[#e6edf3] border border-[#58a6ff33]'
-                    : 'bg-[#161b22] text-[#e6edf3] border border-[#21262d]'
+                    ? 'bg-[#aaf6ff15] text-[#cdf2fb] border border-[#aaf6ff33]'
+                    : 'bg-[#04141a] text-[#cdf2fb] border border-[#0a2b37]'
                 }`}
               >
                 {msg.role === 'user' && msg.workflowTitle && (
@@ -435,7 +435,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
                     className={`inline-flex items-center gap-1 mb-1.5 px-1.5 py-0.5 text-[9px] rounded-full border ${
                       msg.workflowAccent
                         ? ACCENT_BADGE[msg.workflowAccent]
-                        : 'bg-[#bc8cff22] text-[#bc8cff] border-[#bc8cff44]'
+                        : 'bg-[#ec88f522] text-[#ec88f5] border-[#ec88f544]'
                     }`}
                   >
                     <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
@@ -457,7 +457,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
 
           {streaming && (
             <div className="flex justify-start">
-              <div className="bg-[#161b22] border border-[#21262d] rounded-lg px-3 py-2">
+              <div className="bg-[#04141a] border border-[#0a2b37] rounded-lg px-3 py-2">
                 <span className="thinking-shimmer text-xs">Thinking</span>
                 <span className="thinking-dot" />
                 <span className="thinking-dot" />
@@ -467,7 +467,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
           )}
 
           {error && !streaming && (
-            <div className="text-[11px] text-[#f85149] bg-[#f8514911] border border-[#f8514933] rounded-md px-2.5 py-2">
+            <div className="text-[11px] text-[#ff5874] bg-[#ff587411] border border-[#ff587433] rounded-md px-2.5 py-2">
               {error}
             </div>
           )}
@@ -475,7 +475,7 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="px-4 py-3 border-t border-[#30363d] bg-[#161b22]">
+        <div className="px-4 py-3 border-t border-[#143a48] bg-[#04141a]">
           <div className="flex gap-2">
             <textarea
               ref={inputRef}
@@ -485,12 +485,12 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
               placeholder="Ask the copilot..."
               disabled={streaming}
               rows={2}
-              className="flex-1 bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-[13px] text-[#e6edf3] placeholder-[#484f58] focus:border-[#bc8cff] focus:outline-none resize-none disabled:opacity-50"
+              className="flex-1 bg-[#020a0d] border border-[#143a48] rounded-lg px-3 py-2 text-[13px] text-[#cdf2fb] placeholder-[#235e6f] focus:border-[#ec88f5] focus:outline-none resize-none disabled:opacity-50"
             />
             {streaming ? (
               <button
                 onClick={handleStop}
-                className="self-end px-3 py-2 bg-[#f85149] text-white text-xs font-medium rounded-lg hover:bg-[#ff7b72] transition-colors"
+                className="self-end px-3 py-2 bg-[#ff5874] text-white text-xs font-medium rounded-lg hover:bg-[#ff859a] transition-colors"
               >
                 Stop
               </button>
@@ -498,13 +498,13 @@ export const CopilotSidebar = forwardRef<CopilotSidebarHandle, Props>(
               <button
                 onClick={() => send(input)}
                 disabled={!input.trim()}
-                className="self-end px-3 py-2 bg-[#bc8cff] text-[#0d1117] text-xs font-semibold rounded-lg hover:bg-[#d2b3ff] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="self-end px-3 py-2 bg-[#ec88f5] text-[#020a0d] text-xs font-semibold rounded-lg hover:bg-[#ec88f5] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Send
               </button>
             )}
           </div>
-          <p className="text-[10px] text-[#484f58] mt-1.5">
+          <p className="text-[10px] text-[#235e6f] mt-1.5">
             Enter to send · Shift+Enter newline
           </p>
         </div>

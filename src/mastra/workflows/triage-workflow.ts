@@ -1,4 +1,4 @@
-import { createStep, createWorkflow } from '@mastra/core/workflows';
+import { createStep, createWorkflow } from '@mastra/core/workflows/evented';
 import { z } from 'zod';
 import {
   triageInternal,
@@ -473,6 +473,11 @@ export const triageWorkflow = createWorkflow({
   inputSchema: z.object({ repo: z.string().default(DEFAULT_REPO) }),
   outputSchema: z.object({ assigned: z.number(), total: z.number() }),
   stateSchema,
+  schedule: {
+    cron: '30 6 * * *',
+    timezone: 'America/Los_Angeles',
+    inputData: { repo: DEFAULT_REPO },
+  },
 })
   .then(fetchStep)
   .then(analyzeIssuesStep)

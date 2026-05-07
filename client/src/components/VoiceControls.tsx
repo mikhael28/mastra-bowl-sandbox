@@ -484,7 +484,7 @@ export function VoiceControls({
     (voiceState === 'recording' && !pttActive);
 
   return (
-    <div className="flex items-center gap-2 flex-wrap text-xs text-slate-400">
+    <div className="flex items-center gap-2 flex-wrap text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.7)' }}>
       <button
         type="button"
         onMouseDown={startPtt}
@@ -495,31 +495,29 @@ export function VoiceControls({
         onTouchCancel={stopPtt}
         disabled={pttDisabled}
         title="Hold to talk"
-        className={`px-2 py-1 rounded border text-xs font-medium select-none ${
-          pttActive
-            ? 'bg-rose-600 border-rose-500 text-white animate-pulse'
-            : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'
-        } disabled:opacity-40 disabled:cursor-not-allowed`}
+        className={`holo-button select-none disabled:opacity-40 disabled:cursor-not-allowed ${pttActive ? 'animate-pulse' : ''}`}
+        style={pttActive
+          ? { background: 'rgba(255, 88, 116, 0.2)', borderColor: 'rgba(255, 88, 116, 0.7)', color: '#ff859a' }
+          : undefined}
       >
-        🎤 Hold
+        ◉ HOLD
       </button>
 
       <button
         type="button"
         onClick={toggleLive}
         title={liveOn ? 'Stop always-on listening' : 'Start always-on listening'}
-        className={`px-2 py-1 rounded border text-xs font-medium ${
-          liveOn
-            ? 'bg-indigo-600/30 border-indigo-500 text-indigo-100'
-            : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'
-        }`}
+        className="holo-button"
+        style={liveOn
+          ? { background: 'rgba(255, 88, 116, 0.15)', borderColor: 'rgba(255, 88, 116, 0.55)', color: '#ff859a' }
+          : undefined}
       >
-        {liveOn ? '🔴 Live' : '🎙 Live'}
+        {liveOn ? '◉ LIVE' : '◇ LIVE'}
       </button>
 
       <div className="flex items-center gap-1.5">
-        <span className={`inline-block w-2 h-2 rounded-full ${stateDot[voiceState]}`} />
-        <span className="text-slate-400">{voiceState}</span>
+        <span className={`inline-block w-2 h-2 rounded-full ${stateDot[voiceState]}`} style={{ boxShadow: '0 0 4px currentColor' }} />
+        <span className="uppercase tracking-widest">{voiceState}</span>
       </div>
 
       {liveOn && (
@@ -533,11 +531,16 @@ export function VoiceControls({
 
       {speakers.length > 0 && (
         <label className="flex items-center gap-1">
-          <span className="text-slate-500">voice</span>
+          <span className="holo-eyebrow">VOICE</span>
           <select
             value={speakerId}
             onChange={(e) => setSpeakerId(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded px-1 py-0.5 text-xs text-slate-200"
+            className="px-1 py-0.5 text-xs"
+            style={{
+              background: 'rgba(2, 14, 20, 0.7)',
+              border: '1px solid rgba(108, 230, 248, 0.3)',
+              color: '#cdf2fb',
+            }}
           >
             <option value="">(default)</option>
             {speakers.map((s) => {
@@ -554,17 +557,17 @@ export function VoiceControls({
         </label>
       )}
 
-      <label className="flex items-center gap-1 select-none cursor-pointer">
+      <label className="flex items-center gap-1 select-none cursor-pointer uppercase tracking-widest text-[10px]">
         <input
           type="checkbox"
           checked={speakReplies}
           onChange={(e) => setSpeakReplies(e.target.checked)}
-          className="accent-indigo-500"
+          className="accent-cyan-400"
         />
-        speak replies
+        SPEAK REPLIES
       </label>
 
-      {error && <span className="text-rose-400 text-[11px]">{error}</span>}
+      {error && <span className="text-[10px] glow-red" style={{ color: '#ff859a' }}>⚠ {error}</span>}
     </div>
   );
 }

@@ -143,29 +143,33 @@ export function StagehandCard(props: ToolCardProps) {
   }
 
   return (
-    <div className={`mt-2 border rounded p-2 text-xs ${statusColor(tc.status)}`}>
+    <div className={`mt-2 border p-2 text-xs ${statusColor(tc.status)}`}>
       <div className="flex items-center gap-2">
         <PrimitiveBadge primitive="browser" onTeach={onTeach} compact />
-        <span className="font-mono text-slate-200">{tc.toolName}</span>
-        <span className="ml-auto text-[10px] text-slate-400">{tc.status}</span>
+        <span className="font-mono uppercase tracking-wider text-cyan-100 text-[11px]">{tc.toolName}</span>
+        <span className="ml-auto holo-eyebrow">[{tc.status.toUpperCase()}]</span>
       </div>
       {subtitle && (
-        <div className="text-[11px] text-slate-400 font-mono truncate mt-1">
-          {subtitle}
+        <div className="text-[11px] font-mono truncate mt-1" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
+          &gt; {subtitle}
         </div>
       )}
       <div className="mt-2">{body}</div>
-      <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-start gap-2 text-[10px] text-slate-500 leading-relaxed">
+      <div
+        className="mt-2 pt-2 flex items-start gap-2 text-[10px] holo-readout leading-relaxed"
+        style={{ borderTop: '1px solid rgba(108, 230, 248, 0.15)', color: 'rgba(108, 230, 248, 0.55)' }}
+      >
         <button
           onClick={() => onTeach('browser')}
-          className="shrink-0 text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+          className="shrink-0 underline decoration-dotted uppercase tracking-widest"
+          style={{ color: '#88efff' }}
         >
-          learn →
+          ▸ LEARN
         </button>
         <span>
           Stagehand verbs are plain English: navigate, observe (enumerate),
           act (do), extract (structured data). Always{' '}
-          <span className="font-mono">stagehand_close</span> when done.
+          <span className="font-mono" style={{ color: '#aaf6ff' }}>stagehand_close</span> when done.
         </span>
       </div>
     </div>

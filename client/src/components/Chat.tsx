@@ -601,8 +601,14 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
 
   if (!agent) {
     return (
-      <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
-        Pick an agent on the left to start chatting.
+      <div className="flex-1 flex items-center justify-center scan-lines">
+        <div className="holo-frame px-8 py-6 holo-corners">
+          <div className="holo-eyebrow mb-2">// AWAITING SELECTION</div>
+          <div className="holo-title text-base">Select an agent</div>
+          <div className="text-xs mt-1" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+            Pick an agent on the left panel to begin transmission.
+          </div>
+        </div>
       </div>
     );
   }
@@ -634,19 +640,31 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
       )}
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="border-b border-slate-800 p-4 bg-slate-900/40 flex items-start justify-between gap-4">
+        <header
+          className="p-4 flex items-start justify-between gap-4 relative scan-lines"
+          style={{
+            borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+            background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+          }}
+        >
           <div className="min-w-0 flex-1">
+            <div className="holo-eyebrow mb-1">// ACTIVE LINK</div>
             <div className="flex items-center gap-2 flex-wrap">
               {!threadPanelOpen && (
                 <button
                   onClick={() => setThreadPanelOpen(true)}
-                  className="text-slate-400 hover:text-slate-200 text-xs border border-slate-800 rounded px-2 py-0.5"
+                  className="text-[10px] font-mono tracking-widest px-2 py-0.5 transition-all"
+                  style={{
+                    border: '1px solid rgba(108, 230, 248, 0.35)',
+                    color: 'rgba(108, 230, 248, 0.8)',
+                    background: 'rgba(108, 230, 248, 0.04)',
+                  }}
                   title="Show thread history"
                 >
-                  ☰ Threads
+                  ▤ THREADS
                 </button>
               )}
-              <h2 className="text-base font-semibold truncate">
+              <h2 className="holo-title text-base truncate">
                 {agent.name ?? agent.id}
               </h2>
               <PrimitiveBadge primitive="agent" onTeach={onTeach} compact />
@@ -671,24 +689,37 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
 
               <button
                 onClick={() => setCatalogOpen(true)}
-                className="ml-auto text-[11px] px-2 py-0.5 rounded border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100"
+                className="ml-auto text-[10px] font-mono tracking-widest px-2 py-1 transition-all"
+                style={{
+                  border: '1px solid rgba(108, 230, 248, 0.35)',
+                  color: '#88efff',
+                  background: 'rgba(108, 230, 248, 0.06)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(108, 230, 248, 0.18)';
+                  e.currentTarget.style.boxShadow = '0 0 8px rgba(108, 230, 248, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(108, 230, 248, 0.06)';
+                  e.currentTarget.style.boxShadow = '';
+                }}
                 title="Browse every tool this agent can call"
               >
-                🧰 Tool catalog
+                ▤ TOOL CATALOG
               </button>
             </div>
             {agent.description && (
-              <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+              <p className="text-xs mt-1 line-clamp-2" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
                 {agent.description}
               </p>
             )}
-            <div className="text-[10px] font-mono text-slate-500 mt-1 truncate">
-              POST /api/agents/{agent.id}/stream · thread{' '}
+            <div className="text-[10px] holo-readout mt-1 truncate" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+              &gt; POST /api/agents/{agent.id}/stream · THR={' '}
               {currentThreadId ?? '(new)'}
               {agent.modelId && (
                 <>
-                  {' · '}
-                  <span className="text-slate-400">{agent.modelId}</span>
+                  {' · MDL='}
+                  <span style={{ color: '#88efff' }}>{agent.modelId}</span>
                 </>
               )}
             </div>
@@ -732,7 +763,13 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
           ))}
         </div>
 
-        <div className="border-t border-slate-800 p-3 bg-slate-900/40 space-y-2">
+        <div
+          className="p-3 space-y-2 relative"
+          style={{
+            borderTop: '1px solid rgba(108, 230, 248, 0.22)',
+            background: 'linear-gradient(0deg, rgba(4, 30, 38, 0.55), rgba(2, 14, 20, 0.3))',
+          }}
+        >
           {hasVoice && (
             <VoiceControls
               agentId={agent.id}
@@ -743,44 +780,68 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
               pendingSpeak={pendingSpeak}
             />
           )}
-          <div className="flex gap-2">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-                  e.preventDefault();
-                  send();
+          <div className="flex gap-2 relative">
+            <div className="flex-1 relative">
+              <span
+                aria-hidden
+                className="absolute left-2 top-2 text-[10px] holo-readout pointer-events-none"
+                style={{ color: 'rgba(108, 230, 248, 0.45)' }}
+              >
+                {buildMode ? '$ build_artifact >' : '$ tx >'}
+              </span>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                    e.preventDefault();
+                    send();
+                  }
+                }}
+                rows={2}
+                placeholder={
+                  buildMode
+                    ? 'BUILD MODE :: describe an artifact... (↵ send · ⇧↵ newline)'
+                    : `TRANSMIT to ${(agent.name ?? agent.id).toUpperCase()}... (↵ send · ⇧↵ newline)`
                 }
-              }}
-              rows={2}
-              placeholder={`${
-                buildMode ? '🎨 Build mode — describe an artifact… ' : `Message ${agent.name ?? agent.id}... `
-              }(Enter to send · Shift+Enter for newline)`}
-              className={`flex-1 bg-slate-950 border rounded px-3 py-2 text-sm resize-none focus:outline-none ${
-                buildMode
-                  ? 'border-purple-500/60 focus:border-purple-400'
-                  : 'border-slate-800 focus:border-indigo-500/60'
-              }`}
-            />
+                className="w-full bg-transparent text-sm resize-none focus:outline-none px-3 py-2 pl-16"
+                style={{
+                  background: 'rgba(2, 14, 20, 0.7)',
+                  border: buildMode
+                    ? '1px solid rgba(217, 108, 224, 0.6)'
+                    : '1px solid rgba(108, 230, 248, 0.35)',
+                  color: '#cdf2fb',
+                  fontFamily: 'var(--font-mono)',
+                  letterSpacing: '0.04em',
+                  boxShadow: buildMode
+                    ? 'inset 0 0 12px rgba(217, 108, 224, 0.05), 0 0 8px rgba(217, 108, 224, 0.2)'
+                    : 'inset 0 0 12px rgba(108, 230, 248, 0.05), 0 0 8px rgba(108, 230, 248, 0.15)',
+                }}
+              />
+            </div>
             {streaming ? (
               <button
                 onClick={stop}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 rounded text-sm font-medium"
+                className="holo-button holo-button-red"
               >
-                Stop
+                ◼ ABORT
               </button>
             ) : (
               <button
                 onClick={send}
                 disabled={!input.trim()}
-                className={`px-4 py-2 disabled:opacity-40 rounded text-sm font-medium ${
+                className={buildMode ? 'holo-button' : 'holo-button'}
+                style={
                   buildMode
-                    ? 'bg-purple-600 hover:bg-purple-500'
-                    : 'bg-indigo-600 hover:bg-indigo-500'
-                }`}
+                    ? {
+                        background: 'rgba(217, 108, 224, 0.10)',
+                        borderColor: 'rgba(217, 108, 224, 0.55)',
+                        color: '#ec88f5',
+                      }
+                    : undefined
+                }
               >
-                {buildMode ? 'Build' : 'Send'}
+                {buildMode ? '▸ BUILD' : '▸ TRANSMIT'}
               </button>
             )}
           </div>
@@ -789,24 +850,33 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
               onClick={() => {
                 setBuildMode((v) => {
                   const next = !v;
-                  // When turning Build mode on, surface the rail so the user
-                  // can see what they're about to construct.
                   if (next) setRailPanel('build');
                   return next;
                 });
               }}
-              className={`px-2 py-1 rounded border ${
+              className="text-[10px] font-mono tracking-widest px-2 py-1 transition-all"
+              style={
                 buildMode
-                  ? 'bg-purple-500/15 border-purple-500/40 text-purple-200'
-                  : 'border-slate-700 text-slate-400 hover:bg-slate-800'
-              }`}
+                  ? {
+                      background: 'rgba(217, 108, 224, 0.12)',
+                      border: '1px solid rgba(217, 108, 224, 0.55)',
+                      color: '#ec88f5',
+                      textShadow: '0 0 5px rgba(217, 108, 224, 0.5)',
+                      boxShadow: '0 0 8px rgba(217, 108, 224, 0.25)',
+                    }
+                  : {
+                      background: 'transparent',
+                      border: '1px solid rgba(108, 230, 248, 0.25)',
+                      color: 'rgba(108, 230, 248, 0.7)',
+                    }
+              }
               title="Prepend the artifact preamble — agent writes files into workspace/artifacts/<thread>/"
             >
-              {buildMode ? '🎨 Build mode: on' : '🎨 Build mode'}
+              {buildMode ? '◆ BUILD MODE: ON' : '◇ BUILD MODE'}
             </button>
             {buildMode && currentThreadId && (
-              <span className="text-[10px] font-mono text-slate-500 truncate">
-                workspace/artifacts/
+              <span className="text-[10px] holo-readout truncate" style={{ color: 'rgba(217, 108, 224, 0.6)' }}>
+                &gt; workspace/artifacts/
                 {sessionIdFromThread(currentThreadId).slice(0, 8)}/
               </span>
             )}
@@ -823,7 +893,11 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
         <aside
           className={`${
             railPanel === 'build' ? 'w-[480px]' : 'w-[340px]'
-          } border-l border-slate-800 bg-slate-950 flex flex-col min-h-0`}
+          } flex flex-col min-h-0 scan-lines`}
+          style={{
+            borderLeft: '1px solid rgba(108, 230, 248, 0.22)',
+            background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.3))',
+          }}
         >
           {railPanel === 'files' && (
             <WorkspaceExplorer
@@ -858,8 +932,8 @@ export function Chat({ agent, onTeach, onTurnFinished, onViewTrace }: Props) {
             />
           )}
           {railPanel === 'build' && !currentThreadId && (
-            <div className="p-3 text-[11px] text-slate-500">
-              Start or pick a thread to build artifacts in.
+            <div className="p-3 text-[11px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+              // Start or pick a thread to build artifacts in.
             </div>
           )}
         </aside>
@@ -891,28 +965,51 @@ function RightRail({
   onChange: (p: RailPanel) => void;
 }) {
   const tabs: Array<{ id: Exclude<RailPanel, null>; label: string; icon: string; title: string }> = [
-    { id: 'build', label: 'Build', icon: '🎨', title: 'Artifact preview / files / terminal for this thread' },
-    { id: 'files', label: 'Files', icon: '📁', title: "Browse the agent's workspace" },
-    { id: 'todos', label: 'Todos', icon: '☑', title: 'workspace/todo.json' },
-    { id: 'memory', label: 'Memory', icon: '🧠', title: 'What the agent remembers about you' },
+    { id: 'build',  label: 'BLD',  icon: '◇', title: 'Artifact preview / files / terminal for this thread' },
+    { id: 'files',  label: 'FIL',  icon: '▤', title: "Browse the agent's workspace" },
+    { id: 'todos',  label: 'TDO',  icon: '☑', title: 'workspace/todo.json' },
+    { id: 'memory', label: 'MEM',  icon: '◉', title: 'What the agent remembers about you' },
   ];
   return (
-    <div className="w-10 border-l border-slate-800 bg-slate-950/80 flex flex-col items-stretch shrink-0">
-      {tabs.map((t) => (
-        <button
-          key={t.id}
-          onClick={() => onChange(railPanel === t.id ? null : t.id)}
-          title={t.title}
-          className={`h-10 flex flex-col items-center justify-center text-[9px] border-l-2 ${
-            railPanel === t.id
-              ? 'bg-slate-900 border-l-indigo-500 text-indigo-200'
-              : 'border-l-transparent text-slate-500 hover:text-slate-200 hover:bg-slate-900/60'
-          }`}
-        >
-          <span className="text-sm leading-none">{t.icon}</span>
-          <span className="mt-0.5">{t.label}</span>
-        </button>
-      ))}
+    <div
+      className="w-10 flex flex-col items-stretch shrink-0"
+      style={{
+        borderLeft: '1px solid rgba(108, 230, 248, 0.22)',
+        background: 'rgba(2, 14, 20, 0.7)',
+      }}
+    >
+      {tabs.map((t) => {
+        const active = railPanel === t.id;
+        return (
+          <button
+            key={t.id}
+            onClick={() => onChange(active ? null : t.id)}
+            title={t.title}
+            className="h-10 flex flex-col items-center justify-center text-[9px] font-mono tracking-widest transition-all"
+            style={{
+              borderLeft: active ? '2px solid #aaf6ff' : '2px solid transparent',
+              background: active ? 'rgba(108, 230, 248, 0.12)' : 'transparent',
+              color: active ? '#aaf6ff' : 'rgba(108, 230, 248, 0.5)',
+              textShadow: active ? '0 0 4px rgba(108, 230, 248, 0.6)' : 'none',
+            }}
+            onMouseEnter={(e) => {
+              if (!active) {
+                e.currentTarget.style.color = '#88efff';
+                e.currentTarget.style.background = 'rgba(108, 230, 248, 0.05)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!active) {
+                e.currentTarget.style.color = 'rgba(108, 230, 248, 0.5)';
+                e.currentTarget.style.background = 'transparent';
+              }
+            }}
+          >
+            <span className="text-sm leading-none">{t.icon}</span>
+            <span className="mt-0.5">{t.label}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -945,40 +1042,54 @@ function ThreadRail({
   streaming: boolean;
 }) {
   return (
-    <aside className="w-60 border-r border-slate-800 bg-slate-950/60 flex flex-col min-h-0">
-      <div className="px-3 py-2 flex items-center gap-2 border-b border-slate-800">
-        <div className="text-[11px] uppercase tracking-wider text-slate-500 flex-1">
-          Threads {loading ? '…' : `(${threads.length})`}
+    <aside
+      className="w-60 flex flex-col min-h-0 scan-lines"
+      style={{
+        borderRight: '1px solid rgba(108, 230, 248, 0.22)',
+        background: 'rgba(2, 14, 20, 0.55)',
+      }}
+    >
+      <div
+        className="px-3 py-2.5 flex items-center gap-2"
+        style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}
+      >
+        <div className="holo-eyebrow flex-1">
+          // THREADS [{loading ? '...' : threads.length.toString().padStart(2, '0')}]
         </div>
         <button
           onClick={onCollapse}
-          className="text-slate-500 hover:text-slate-200 text-xs"
+          className="text-xs transition-colors"
+          style={{ color: 'rgba(108, 230, 248, 0.55)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#aaf6ff')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(108, 230, 248, 0.55)')}
           title="Hide thread panel"
         >
-          ⟨
+          ◀
         </button>
       </div>
       <div className="mx-3 mt-3 mb-1 flex gap-1">
         <button
           onClick={onNew}
           disabled={streaming}
-          className="flex-1 px-2 py-1.5 text-xs rounded border border-indigo-500/40 text-indigo-200 hover:bg-indigo-500/10 disabled:opacity-40"
+          className="holo-button flex-1 justify-center disabled:opacity-40"
         >
-          + New thread
+          + NEW
         </button>
         <button
           onClick={onDeleteAll}
           disabled={streaming || threads.length === 0}
           title="Delete every thread for this agent"
-          className="px-2 py-1.5 text-xs rounded border border-rose-500/40 text-rose-300 hover:bg-rose-500/10 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="holo-button holo-button-red disabled:opacity-30"
         >
-          Clear all
+          ✕ CLR
         </button>
       </div>
       <ul className="flex-1 overflow-y-auto py-1">
         {threads.length === 0 && !loading && (
-          <li className="px-3 py-4 text-[11px] text-slate-500">
-            No prior threads. Send a message to start one.
+          <li className="px-3 py-4 text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.45)' }}>
+            // No prior threads.
+            <br />
+            // Transmit to begin.
           </li>
         )}
         {threads.map((t) => {
@@ -989,20 +1100,34 @@ function ThreadRail({
               <button
                 onClick={() => onSelect(t.id)}
                 disabled={streaming && !active}
-                className={`w-full text-left pl-3 pr-8 py-2 text-xs border-l-2 ${
-                  active
-                    ? 'bg-indigo-500/10 border-l-indigo-500'
-                    : 'border-l-transparent hover:bg-slate-800/40'
-                } disabled:opacity-40`}
+                className="w-full text-left pl-3 pr-8 py-2 text-xs transition-all disabled:opacity-40"
+                style={{
+                  borderLeft: active ? '2px solid #aaf6ff' : '2px solid transparent',
+                  background: active
+                    ? 'linear-gradient(90deg, rgba(108, 230, 248, 0.14), transparent 90%)'
+                    : 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) e.currentTarget.style.background = 'rgba(108, 230, 248, 0.05)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) e.currentTarget.style.background = 'transparent';
+                }}
               >
-                <div className="font-medium text-slate-200 truncate">
-                  {t.title || '(untitled)'}
+                <div
+                  className="font-display font-semibold tracking-wider uppercase truncate text-[12px]"
+                  style={{
+                    color: active ? '#aaf6ff' : '#cdf2fb',
+                    textShadow: active ? '0 0 5px rgba(108, 230, 248, 0.5)' : 'none',
+                  }}
+                >
+                  {t.title || '(UNTITLED)'}
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono truncate">
+                <div className="text-[10px] holo-readout truncate" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
                   {t.id.slice(0, 18)}
                 </div>
                 {updated && (
-                  <div className="text-[10px] text-slate-500 mt-0.5">
+                  <div className="text-[10px] holo-readout mt-0.5" style={{ color: 'rgba(108, 230, 248, 0.4)' }}>
                     {formatRelative(updated)}
                   </div>
                 )}
@@ -1015,7 +1140,10 @@ function ThreadRail({
                   }}
                   disabled={streaming}
                   title="Rename this thread"
-                  className="text-slate-500 hover:text-indigo-300 disabled:opacity-30 disabled:cursor-not-allowed text-xs px-1 py-0.5 rounded hover:bg-indigo-500/10"
+                  className="text-xs px-1 py-0.5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ color: 'rgba(108, 230, 248, 0.55)' }}
+                  onMouseEnter={(e) => !streaming && (e.currentTarget.style.color = '#aaf6ff')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(108, 230, 248, 0.55)')}
                 >
                   ✎
                 </button>
@@ -1026,7 +1154,10 @@ function ThreadRail({
                   }}
                   disabled={streaming}
                   title="Delete this thread"
-                  className="text-slate-500 hover:text-rose-300 disabled:opacity-30 disabled:cursor-not-allowed text-xs px-1 py-0.5 rounded hover:bg-rose-500/10"
+                  className="text-xs px-1 py-0.5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ color: 'rgba(108, 230, 248, 0.55)' }}
+                  onMouseEnter={(e) => !streaming && (e.currentTarget.style.color = '#ff859a')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(108, 230, 248, 0.55)')}
                 >
                   ✕
                 </button>
@@ -1080,29 +1211,47 @@ function EmptyState({
   const prompts = suggestions[agentId] ?? ['Hello!'];
   return (
     <div className="max-w-xl mx-auto mt-8 space-y-4">
-      <div className="text-center text-slate-400 text-sm">
-        Try one of these to see{' '}
-        <button
-          className="underline decoration-dotted hover:text-slate-200"
-          onClick={() => onTeach('agent')}
-        >
-          how a Mastra agent
-        </button>{' '}
-        handles it:
+      <div className="text-center" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
+        <div className="holo-eyebrow mb-2">// SUGGESTED COMMANDS</div>
+        <div className="text-sm">
+          Try one of these to see{' '}
+          <button
+            className="underline decoration-dotted transition-colors"
+            style={{ color: '#aaf6ff' }}
+            onClick={() => onTeach('agent')}
+            onMouseEnter={(e) => (e.currentTarget.style.textShadow = '0 0 5px rgba(108, 230, 248, 0.6)')}
+            onMouseLeave={(e) => (e.currentTarget.style.textShadow = '')}
+          >
+            how a Mastra agent
+          </button>{' '}
+          handles it:
+        </div>
       </div>
       <div className="space-y-2">
-        {prompts.map((p) => (
+        {prompts.map((p, i) => (
           <div
             key={p}
-            className="border border-slate-800 rounded p-3 text-sm text-slate-300 bg-slate-900/40"
+            className="p-3 text-sm relative"
+            style={{
+              border: '1px solid rgba(108, 230, 248, 0.18)',
+              background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.3))',
+              color: '#cdf2fb',
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.03em',
+            }}
           >
+            <span
+              className="holo-eyebrow mr-2"
+              style={{ color: 'rgba(108, 230, 248, 0.55)' }}
+            >
+              [{(i + 1).toString().padStart(2, '0')}]
+            </span>
             {p}
           </div>
         ))}
       </div>
-      <div className="text-[11px] text-slate-500 text-center pt-2">
-        Pro tip: open the right-rail 📁 Files panel to watch the workspace as
-        the agent writes to it.
+      <div className="text-[10px] holo-readout text-center pt-2" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+        // Open the right-rail FIL panel to watch the workspace live.
       </div>
     </div>
   );
@@ -1205,18 +1354,48 @@ function MessageBubble({
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`max-w-[85%] rounded-lg px-4 py-3 text-sm ${
+        className="max-w-[85%] px-4 py-3 text-sm relative"
+        style={
           isUser
-            ? 'bg-indigo-600/30 border border-indigo-500/30'
-            : 'bg-slate-900 border border-slate-800'
-        }`}
+            ? {
+                border: '1px solid rgba(108, 230, 248, 0.45)',
+                background: 'linear-gradient(135deg, rgba(108, 230, 248, 0.14), rgba(108, 230, 248, 0.04))',
+                boxShadow: '0 0 12px rgba(108, 230, 248, 0.18), inset 0 0 12px rgba(108, 230, 248, 0.04)',
+                clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+              }
+            : {
+                border: '1px solid rgba(108, 230, 248, 0.18)',
+                background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.6), rgba(2, 14, 20, 0.4))',
+                boxShadow: 'inset 0 0 18px rgba(108, 230, 248, 0.04)',
+              }
+        }
       >
+        {!isUser && (
+          <div
+            aria-hidden
+            className="holo-eyebrow absolute -top-2 left-3 px-1"
+            style={{
+              background: 'rgba(2, 14, 20, 0.95)',
+              color: '#88efff',
+              fontSize: '8px',
+            }}
+          >
+            // {agentId.toUpperCase().replace(/-/g, '_')}
+          </div>
+        )}
         {!isUser && message.reasoning && (
-          <details className="mb-2 text-xs text-slate-400">
-            <summary className="cursor-pointer select-none">
-              reasoning ({message.reasoning.length} chars)
+          <details className="mb-2 text-xs" style={{ color: 'rgba(108, 230, 248, 0.65)' }}>
+            <summary className="cursor-pointer select-none holo-eyebrow">
+              [REASONING / {message.reasoning.length}b]
             </summary>
-            <pre className="mt-1 whitespace-pre-wrap font-mono text-[11px] bg-slate-950 p-2 rounded">
+            <pre
+              className="mt-1 whitespace-pre-wrap font-mono text-[11px] p-2"
+              style={{
+                background: 'rgba(2, 14, 20, 0.7)',
+                border: '1px solid rgba(108, 230, 248, 0.15)',
+                color: 'rgba(170, 246, 255, 0.85)',
+              }}
+            >
               {message.reasoning}
             </pre>
           </details>
@@ -1247,34 +1426,44 @@ function MessageBubble({
         ))}
 
         {message.tripwire && (
-          <div className="mt-2 p-2 rounded bg-yellow-500/10 border border-yellow-500/30 text-xs">
+          <div className="mt-2 p-2 holo-panel-amber text-xs">
             <div className="flex items-center gap-2 mb-1">
               <PrimitiveBadge primitive="processor" onTeach={onTeach} compact />
-              <span className="text-yellow-300 font-medium">
-                tripwire — output blocked
+              <span className="font-display tracking-widest uppercase glow-amber" style={{ color: '#ffd082' }}>
+                ▲ TRIPWIRE — OUTPUT BLOCKED
               </span>
             </div>
-            <div className="text-slate-300">{message.tripwire.reason}</div>
+            <div style={{ color: '#ffecb3' }}>{message.tripwire.reason}</div>
             {message.tripwire.rewritten && (
               <div className="mt-1">
-                <div className="text-[10px] uppercase text-slate-500">
-                  rewritten to
+                <div className="holo-eyebrow" style={{ color: 'rgba(255, 184, 77, 0.7)' }}>
+                  // REWRITTEN TO
                 </div>
-                <pre className="bg-slate-950 p-1.5 rounded text-[11px] whitespace-pre-wrap break-all mt-0.5">
+                <pre
+                  className="p-1.5 text-[11px] whitespace-pre-wrap break-all mt-0.5"
+                  style={{
+                    background: 'rgba(2, 14, 20, 0.7)',
+                    border: '1px solid rgba(255, 184, 77, 0.25)',
+                    color: '#ffecb3',
+                  }}
+                >
                   {message.tripwire.rewritten}
                 </pre>
               </div>
             )}
             {message.tripwire.processorId && (
-              <div className="text-slate-500 font-mono text-[10px] mt-1">
-                processor: {message.tripwire.processorId}
+              <div className="font-mono text-[10px] mt-1" style={{ color: 'rgba(255, 184, 77, 0.65)' }}>
+                &gt; processor: {message.tripwire.processorId}
               </div>
             )}
           </div>
         )}
 
         {!isUser && message.finished && (
-          <div className="mt-2 flex items-center gap-2 flex-wrap text-[10px] text-slate-500">
+          <div
+            className="mt-2 flex items-center gap-2 flex-wrap text-[10px] holo-readout"
+            style={{ color: 'rgba(108, 230, 248, 0.6)' }}
+          >
             {message.usage && <UsageChip usage={message.usage} modelId={modelId} />}
             <EvalBadges
               runId={message.runId}
@@ -1284,20 +1473,30 @@ function MessageBubble({
             {message.runId && onViewTrace && (
               <button
                 onClick={() => onViewTrace(message.runId!)}
-                className="text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+                className="underline decoration-dotted transition-colors"
+                style={{ color: '#88efff' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#aaf6ff';
+                  e.currentTarget.style.textShadow = '0 0 5px rgba(108, 230, 248, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#88efff';
+                  e.currentTarget.style.textShadow = '';
+                }}
                 title="Open this turn in the Observability tab"
               >
-                view trace ↗
+                ▸ VIEW TRACE
               </button>
             )}
             {hasVoice && message.text.trim() && (
               <button
                 onClick={play}
                 disabled={playing}
-                className="ml-auto text-teal-300 hover:text-teal-200 disabled:opacity-40"
+                className="ml-auto disabled:opacity-40 transition-colors"
+                style={{ color: '#36e3a8' }}
                 title="Speak this message via the voice-agent route"
               >
-                {playing ? '🔊 …' : '🔊 play'}
+                {playing ? '◉ TX...' : '◉ PLAY'}
               </button>
             )}
           </div>
@@ -1332,18 +1531,23 @@ function UsageChip({
       title={`input ${b.inputTokens.toLocaleString()} · output ${b.outputTokens.toLocaleString()}${
         extras.length ? ` · ${extras.join(' · ')}` : ''
       }${cost != null ? ` · ${formatCost(cost)}` : ''}`}
-      className="inline-flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-800 text-slate-300"
+      className="inline-flex items-center gap-1.5 px-1.5 py-0.5 holo-readout text-[10px]"
+      style={{
+        background: 'rgba(2, 14, 20, 0.7)',
+        border: '1px solid rgba(108, 230, 248, 0.22)',
+        color: '#a8e0ec',
+      }}
     >
-      <span className="text-slate-500">tok</span>
+      <span style={{ color: 'rgba(108, 230, 248, 0.55)' }}>TOK</span>
       <span>
-        <span className="text-slate-200">{formatTokens(b.inputTokens)}</span>
-        <span className="text-slate-600 mx-0.5">→</span>
-        <span className="text-slate-200">{formatTokens(b.outputTokens)}</span>
+        <span style={{ color: '#cdf2fb' }}>{formatTokens(b.inputTokens)}</span>
+        <span style={{ color: 'rgba(108, 230, 248, 0.45)' }} className="mx-0.5">→</span>
+        <span style={{ color: '#cdf2fb' }}>{formatTokens(b.outputTokens)}</span>
       </span>
       {cost != null && (
         <>
-          <span className="text-slate-700">·</span>
-          <span className="text-emerald-300">{formatCost(cost)}</span>
+          <span style={{ color: 'rgba(108, 230, 248, 0.35)' }}>·</span>
+          <span style={{ color: '#36e3a8' }}>{formatCost(cost)}</span>
         </>
       )}
     </span>
@@ -1360,32 +1564,49 @@ function SessionUsageHud({
   turns: number;
 }) {
   return (
-    <div className="mt-2 flex items-center gap-2 flex-wrap text-[10px]">
-      <span className="text-slate-500 uppercase tracking-wider">Session</span>
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-200 font-medium">
-        {turns} turn{turns === 1 ? '' : 's'}
+    <div className="mt-2 flex items-center gap-2 flex-wrap text-[10px] holo-readout">
+      <span className="holo-eyebrow">// SESSION</span>
+      <span
+        className="inline-flex items-center gap-1 px-2 py-0.5"
+        style={{
+          background: 'rgba(108, 230, 248, 0.08)',
+          border: '1px solid rgba(108, 230, 248, 0.45)',
+          color: '#aaf6ff',
+        }}
+      >
+        T={turns.toString().padStart(2, '0')}
       </span>
       <span
         title={`input ${usage.inputTokens.toLocaleString()} · output ${usage.outputTokens.toLocaleString()}${
           usage.cachedTokens ? ` · ${usage.cachedTokens.toLocaleString()} cached` : ''
         }${usage.reasoningTokens ? ` · ${usage.reasoningTokens.toLocaleString()} reasoning` : ''}`}
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-200"
+        className="inline-flex items-center gap-1 px-2 py-0.5"
+        style={{
+          background: 'rgba(2, 14, 20, 0.7)',
+          border: '1px solid rgba(108, 230, 248, 0.25)',
+          color: '#cdf2fb',
+        }}
       >
-        <span className="text-slate-500">tokens</span>
+        <span style={{ color: 'rgba(108, 230, 248, 0.55)' }}>TOK</span>
         <span>{formatTokens(usage.totalTokens)}</span>
-        <span className="text-slate-600 ml-0.5">
+        <span style={{ color: 'rgba(108, 230, 248, 0.4)' }} className="ml-0.5">
           ({formatTokens(usage.inputTokens)}→{formatTokens(usage.outputTokens)})
         </span>
         {usage.cachedTokens > 0 && (
-          <span className="text-slate-500">· {formatTokens(usage.cachedTokens)} cached</span>
+          <span style={{ color: 'rgba(108, 230, 248, 0.55)' }}>· {formatTokens(usage.cachedTokens)} cache</span>
         )}
       </span>
       <span
         title={cost == null ? 'No pricing data for this model' : undefined}
-        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-200"
+        className="inline-flex items-center gap-1 px-2 py-0.5"
+        style={{
+          background: 'rgba(54, 227, 168, 0.08)',
+          border: '1px solid rgba(54, 227, 168, 0.4)',
+          color: '#66f5c2',
+        }}
       >
-        <span className="text-emerald-400/70">cost</span>
-        <span className="font-medium">{formatCost(cost)}</span>
+        <span style={{ color: 'rgba(54, 227, 168, 0.6)' }}>COST</span>
+        <span className="font-bold">{formatCost(cost)}</span>
       </span>
     </div>
   );

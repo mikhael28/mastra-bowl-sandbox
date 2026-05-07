@@ -48,24 +48,36 @@ export function ModelStatusPicker() {
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 text-xs text-slate-300 hover:text-slate-100 px-2 py-1 rounded border border-slate-700 hover:bg-slate-800"
+        className="flex items-center gap-2 text-[10px] font-mono tracking-widest uppercase px-2 py-1 transition-all"
+        style={{
+          border: '1px solid rgba(108, 230, 248, 0.25)',
+          color: 'rgba(170, 246, 255, 0.85)',
+          background: 'rgba(108, 230, 248, 0.04)',
+        }}
         title="Model selection"
       >
-        <span className={`w-2 h-2 rounded-full ${dot}`} />
-        <span className="font-mono truncate max-w-[26ch]">
+        <span className={`w-2 h-2 rounded-full ${dot}`} style={{ boxShadow: '0 0 4px currentColor' }} />
+        <span className="truncate max-w-[26ch]" style={{ letterSpacing: '0.04em', textTransform: 'none' }}>
           {status.selected}
         </span>
-        <span className="text-slate-500">▾</span>
+        <span style={{ color: 'rgba(108, 230, 248, 0.6)' }}>▾</span>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-96 rounded border border-slate-700 bg-slate-900 shadow-lg z-30 text-xs">
-          <div className="px-3 py-2 border-b border-slate-800">
-            <div className="text-slate-300 font-semibold mb-1">Active</div>
-            <div className="font-mono text-emerald-300 truncate">
+        <div
+          className="absolute right-0 top-full mt-1 w-96 z-30 text-xs holo-frame"
+          style={{
+            background: 'rgba(2, 14, 20, 0.95)',
+            backdropFilter: 'blur(8px)',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.7), 0 0 24px rgba(108, 230, 248, 0.15)',
+          }}
+        >
+          <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.18)' }}>
+            <div className="holo-eyebrow mb-1">// ACTIVE MODEL</div>
+            <div className="font-mono truncate glow-cyan" style={{ color: '#aaf6ff' }}>
               {status.selected}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
-              source: {status.source}
+            <div className="text-[10px] holo-readout mt-0.5" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+              src: {status.source}
             </div>
           </div>
           <div className="px-3 py-2 border-b border-slate-800">

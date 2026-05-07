@@ -27,11 +27,11 @@ interface Props {
 }
 
 const ACCENT: Record<NonNullable<ContextMenuItem['accent']>, string> = {
-  purple: 'text-[#bc8cff] hover:bg-[#bc8cff15]',
-  blue: 'text-[#58a6ff] hover:bg-[#58a6ff15]',
-  green: 'text-[#3fb950] hover:bg-[#3fb95015]',
-  red: 'text-[#f85149] hover:bg-[#f8514915]',
-  default: 'text-[#e6edf3] hover:bg-[#21262d]',
+  purple: 'text-[#ec88f5] hover:bg-[#ec88f515]',
+  blue: 'text-[#aaf6ff] hover:bg-[#aaf6ff15]',
+  green: 'text-[#36e3a8] hover:bg-[#36e3a815]',
+  red: 'text-[#ff5874] hover:bg-[#ff587415]',
+  default: 'text-[#cdf2fb] hover:bg-[#0a2b37]',
 };
 
 export function ContextMenu({ x, y, items, onClose, header }: Props) {
@@ -75,11 +75,11 @@ export function ContextMenu({ x, y, items, onClose, header }: Props) {
     <div
       ref={ref}
       style={{ left: x, top: y }}
-      className="fixed z-[60] min-w-[220px] py-1 bg-[#161b22] border border-[#30363d] rounded-lg shadow-2xl shadow-black/50"
+      className="fixed z-[60] min-w-[220px] py-1 bg-[#04141a] border border-[#143a48] rounded-lg shadow-2xl shadow-black/50"
       role="menu"
     >
       {header && (
-        <div className="px-3 py-1.5 border-b border-[#21262d] text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider">
+        <div className="px-3 py-1.5 border-b border-[#0a2b37] text-[10px] font-semibold text-[#5395a8] uppercase tracking-wider">
           {header}
         </div>
       )}
@@ -104,7 +104,7 @@ export function ContextMenu({ x, y, items, onClose, header }: Props) {
           <span className="flex-1 min-w-0">
             <span className="font-medium leading-tight">{item.label}</span>
             {item.description && (
-              <span className="block text-[11px] text-[#8b949e] mt-0.5 leading-snug">
+              <span className="block text-[11px] text-[#5395a8] mt-0.5 leading-snug">
                 {item.description}
               </span>
             )}

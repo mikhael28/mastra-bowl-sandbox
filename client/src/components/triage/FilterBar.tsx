@@ -73,7 +73,7 @@ export function FilterBar({
     !filters.showDrafts;
 
   return (
-    <div className="border-b border-[#30363d] bg-[#0d1117] px-6 py-3 space-y-3">
+    <div className="border-b border-[#143a48] bg-[#020a0d] px-6 py-3 space-y-3">
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
           <input
@@ -81,19 +81,19 @@ export function FilterBar({
             placeholder="Search issues & PRs..."
             value={filters.search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#0d1117] border border-[#30363d] rounded-md px-3 py-1.5 text-sm text-[#e6edf3] placeholder-[#484f58] focus:border-[#58a6ff] focus:outline-none"
+            className="w-full bg-[#020a0d] border border-[#143a48] rounded-md px-3 py-1.5 text-sm text-[#cdf2fb] placeholder-[#235e6f] focus:border-[#aaf6ff] focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center border border-[#30363d] rounded-md overflow-hidden">
+        <div className="flex items-center border border-[#143a48] rounded-md overflow-hidden">
           {viewModes.map((vm) => (
             <button
               key={vm.value}
               onClick={() => setViewMode(vm.value)}
               className={`px-3 py-1.5 text-sm transition-colors ${
                 filters.viewMode === vm.value
-                  ? 'bg-[#21262d] text-white'
-                  : 'text-[#8b949e] hover:text-white'
+                  ? 'bg-[#0a2b37] text-white'
+                  : 'text-[#5395a8] hover:text-white'
               }`}
             >
               {vm.label}
@@ -104,7 +104,7 @@ export function FilterBar({
         <select
           value={filters.sortField}
           onChange={(e) => setSortField(e.target.value as SortField)}
-          className="bg-[#21262d] border border-[#30363d] rounded-md px-3 py-1.5 text-sm text-[#e6edf3] focus:outline-none"
+          className="bg-[#0a2b37] border border-[#143a48] rounded-md px-3 py-1.5 text-sm text-[#cdf2fb] focus:outline-none"
         >
           {sortOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -115,13 +115,13 @@ export function FilterBar({
 
         <button
           onClick={toggleSort}
-          className="px-2 py-1.5 border border-[#30363d] rounded-md text-sm text-[#8b949e] hover:text-white transition-colors"
+          className="px-2 py-1.5 border border-[#143a48] rounded-md text-sm text-[#5395a8] hover:text-white transition-colors"
           title={filters.sortDirection === 'desc' ? 'Descending' : 'Ascending'}
         >
           {filters.sortDirection === 'desc' ? '↓' : '↑'}
         </button>
 
-        <span className="text-sm text-[#8b949e]">{totalResults} results</span>
+        <span className="text-sm text-[#5395a8]">{totalResults} results</span>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -133,22 +133,22 @@ export function FilterBar({
             }}
             className={`px-3 py-1 text-xs border rounded-full transition-colors ${
               filters.authors.length > 0
-                ? 'border-[#58a6ff] text-[#58a6ff] bg-[#58a6ff11]'
-                : 'border-[#30363d] text-[#8b949e] hover:text-white'
+                ? 'border-[#aaf6ff] text-[#aaf6ff] bg-[#aaf6ff11]'
+                : 'border-[#143a48] text-[#5395a8] hover:text-white'
             }`}
           >
             Authors
             {filters.authors.length > 0 ? ` (${filters.authors.length})` : ''}
           </button>
           {showAuthors && (
-            <div className="absolute z-50 mt-1 w-64 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg max-h-64 overflow-y-auto">
+            <div className="absolute z-50 mt-1 w-64 bg-[#04141a] border border-[#143a48] rounded-md shadow-lg max-h-64 overflow-y-auto">
               <div className="p-2">
                 <input
                   type="text"
                   placeholder="Filter authors..."
                   value={authorSearch}
                   onChange={(e) => setAuthorSearch(e.target.value)}
-                  className="w-full bg-[#0d1117] border border-[#30363d] rounded px-2 py-1 text-xs text-[#e6edf3] placeholder-[#484f58] focus:outline-none"
+                  className="w-full bg-[#020a0d] border border-[#143a48] rounded px-2 py-1 text-xs text-[#cdf2fb] placeholder-[#235e6f] focus:outline-none"
                   autoFocus
                 />
               </div>
@@ -156,8 +156,8 @@ export function FilterBar({
                 <button
                   key={a}
                   onClick={() => toggleAuthor(a)}
-                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[#21262d] ${
-                    filters.authors.includes(a) ? 'text-[#58a6ff]' : 'text-[#e6edf3]'
+                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[#0a2b37] ${
+                    filters.authors.includes(a) ? 'text-[#aaf6ff]' : 'text-[#cdf2fb]'
                   }`}
                 >
                   {filters.authors.includes(a) ? '✓ ' : '  '}
@@ -176,22 +176,22 @@ export function FilterBar({
             }}
             className={`px-3 py-1 text-xs border rounded-full transition-colors ${
               filters.labels.length > 0
-                ? 'border-[#58a6ff] text-[#58a6ff] bg-[#58a6ff11]'
-                : 'border-[#30363d] text-[#8b949e] hover:text-white'
+                ? 'border-[#aaf6ff] text-[#aaf6ff] bg-[#aaf6ff11]'
+                : 'border-[#143a48] text-[#5395a8] hover:text-white'
             }`}
           >
             Labels
             {filters.labels.length > 0 ? ` (${filters.labels.length})` : ''}
           </button>
           {showLabels && (
-            <div className="absolute z-50 mt-1 w-72 bg-[#161b22] border border-[#30363d] rounded-md shadow-lg max-h-64 overflow-y-auto">
+            <div className="absolute z-50 mt-1 w-72 bg-[#04141a] border border-[#143a48] rounded-md shadow-lg max-h-64 overflow-y-auto">
               <div className="p-2">
                 <input
                   type="text"
                   placeholder="Filter labels..."
                   value={labelSearch}
                   onChange={(e) => setLabelSearch(e.target.value)}
-                  className="w-full bg-[#0d1117] border border-[#30363d] rounded px-2 py-1 text-xs text-[#e6edf3] placeholder-[#484f58] focus:outline-none"
+                  className="w-full bg-[#020a0d] border border-[#143a48] rounded px-2 py-1 text-xs text-[#cdf2fb] placeholder-[#235e6f] focus:outline-none"
                   autoFocus
                 />
               </div>
@@ -199,8 +199,8 @@ export function FilterBar({
                 <button
                   key={l}
                   onClick={() => toggleLabel(l)}
-                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[#21262d] ${
-                    filters.labels.includes(l) ? 'text-[#58a6ff]' : 'text-[#e6edf3]'
+                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-[#0a2b37] ${
+                    filters.labels.includes(l) ? 'text-[#aaf6ff]' : 'text-[#cdf2fb]'
                   }`}
                 >
                   {filters.labels.includes(l) ? '✓ ' : '  '}
@@ -215,37 +215,37 @@ export function FilterBar({
           type="date"
           value={filters.dateFrom}
           onChange={(e) => setDateFrom(e.target.value)}
-          className="bg-[#0d1117] border border-[#30363d] rounded-md px-2 py-1 text-xs text-[#8b949e] focus:outline-none"
+          className="bg-[#020a0d] border border-[#143a48] rounded-md px-2 py-1 text-xs text-[#5395a8] focus:outline-none"
           placeholder="From"
         />
-        <span className="text-xs text-[#484f58]">to</span>
+        <span className="text-xs text-[#235e6f]">to</span>
         <input
           type="date"
           value={filters.dateTo}
           onChange={(e) => setDateTo(e.target.value)}
-          className="bg-[#0d1117] border border-[#30363d] rounded-md px-2 py-1 text-xs text-[#8b949e] focus:outline-none"
+          className="bg-[#020a0d] border border-[#143a48] rounded-md px-2 py-1 text-xs text-[#5395a8] focus:outline-none"
           placeholder="To"
         />
 
-        <label className="flex items-center gap-1 text-xs text-[#8b949e] cursor-pointer">
+        <label className="flex items-center gap-1 text-xs text-[#5395a8] cursor-pointer">
           <input
             type="checkbox"
             checked={filters.showDrafts}
             onChange={(e) => setShowDrafts(e.target.checked)}
-            className="accent-[#58a6ff]"
+            className="accent-[#aaf6ff]"
           />
           Drafts
         </label>
 
         <label
-          className="flex items-center gap-1 text-xs text-[#8b949e] cursor-pointer"
+          className="flex items-center gap-1 text-xs text-[#5395a8] cursor-pointer"
           title="Show items you've hidden until the next sync"
         >
           <input
             type="checkbox"
             checked={filters.showHidden}
             onChange={(e) => setShowHidden(e.target.checked)}
-            className="accent-[#d29922]"
+            className="accent-[#ffb84d]"
           />
           Show hidden{hiddenCount > 0 ? ` (${hiddenCount})` : ''}
         </label>
@@ -253,7 +253,7 @@ export function FilterBar({
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="px-3 py-1 text-xs text-[#f85149] border border-[#f8514933] rounded-full hover:bg-[#f8514911] transition-colors"
+            className="px-3 py-1 text-xs text-[#ff5874] border border-[#ff587433] rounded-full hover:bg-[#ff587411] transition-colors"
           >
             Clear filters
           </button>
@@ -266,7 +266,7 @@ export function FilterBar({
             <span
               key={a}
               onClick={() => toggleAuthor(a)}
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-[#58a6ff22] text-[#58a6ff] rounded-full cursor-pointer hover:bg-[#58a6ff33]"
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-[#aaf6ff22] text-[#aaf6ff] rounded-full cursor-pointer hover:bg-[#aaf6ff33]"
             >
               @{a} ×
             </span>
@@ -275,7 +275,7 @@ export function FilterBar({
             <span
               key={l}
               onClick={() => toggleLabel(l)}
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-[#3fb95022] text-[#3fb950] rounded-full cursor-pointer hover:bg-[#3fb95033]"
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-[#36e3a822] text-[#36e3a8] rounded-full cursor-pointer hover:bg-[#36e3a833]"
             >
               {l} ×
             </span>

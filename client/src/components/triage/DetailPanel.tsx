@@ -72,14 +72,14 @@ export function DetailPanel({
 
       <div
         ref={panelRef}
-        className="w-[1100px] max-w-[85vw] bg-[#0d1117] border-l border-[#30363d] overflow-y-auto"
+        className="w-[1100px] max-w-[85vw] bg-[#020a0d] border-l border-[#143a48] overflow-y-auto"
         style={{ overscrollBehavior: 'contain' }}
       >
-        <div className="sticky top-0 z-10 bg-[#161b22] border-b border-[#30363d] px-8 py-5">
+        <div className="sticky top-0 z-10 bg-[#04141a] border-b border-[#143a48] px-8 py-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className={isPR ? 'text-[#58a6ff] text-lg' : 'text-[#3fb950] text-lg'}>
+                <span className={isPR ? 'text-[#aaf6ff] text-lg' : 'text-[#36e3a8] text-lg'}>
                   {isPR ? '↗' : '●'}
                 </span>
                 <button
@@ -88,13 +88,13 @@ export function DetailPanel({
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1500);
                   }}
-                  className="text-sm text-[#8b949e] hover:text-[#58a6ff] transition-colors cursor-pointer"
+                  className="text-sm text-[#5395a8] hover:text-[#aaf6ff] transition-colors cursor-pointer"
                   title="Click to copy"
                 >
                   {copied ? 'Copied!' : `#${item.number}`}
                 </button>
                 {pr?.isDraft && (
-                  <span className="px-1.5 py-0.5 text-[10px] border border-[#30363d] text-[#8b949e] rounded-full">
+                  <span className="px-1.5 py-0.5 text-[10px] border border-[#143a48] text-[#5395a8] rounded-full">
                     Draft
                   </span>
                 )}
@@ -107,7 +107,7 @@ export function DetailPanel({
               {onAskCopilot && (
                 <button
                   onClick={onAskCopilot}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-md border border-[#bc8cff44] bg-[#bc8cff15] text-[#bc8cff] hover:bg-[#bc8cff22] hover:border-[#bc8cff] transition-all text-xs font-semibold"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-md border border-[#ec88f544] bg-[#ec88f515] text-[#ec88f5] hover:bg-[#ec88f522] hover:border-[#ec88f5] transition-all text-xs font-semibold"
                   title="Ask the copilot about this item"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -120,7 +120,7 @@ export function DetailPanel({
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-md border border-[#30363d] text-[#484f58] hover:text-[#58a6ff] hover:border-[#58a6ff] transition-all"
+                className="p-2 rounded-md border border-[#143a48] text-[#235e6f] hover:text-[#aaf6ff] hover:border-[#aaf6ff] transition-all"
                 title="View on GitHub"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -131,8 +131,8 @@ export function DetailPanel({
                 onClick={() => toggleFavorite(item)}
                 className={`p-2 rounded-md border transition-all ${
                   favorited
-                    ? 'bg-[#58a6ff22] border-[#58a6ff] text-[#58a6ff]'
-                    : 'border-[#30363d] text-[#484f58] hover:text-[#58a6ff] hover:border-[#58a6ff]'
+                    ? 'bg-[#aaf6ff22] border-[#aaf6ff] text-[#aaf6ff]'
+                    : 'border-[#143a48] text-[#235e6f] hover:text-[#aaf6ff] hover:border-[#aaf6ff]'
                 }`}
                 title={favorited ? 'Remove from favorites' : 'Add to favorites'}
               >
@@ -140,7 +140,7 @@ export function DetailPanel({
                   width="16"
                   height="16"
                   viewBox="0 0 24 24"
-                  fill={favorited ? '#58a6ff' : 'none'}
+                  fill={favorited ? '#aaf6ff' : 'none'}
                   stroke="currentColor"
                   strokeWidth="2"
                 >
@@ -151,8 +151,8 @@ export function DetailPanel({
                 onClick={() => onToggleHidden(item._kind, item.number, !isHidden)}
                 className={`p-2 rounded-md border transition-all ${
                   isHidden
-                    ? 'bg-[#d2992222] border-[#d29922] text-[#d29922]'
-                    : 'border-[#30363d] text-[#484f58] hover:text-[#d29922] hover:border-[#d29922]'
+                    ? 'bg-[#ffb84d22] border-[#ffb84d] text-[#ffb84d]'
+                    : 'border-[#143a48] text-[#235e6f] hover:text-[#ffb84d] hover:border-[#ffb84d]'
                 }`}
                 title={isHidden ? 'Unhide' : 'Hide until next sync'}
               >
@@ -168,13 +168,13 @@ export function DetailPanel({
                   </svg>
                 )}
               </button>
-              <button onClick={onClose} className="p-2 text-[#8b949e] hover:text-white text-xl leading-none">
+              <button onClick={onClose} className="p-2 text-[#5395a8] hover:text-white text-xl leading-none">
                 ×
               </button>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-5 mt-3 text-sm text-[#8b949e]">
+          <div className="flex flex-wrap gap-5 mt-3 text-sm text-[#5395a8]">
             <span>@{item.author.login}</span>
             <span>Created {formatDate(item.createdAt)}</span>
             <span>Updated {timeAgo(item.updatedAt)}</span>
@@ -182,8 +182,8 @@ export function DetailPanel({
             <span>Reactions: {getReactionCount(item)}</span>
             {isPR && pr && (
               <>
-                <span className="text-[#3fb950]">+{pr.additions}</span>
-                <span className="text-[#f85149]">-{pr.deletions}</span>
+                <span className="text-[#36e3a8]">+{pr.additions}</span>
+                <span className="text-[#ff5874]">-{pr.deletions}</span>
                 <span>{pr.changedFiles} files</span>
               </>
             )}
@@ -193,10 +193,10 @@ export function DetailPanel({
         <div className="px-8 py-6 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider">
+              <span className="text-[10px] font-semibold text-[#5395a8] uppercase tracking-wider">
                 Staleness
               </span>
-              <div className="w-24 h-1.5 bg-[#21262d] rounded-full overflow-hidden">
+              <div className="w-24 h-1.5 bg-[#0a2b37] rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${
                     staleness > 75
@@ -210,11 +210,11 @@ export function DetailPanel({
                   style={{ width: `${staleness}%` }}
                 />
               </div>
-              <span className="text-xs font-mono text-[#8b949e]">{staleness}</span>
+              <span className="text-xs font-mono text-[#5395a8]">{staleness}</span>
             </div>
 
             {(item.labels.length > 0 || item.assignees.length > 0) && (
-              <span className="text-[#30363d]">|</span>
+              <span className="text-[#143a48]">|</span>
             )}
 
             {item.labels.map((label) => {
@@ -237,7 +237,7 @@ export function DetailPanel({
             {item.assignees.map((a) => (
               <span
                 key={a.login}
-                className="px-2 py-0.5 text-[10px] bg-[#21262d] text-[#e6edf3] rounded"
+                className="px-2 py-0.5 text-[10px] bg-[#0a2b37] text-[#cdf2fb] rounded"
               >
                 @{a.login}
               </span>
@@ -247,17 +247,17 @@ export function DetailPanel({
           {(itemAnalysis || (linkedPRs && linkedPRs.length > 0) || (isPR && pr)) && (
             <div className="flex flex-wrap gap-4">
               {itemAnalysis && (
-                <div className="flex-1 min-w-[280px] bg-[#161b22] border border-[#30363d] rounded-lg p-3">
+                <div className="flex-1 min-w-[280px] bg-[#04141a] border border-[#143a48] rounded-lg p-3">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <h3 className="text-[10px] font-semibold text-[#bc8cff] uppercase tracking-wider">
+                    <h3 className="text-[10px] font-semibold text-[#ec88f5] uppercase tracking-wider">
                       AI Analysis
                     </h3>
                     {'category' in itemAnalysis && (
                       <>
-                        <span className="px-1.5 py-0.5 text-[10px] bg-[#bc8cff22] text-[#bc8cff] rounded-full">
+                        <span className="px-1.5 py-0.5 text-[10px] bg-[#ec88f522] text-[#ec88f5] rounded-full">
                           {itemAnalysis.category}
                         </span>
-                        <span className="px-1.5 py-0.5 text-[10px] bg-[#d2992222] text-[#d29922] rounded-full">
+                        <span className="px-1.5 py-0.5 text-[10px] bg-[#ffb84d22] text-[#ffb84d] rounded-full">
                           {itemAnalysis.priority}
                         </span>
                       </>
@@ -266,48 +266,48 @@ export function DetailPanel({
                       <span
                         className={`px-1.5 py-0.5 text-[10px] rounded-full ${
                           itemAnalysis.riskLevel === 'high'
-                            ? 'bg-[#f8514922] text-[#f85149]'
+                            ? 'bg-[#ff587422] text-[#ff5874]'
                             : itemAnalysis.riskLevel === 'medium'
-                              ? 'bg-[#d2992222] text-[#d29922]'
-                              : 'bg-[#3fb95022] text-[#3fb950]'
+                              ? 'bg-[#ffb84d22] text-[#ffb84d]'
+                              : 'bg-[#36e3a822] text-[#36e3a8]'
                         }`}
                       >
                         Risk: {itemAnalysis.riskLevel}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-[#e6edf3] leading-relaxed">{itemAnalysis.summary}</p>
+                  <p className="text-sm text-[#cdf2fb] leading-relaxed">{itemAnalysis.summary}</p>
                 </div>
               )}
 
               {isPR && pr && (
                 <div className="flex-1 min-w-[280px]">
                   <div className="grid grid-cols-2 gap-1.5 text-xs">
-                    <div className="bg-[#161b22] rounded p-2">
-                      <span className="text-[#8b949e]">Branch:</span>{' '}
-                      <span className="text-[#e6edf3] font-mono">{pr.headRefName}</span>
+                    <div className="bg-[#04141a] rounded p-2">
+                      <span className="text-[#5395a8]">Branch:</span>{' '}
+                      <span className="text-[#cdf2fb] font-mono">{pr.headRefName}</span>
                     </div>
-                    <div className="bg-[#161b22] rounded p-2">
-                      <span className="text-[#8b949e]">Base:</span>{' '}
-                      <span className="text-[#e6edf3] font-mono">{pr.baseRefName}</span>
+                    <div className="bg-[#04141a] rounded p-2">
+                      <span className="text-[#5395a8]">Base:</span>{' '}
+                      <span className="text-[#cdf2fb] font-mono">{pr.baseRefName}</span>
                     </div>
-                    <div className="bg-[#161b22] rounded p-2">
-                      <span className="text-[#8b949e]">Review:</span>{' '}
+                    <div className="bg-[#04141a] rounded p-2">
+                      <span className="text-[#5395a8]">Review:</span>{' '}
                       <span
                         className={
                           pr.reviewDecision === 'APPROVED'
-                            ? 'text-[#3fb950]'
+                            ? 'text-[#36e3a8]'
                             : pr.reviewDecision === 'CHANGES_REQUESTED'
-                              ? 'text-[#f85149]'
-                              : 'text-[#d29922]'
+                              ? 'text-[#ff5874]'
+                              : 'text-[#ffb84d]'
                         }
                       >
                         {pr.reviewDecision || 'Pending'}
                       </span>
                     </div>
-                    <div className="bg-[#161b22] rounded p-2">
-                      <span className="text-[#8b949e]">Mergeable:</span>{' '}
-                      <span className="text-[#e6edf3]">{pr.mergeable || 'Unknown'}</span>
+                    <div className="bg-[#04141a] rounded p-2">
+                      <span className="text-[#5395a8]">Mergeable:</span>{' '}
+                      <span className="text-[#cdf2fb]">{pr.mergeable || 'Unknown'}</span>
                     </div>
                   </div>
                 </div>
@@ -317,25 +317,25 @@ export function DetailPanel({
 
           {triageAssignment && triageAssignment.assignedDevelopers.length > 0 && (
             <div>
-              <h3 className="text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">
+              <h3 className="text-[10px] font-semibold text-[#5395a8] uppercase tracking-wider mb-1.5">
                 Suggested Experts
               </h3>
               <div className="flex flex-wrap gap-3">
                 {triageAssignment.assignedDevelopers.map((dev) => (
                   <div
                     key={dev.name}
-                    className="flex-1 min-w-[220px] bg-[#161b22] border border-[#30363d] rounded-lg p-3"
+                    className="flex-1 min-w-[220px] bg-[#04141a] border border-[#143a48] rounded-lg p-3"
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-[#e6edf3]">{dev.name}</span>
-                      <span className="text-[10px] text-[#8b949e] font-mono">({dev.score})</span>
+                      <span className="text-sm font-medium text-[#cdf2fb]">{dev.name}</span>
+                      <span className="text-[10px] text-[#5395a8] font-mono">({dev.score})</span>
                     </div>
-                    <p className="text-[11px] text-[#8b949e] mb-1.5">{dev.role}</p>
+                    <p className="text-[11px] text-[#5395a8] mb-1.5">{dev.role}</p>
                     <div className="flex flex-wrap gap-1">
                       {dev.matchedTags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-1.5 py-0.5 text-[10px] bg-[#388bfd22] text-[#388bfd] rounded-full"
+                          className="px-1.5 py-0.5 text-[10px] bg-[#88efff22] text-[#88efff] rounded-full"
                         >
                           {tag}
                         </span>
@@ -349,7 +349,7 @@ export function DetailPanel({
 
           {linkedPRs && linkedPRs.length > 0 && (
             <div>
-              <h3 className="text-[10px] font-semibold text-[#8b949e] uppercase tracking-wider mb-1.5">
+              <h3 className="text-[10px] font-semibold text-[#5395a8] uppercase tracking-wider mb-1.5">
                 {isPR ? 'Linked Issues' : 'Linked PRs'}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -364,13 +364,13 @@ export function DetailPanel({
                   return (
                     <div
                       key={i}
-                      className="flex items-center gap-2 bg-[#161b22] border border-[#30363d] rounded px-2.5 py-1.5 text-xs"
+                      className="flex items-center gap-2 bg-[#04141a] border border-[#143a48] rounded px-2.5 py-1.5 text-xs"
                     >
-                      <span className={isPR ? 'text-[#3fb950]' : 'text-[#58a6ff]'}>
+                      <span className={isPR ? 'text-[#36e3a8]' : 'text-[#aaf6ff]'}>
                         #{isPR ? link.issueNumber : link.prNumber}
                       </span>
-                      <span className="text-[#e6edf3]">{linked?.title || 'Unknown'}</span>
-                      <span className="text-[#8b949e]">{Math.round(link.confidence * 100)}%</span>
+                      <span className="text-[#cdf2fb]">{linked?.title || 'Unknown'}</span>
+                      <span className="text-[#5395a8]">{Math.round(link.confidence * 100)}%</span>
                     </div>
                   );
                 })}
@@ -381,20 +381,20 @@ export function DetailPanel({
           <div className="grid grid-cols-2 gap-6">
             <div className="min-w-0">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xs font-semibold text-[#8b949e] uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-[#5395a8] uppercase tracking-wider">
                   Description
                 </h3>
                 {item.body && item.body.length > 300 && (
                   <button
                     onClick={() => setDescCollapsed((c) => !c)}
-                    className="text-[10px] text-[#58a6ff] hover:underline"
+                    className="text-[10px] text-[#aaf6ff] hover:underline"
                   >
                     {descCollapsed ? 'Expand' : 'Collapse'}
                   </button>
                 )}
               </div>
               <div
-                className={`bg-[#161b22] border border-[#21262d] rounded-lg p-5 text-sm text-[#e6edf3] whitespace-pre-wrap break-words overflow-y-auto leading-relaxed transition-all ${
+                className={`bg-[#04141a] border border-[#0a2b37] rounded-lg p-5 text-sm text-[#cdf2fb] whitespace-pre-wrap break-words overflow-y-auto leading-relaxed transition-all ${
                   descCollapsed ? 'max-h-[100px]' : 'max-h-[600px]'
                 }`}
               >
@@ -403,7 +403,7 @@ export function DetailPanel({
             </div>
 
             <div className="min-w-0">
-              <h3 className="text-xs font-semibold text-[#8b949e] uppercase tracking-wider mb-2">
+              <h3 className="text-xs font-semibold text-[#5395a8] uppercase tracking-wider mb-2">
                 Comments ({item.comments?.length || 0})
               </h3>
               {item.comments && item.comments.length > 0 ? (
@@ -411,36 +411,36 @@ export function DetailPanel({
                   {item.comments.map((comment) => (
                     <div
                       key={comment.id}
-                      className="bg-[#161b22] border border-[#21262d] rounded-lg p-4"
+                      className="bg-[#04141a] border border-[#0a2b37] rounded-lg p-4"
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-medium text-[#e6edf3]">
+                        <span className="text-xs font-medium text-[#cdf2fb]">
                           @{comment.author?.login || 'unknown'}
                         </span>
-                        <span className="text-xs text-[#484f58]">
+                        <span className="text-xs text-[#235e6f]">
                           {timeAgo(comment.createdAt)}
                         </span>
                       </div>
-                      <p className="text-sm text-[#8b949e] whitespace-pre-wrap break-words leading-relaxed">
+                      <p className="text-sm text-[#5395a8] whitespace-pre-wrap break-words leading-relaxed">
                         {comment.body}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="bg-[#161b22] border border-[#21262d] rounded-lg p-5 text-sm text-[#484f58]">
+                <div className="bg-[#04141a] border border-[#0a2b37] rounded-lg p-5 text-sm text-[#235e6f]">
                   No comments yet.
                 </div>
               )}
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#21262d]">
+          <div className="pt-3 border-t border-[#0a2b37]">
             <a
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-[#58a6ff] hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-[#aaf6ff] hover:underline"
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />

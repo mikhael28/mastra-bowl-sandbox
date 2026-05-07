@@ -112,29 +112,44 @@ export function ObservabilityPanel({
         refreshNonce={refreshNonce}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 scan-lines">
         {/* Header */}
-        <header className="border-b border-slate-800 p-3 bg-slate-900/40">
+        <header
+          className="p-3"
+          style={{
+            borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+            background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+          }}
+        >
           {rootSpan ? (
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="holo-eyebrow">// MODULE 09 // TELEMETRY</div>
+              <div className="flex items-center gap-2 flex-wrap mt-1">
                 <EntityBadge span={rootSpan} />
-                <h2 className="text-base font-semibold truncate max-w-[480px]">
+                <h2 className="holo-title text-base truncate max-w-[480px]">
                   {rootSpan.entityName ?? rootSpan.entityId ?? rootSpan.name}
                 </h2>
                 <PrimitiveBadge primitive="observability" onTeach={onTeach} compact />
                 {summary?.hasError && (
-                  <span className="text-[10px] uppercase px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
-                    error
+                  <span
+                    className="text-[10px] uppercase tracking-widest px-1.5 py-0.5 glow-red"
+                    style={{
+                      background: 'rgba(255, 88, 116, 0.15)',
+                      color: '#ff859a',
+                      border: '1px solid rgba(255, 88, 116, 0.45)',
+                    }}
+                  >
+                    ⚠ ERROR
                   </span>
                 )}
-                <label className="ml-auto flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer">
+                <label className="ml-auto flex items-center gap-1.5 text-[10px] holo-readout cursor-pointer uppercase tracking-widest" style={{ color: 'rgba(108, 230, 248, 0.7)' }}>
                   <input
                     type="checkbox"
                     checked={hideInternal}
                     onChange={(e) => setHideInternal(e.target.checked)}
+                    className="accent-cyan-400"
                   />
-                  hide processors
+                  HIDE PROCESSORS
                 </label>
               </div>
 
@@ -174,25 +189,28 @@ export function ObservabilityPanel({
                 />
               </div>
 
-              <div className="mt-2 font-mono text-[10px] text-slate-500 truncate">
-                GET /api/observability/traces/{rootSpan.traceId}
+              <div className="mt-2 font-mono text-[10px] truncate" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+                &gt; GET /api/observability/traces/{rootSpan.traceId}
                 {rootSpan.runId ? ` · run ${rootSpan.runId}` : ''}
               </div>
             </div>
           ) : (
-            <div className="text-sm text-slate-500">
-              Select a trace on the left to inspect it.
+            <div className="text-sm holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+              // Select a trace on the left to inspect it.
             </div>
           )}
         </header>
 
         {/* Waterfall */}
         {loading && (
-          <div className="p-8 text-sm text-slate-500">Loading trace…</div>
+          <div className="p-8 text-sm holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>// loading trace...</div>
         )}
         {err && !loading && (
-          <div className="m-3 p-3 rounded bg-rose-500/10 border border-rose-500/30 text-xs text-rose-200">
-            {err}
+          <div
+            className="m-3 p-3 text-xs holo-panel-red"
+            style={{ color: '#ff859a' }}
+          >
+            ⚠ {err}
           </div>
         )}
         {!loading && trace && (
@@ -212,10 +230,22 @@ export function ObservabilityPanel({
 
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded px-2 py-1.5">
-      <div className="text-[9px] uppercase tracking-wider text-slate-500">{label}</div>
-      <div className="text-sm font-semibold text-slate-100 truncate">{value}</div>
-      {sub && <div className="text-[10px] text-slate-500 truncate">{sub}</div>}
+    <div
+      className="px-2 py-1.5"
+      style={{
+        background: 'rgba(2, 14, 20, 0.7)',
+        border: '1px solid rgba(108, 230, 248, 0.22)',
+      }}
+    >
+      <div className="holo-eyebrow">{label}</div>
+      <div className="text-sm font-bold truncate holo-num" style={{ color: '#aaf6ff', textShadow: '0 0 5px rgba(108, 230, 248, 0.4)' }}>
+        {value}
+      </div>
+      {sub && (
+        <div className="text-[10px] truncate holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+          {sub}
+        </div>
+      )}
     </div>
   );
 }
@@ -224,7 +254,7 @@ function EntityBadge({ span }: { span: SpanRecord }) {
   const meta = metaForSpanType(span.spanType);
   return (
     <span
-      className={`text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded ${meta.bg} ${meta.textOn}`}
+      className={`text-[9px] uppercase tracking-widest px-1.5 py-0.5 font-mono ${meta.bg} ${meta.textOn}`}
     >
       {meta.label}
     </span>

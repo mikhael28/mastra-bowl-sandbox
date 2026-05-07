@@ -106,21 +106,21 @@ export function WorkflowCard(props: ToolCardProps) {
   const steps = extractSteps(run ?? result);
 
   return (
-    <div className={`mt-2 border rounded p-2 text-xs ${statusColor(tc.status)}`}>
+    <div className={`mt-2 border p-2 text-xs ${statusColor(tc.status)}`}>
       <div className="flex items-center gap-2">
         <PrimitiveBadge primitive="workflow" onTeach={onTeach} compact />
-        <span className="font-mono text-slate-200 truncate">{workflowId}</span>
-        <span className="ml-auto text-[10px] text-slate-400">{tc.status}</span>
+        <span className="font-mono uppercase tracking-wider truncate text-cyan-100 text-[11px]">{workflowId}</span>
+        <span className="ml-auto holo-eyebrow">[{tc.status.toUpperCase()}]</span>
       </div>
 
       {tc.status === 'calling' && (
-        <div className="mt-2 flex items-center gap-2 text-[11px] text-amber-300/80 italic">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+        <div className="mt-2 flex items-center gap-2 text-[10px] holo-readout glow-amber" style={{ color: '#ffd082' }}>
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#ffd082', boxShadow: '0 0 4px #ffd082' }} />
           {steps.length > 0
-            ? `running — ${steps.filter((s) => s.status === 'completed').length}/${steps.length} steps complete`
+            ? `// EXECUTING — ${steps.filter((s) => s.status === 'completed').length}/${steps.length} STEPS COMPLETE`
             : runId
-              ? 'running — waiting for first step snapshot…'
-              : 'starting workflow run…'}
+              ? '// EXECUTING — awaiting first step snapshot...'
+              : '// INITIALIZING WORKFLOW RUN...'}
         </div>
       )}
 
@@ -133,28 +133,35 @@ export function WorkflowCard(props: ToolCardProps) {
       )}
 
       {tc.status === 'done' && steps.length === 0 && (
-        <div className="mt-2 text-[11px] text-slate-500">
-          {loading ? 'loading run details…' : 'Workflow completed. Run snapshot unavailable — see raw output below.'}
+        <div className="mt-2 text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+          {loading ? '// loading run details...' : '// Workflow completed. Run snapshot unavailable — see raw output below.'}
         </div>
       )}
 
       {result && steps.length === 0 && tc.status === 'done' && (
         <details className="mt-2">
-          <summary className="text-[10px] text-slate-500 cursor-pointer">
-            raw result
+          <summary className="text-[10px] holo-readout cursor-pointer" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+            // RAW RESULT
           </summary>
-          <pre className="mt-1 bg-slate-950 rounded p-2 text-[11px] whitespace-pre-wrap break-all max-h-56 overflow-auto">
+          <pre
+            className="mt-1 p-2 text-[11px] whitespace-pre-wrap break-all max-h-56 overflow-auto"
+            style={{ background: 'rgba(2, 14, 20, 0.7)', border: '1px solid rgba(108, 230, 248, 0.18)', color: '#cdf2fb' }}
+          >
             {safeStringify(result)}
           </pre>
         </details>
       )}
 
-      <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-start gap-2 text-[10px] text-slate-500 leading-relaxed">
+      <div
+        className="mt-2 pt-2 flex items-start gap-2 text-[10px] holo-readout leading-relaxed"
+        style={{ borderTop: '1px solid rgba(108, 230, 248, 0.15)', color: 'rgba(108, 230, 248, 0.55)' }}
+      >
         <button
           onClick={() => onTeach('workflow')}
-          className="shrink-0 text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+          className="shrink-0 underline decoration-dotted uppercase tracking-widest"
+          style={{ color: '#88efff' }}
         >
-          learn →
+          ▸ LEARN
         </button>
         <span>
           A workflow is a typed DAG of steps (then / parallel / branch /
@@ -251,10 +258,16 @@ function StepRow({ step, index }: { step: StepView; index: number }) {
     completed: 'text-emerald-300',
     suspended: 'text-amber-300',
     failed: 'text-rose-300',
-    skipped: 'text-slate-500',
+    skipped: 'text-cyan-700',
   };
   return (
-    <li className="border border-slate-800 rounded bg-slate-900/40 text-[11px]">
+    <li
+      className="text-[11px]"
+      style={{
+        border: '1px solid rgba(108, 230, 248, 0.18)',
+        background: 'rgba(4, 30, 38, 0.5)',
+      }}
+    >
       <button
         onClick={() => {
           touchedRef.current = true;
@@ -262,14 +275,14 @@ function StepRow({ step, index }: { step: StepView; index: number }) {
         }}
         className="w-full flex items-center gap-2 px-2 py-1 text-left"
       >
-        <span className="text-slate-600 font-mono w-4 text-right">
-          {index + 1}
+        <span className="font-mono w-5 text-right" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+          {(index + 1).toString().padStart(2, '0')}
         </span>
         <span className={`font-mono w-4 ${color[step.status]}`}>
           {icon[step.status]}
         </span>
-        <span className="font-mono text-slate-200 truncate">{step.id}</span>
-        <span className={`ml-auto text-[10px] ${color[step.status]}`}>
+        <span className="font-mono uppercase tracking-wider truncate text-cyan-100">{step.id}</span>
+        <span className={`ml-auto text-[10px] uppercase tracking-widest ${color[step.status]}`}>
           {step.status}
         </span>
       </button>
@@ -277,16 +290,22 @@ function StepRow({ step, index }: { step: StepView; index: number }) {
         <div className="px-3 pb-2 space-y-1">
           {step.input !== undefined && (
             <>
-              <div className="text-[10px] uppercase text-slate-500">input</div>
-              <pre className="bg-slate-950 rounded p-2 text-[10px] whitespace-pre-wrap break-all max-h-24 overflow-auto">
+              <div className="holo-eyebrow">// INPUT</div>
+              <pre
+                className="p-2 text-[10px] whitespace-pre-wrap break-all max-h-24 overflow-auto"
+                style={{ background: 'rgba(2, 14, 20, 0.7)', border: '1px solid rgba(108, 230, 248, 0.18)', color: '#cdf2fb' }}
+              >
                 {safeStringify(step.input)}
               </pre>
             </>
           )}
           {step.output !== undefined && (
             <>
-              <div className="text-[10px] uppercase text-slate-500">output</div>
-              <pre className="bg-slate-950 rounded p-2 text-[10px] whitespace-pre-wrap break-all max-h-36 overflow-auto">
+              <div className="holo-eyebrow">// OUTPUT</div>
+              <pre
+                className="p-2 text-[10px] whitespace-pre-wrap break-all max-h-36 overflow-auto"
+                style={{ background: 'rgba(2, 14, 20, 0.7)', border: '1px solid rgba(108, 230, 248, 0.18)', color: '#cdf2fb' }}
+              >
                 {safeStringify(step.output)}
               </pre>
             </>

@@ -26,51 +26,61 @@ export function SubagentCard(props: ToolCardProps) {
   const subagentLabel = humanize(tc.toolName);
 
   return (
-    <div className={`mt-2 border rounded p-2 text-xs ${statusColor(tc.status)}`}>
+    <div className={`mt-2 border p-2 text-xs ${statusColor(tc.status)}`}>
       <div className="flex items-center gap-2">
         <PrimitiveBadge primitive="agent-as-tool" onTeach={onTeach} compact />
-        <span className="font-mono text-slate-200 truncate">
+        <span className="font-mono uppercase tracking-wider truncate text-cyan-100 text-[11px]">
           {tc.toolName}
         </span>
-        <span className="text-[10px] text-slate-400">→ subagent</span>
-        <span className="ml-auto text-[10px] text-slate-400">{tc.status}</span>
+        <span className="holo-eyebrow">// SUBAGENT</span>
+        <span className="ml-auto holo-eyebrow">[{tc.status.toUpperCase()}]</span>
       </div>
 
       {tc.status === 'calling' && !text && (
-        <div className="mt-2 text-[11px] text-slate-500 italic">
-          {subagentLabel} is working…
+        <div className="mt-2 text-[10px] holo-readout italic" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+          // {subagentLabel.toUpperCase()} is working...
         </div>
       )}
 
       {text && (
-        <div className="mt-2 p-3 rounded-lg bg-slate-950/60 border border-violet-500/20 relative">
-          <div className="absolute -top-2 left-3 bg-slate-950 px-1.5 text-[9px] uppercase tracking-wider text-violet-300">
-            {subagentLabel}
+        <div
+          className="mt-2 p-3 relative"
+          style={{
+            background: 'rgba(2, 14, 20, 0.7)',
+            border: '1px solid rgba(170, 246, 255, 0.25)',
+            boxShadow: 'inset 0 0 18px rgba(170, 246, 255, 0.04)',
+          }}
+        >
+          <div
+            className="absolute -top-2 left-3 px-1.5 text-[9px] uppercase tracking-widest font-mono"
+            style={{ background: 'rgba(2, 14, 20, 0.95)', color: '#aaf6ff' }}
+          >
+            // {subagentLabel}
           </div>
           <div className="prose-chat text-[12px] leading-relaxed">
             <ReactMarkdown>{text}</ReactMarkdown>
           </div>
           {toolCalls.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-slate-800/60">
-              <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-1">
-                inner tools ({toolCalls.length})
+            <div className="mt-2 pt-2" style={{ borderTop: '1px solid rgba(108, 230, 248, 0.18)' }}>
+              <div className="holo-eyebrow mb-1">
+                // INNER TOOLS [{toolCalls.length}]
               </div>
               <ul className="space-y-0.5">
                 {toolCalls.map((t, i) => (
                   <li
                     key={i}
-                    className="text-[10px] font-mono text-slate-400 truncate"
+                    className="text-[10px] font-mono truncate"
+                    style={{ color: 'rgba(170, 246, 255, 0.7)' }}
                   >
-                    → {t.toolName ?? 'tool'}
+                    &gt; {t.toolName ?? 'tool'}
                   </li>
                 ))}
               </ul>
             </div>
           )}
           {usage && (
-            <div className="mt-2 pt-2 border-t border-slate-800/60 text-[10px] text-slate-500">
-              tokens in {usage.promptTokens ?? usage.inputTokens ?? '?'} / out{' '}
-              {usage.completionTokens ?? usage.outputTokens ?? '?'}
+            <div className="mt-2 pt-2 text-[10px] holo-readout" style={{ borderTop: '1px solid rgba(108, 230, 248, 0.18)', color: 'rgba(108, 230, 248, 0.55)' }}>
+              TOK IN={usage.promptTokens ?? usage.inputTokens ?? '?'} OUT={usage.completionTokens ?? usage.outputTokens ?? '?'}
             </div>
           )}
         </div>
@@ -79,23 +89,31 @@ export function SubagentCard(props: ToolCardProps) {
       <div className="mt-2 flex items-center justify-end">
         <button
           onClick={() => setShowRaw((r) => !r)}
-          className="text-[10px] text-slate-500 hover:text-slate-300 underline decoration-dotted"
+          className="text-[10px] underline decoration-dotted uppercase tracking-widest"
+          style={{ color: 'rgba(108, 230, 248, 0.6)' }}
         >
-          {showRaw ? 'hide raw' : 'raw response'}
+          {showRaw ? '◣ HIDE RAW' : '◣ RAW JSON'}
         </button>
       </div>
       {showRaw && (
-        <pre className="mt-1 bg-slate-950 rounded p-2 text-[10px] whitespace-pre-wrap break-all max-h-56 overflow-auto">
+        <pre
+          className="mt-1 p-2 text-[10px] whitespace-pre-wrap break-all max-h-56 overflow-auto"
+          style={{ background: 'rgba(2, 14, 20, 0.7)', border: '1px solid rgba(108, 230, 248, 0.18)', color: '#cdf2fb' }}
+        >
           {safeStringify(result ?? tc.args)}
         </pre>
       )}
 
-      <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-start gap-2 text-[10px] text-slate-500 leading-relaxed">
+      <div
+        className="mt-2 pt-2 flex items-start gap-2 text-[10px] holo-readout leading-relaxed"
+        style={{ borderTop: '1px solid rgba(108, 230, 248, 0.15)', color: 'rgba(108, 230, 248, 0.55)' }}
+      >
         <button
           onClick={() => onTeach('agent-as-tool')}
-          className="shrink-0 text-indigo-300 hover:text-indigo-200 underline decoration-dotted"
+          className="shrink-0 underline decoration-dotted uppercase tracking-widest"
+          style={{ color: '#88efff' }}
         >
-          learn →
+          ▸ LEARN
         </button>
         <span>
           This whole bubble is the *reply* from {subagentLabel}. It ran its own

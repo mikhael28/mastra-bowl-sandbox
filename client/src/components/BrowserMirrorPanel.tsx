@@ -96,8 +96,14 @@ export function BrowserMirrorPanel({ agent, onTeach }: Props) {
 
   if (!agent) {
     return (
-      <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">
-        Pick an agent to mirror its browser.
+      <div className="flex-1 flex items-center justify-center scan-lines">
+        <div className="holo-frame px-8 py-6 holo-corners">
+          <div className="holo-eyebrow mb-2">// AWAITING SELECTION</div>
+          <div className="holo-title text-base">Select an agent</div>
+          <div className="text-xs mt-1" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
+            Pick an agent to mirror its browser.
+          </div>
+        </div>
       </div>
     );
   }
@@ -114,31 +120,40 @@ export function BrowserMirrorPanel({ agent, onTeach }: Props) {
             : 'bg-slate-500';
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-slate-950">
-      <header className="border-b border-slate-800 p-3 flex items-center gap-3 flex-wrap">
-        <h2 className="font-semibold text-sm">Browser mirror</h2>
+    <div className="flex-1 flex flex-col min-w-0 scan-lines">
+      <header
+        className="p-3 flex items-center gap-3 flex-wrap"
+        style={{
+          borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+          background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+        }}
+      >
+        <div>
+          <div className="holo-eyebrow">// MODULE 06</div>
+          <h2 className="holo-title text-base mt-0.5">BROWSER MIRROR</h2>
+        </div>
         <PrimitiveBadge primitive="browser" onTeach={onTeach} compact />
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span className={`w-2 h-2 rounded-full ${dot}`} />
+        <div className="flex items-center gap-2 text-xs holo-readout" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
+          <span className={`w-2 h-2 rounded-full ${dot}`} style={{ boxShadow: '0 0 4px currentColor' }} />
           {status === 'live' && (
-            <span>
-              live • {frameCount} frame{frameCount === 1 ? '' : 's'}
+            <span className="uppercase tracking-widest">
+              ▸ LIVE · {frameCount} FRAME{frameCount === 1 ? '' : 'S'}
               {frame?.viewport &&
-                ` • ${frame.viewport.width}×${frame.viewport.height}`}
+                ` · ${frame.viewport.width}×${frame.viewport.height}`}
             </span>
           )}
-          {status === 'connecting' && <span>connecting…</span>}
+          {status === 'connecting' && <span className="uppercase tracking-widest">◌ CONNECTING...</span>}
           {status === 'inactive' && (
-            <span>
-              browser idle — frames will stream when the agent uses Stagehand
+            <span className="uppercase tracking-widest">
+              ◇ IDLE — frames stream when agent uses Stagehand
             </span>
           )}
-          {status === 'error' && <span>error: {errMsg ?? 'unknown'}</span>}
-          {status === 'closed' && <span>connection closed</span>}
+          {status === 'error' && <span className="uppercase tracking-widest glow-red" style={{ color: '#ff859a' }}>⚠ ERROR: {errMsg ?? 'unknown'}</span>}
+          {status === 'closed' && <span className="uppercase tracking-widest">◼ CONNECTION CLOSED</span>}
         </div>
         {currentUrl && (
-          <div className="ml-auto text-[11px] font-mono text-slate-500 truncate max-w-[40%]">
-            {currentUrl}
+          <div className="ml-auto text-[11px] font-mono truncate max-w-[40%]" style={{ color: '#aaf6ff' }}>
+            &gt; {currentUrl}
           </div>
         )}
       </header>
@@ -148,30 +163,34 @@ export function BrowserMirrorPanel({ agent, onTeach }: Props) {
           <img
             alt="browser mirror"
             src={`data:image/jpeg;base64,${frame.data}`}
-            className="max-w-full max-h-full rounded shadow-lg border border-slate-800"
-            style={{ imageRendering: 'auto' }}
+            className="max-w-full max-h-full"
+            style={{
+              imageRendering: 'auto',
+              border: '1px solid rgba(108, 230, 248, 0.4)',
+              boxShadow: '0 0 24px rgba(108, 230, 248, 0.18)',
+            }}
           />
         ) : (
-          <div className="text-slate-500 text-sm max-w-md text-center mt-16">
-            <div className="text-slate-300 mb-2">
+          <div className="text-sm max-w-md text-center mt-16">
+            <div className="holo-title text-base mb-2">
               {status === 'inactive'
-                ? 'No active browser session yet.'
+                ? '◇ NO ACTIVE SESSION'
                 : status === 'connecting'
-                  ? 'Connecting…'
+                  ? '◌ CONNECTING'
                   : status === 'error'
-                    ? 'Connection failed.'
-                    : 'Stream closed.'}
+                    ? '⚠ CONNECTION FAILED'
+                    : '◼ STREAM CLOSED'}
             </div>
             {status === 'inactive' && (
-              <div className="text-xs">
-                Ask the agent to open a page in the chat, e.g.
-                <span className="block mt-2 font-mono text-slate-400">
+              <div className="text-xs holo-readout" style={{ color: 'rgba(108, 230, 248, 0.7)' }}>
+                // Ask the agent to open a page, e.g.
+                <span className="block mt-2 font-mono" style={{ color: '#aaf6ff' }}>
                   "open mastra.ai and tell me what's on the homepage"
                 </span>
               </div>
             )}
             {errMsg && (
-              <pre className="text-xs text-rose-300 mt-3 whitespace-pre-wrap">
+              <pre className="text-xs glow-red mt-3 whitespace-pre-wrap" style={{ color: '#ff859a' }}>
                 {errMsg}
               </pre>
             )}

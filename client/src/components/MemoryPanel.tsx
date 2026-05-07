@@ -131,15 +131,25 @@ export function MemoryPanel({ agents, onTeach }: Props) {
   const wmDirty = wmDraft !== (wm?.workingMemory ?? wm?.template ?? '');
 
   return (
-    <div className="flex-1 flex flex-col min-w-0">
-      <header className="border-b border-slate-800 p-4 flex items-center gap-3 flex-wrap">
-        <h2 className="font-semibold">Memory</h2>
+    <div className="flex-1 flex flex-col min-w-0 scan-lines">
+      <header
+        className="p-4 flex items-center gap-3 flex-wrap"
+        style={{
+          borderBottom: '1px solid rgba(108, 230, 248, 0.22)',
+          background: 'linear-gradient(180deg, rgba(4, 30, 38, 0.5), rgba(2, 14, 20, 0.25))',
+        }}
+      >
+        <div>
+          <div className="holo-eyebrow">// MODULE 05</div>
+          <h2 className="holo-title text-base mt-0.5">MEMORY</h2>
+        </div>
         <PrimitiveBadge primitive="memory" onTeach={onTeach} compact />
         <PrimitiveBadge primitive="working-memory" onTeach={onTeach} compact />
         <select
           value={agentId}
           onChange={(e) => setAgentId(e.target.value)}
-          className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs"
+          className="px-2 py-1 text-xs"
+          style={{ background: 'rgba(2, 14, 20, 0.7)', border: '1px solid rgba(108, 230, 248, 0.3)', color: '#cdf2fb' }}
         >
           {agents.map((a) => (
             <option key={a.id} value={a.id}>
@@ -150,7 +160,8 @@ export function MemoryPanel({ agents, onTeach }: Props) {
         <input
           value={resourceId}
           onChange={(e) => setResourceId(e.target.value)}
-          className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-xs font-mono"
+          className="px-2 py-1 text-xs font-mono"
+          style={{ background: 'rgba(2, 14, 20, 0.7)', border: '1px solid rgba(108, 230, 248, 0.3)', color: '#cdf2fb' }}
           placeholder="resourceId"
         />
         <button
@@ -158,22 +169,24 @@ export function MemoryPanel({ agents, onTeach }: Props) {
             refresh();
             refreshWorkingMemory();
           }}
-          className="px-2 py-1 text-xs rounded bg-slate-800 hover:bg-slate-700"
+          className="holo-button"
         >
-          {loading || wmLoading ? '…' : 'Refresh'}
+          {loading || wmLoading ? '◌ SYNC' : '↻ REFRESH'}
         </button>
-        <div className="ml-auto flex items-center gap-0 text-[11px] rounded border border-slate-700 overflow-hidden">
+        <div className="ml-auto flex items-center gap-0 text-[10px] overflow-hidden" style={{ border: '1px solid rgba(108, 230, 248, 0.35)' }}>
           {(['threads', 'working-memory'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-3 py-1 ${t === 'working-memory' ? 'border-l border-slate-700' : ''} ${
-                tab === t
-                  ? 'bg-slate-800 text-white'
-                  : 'text-slate-400 hover:bg-slate-800/60'
-              }`}
+              className="px-3 py-1 font-mono uppercase tracking-widest"
+              style={{
+                borderLeft: t === 'working-memory' ? '1px solid rgba(108, 230, 248, 0.35)' : 'none',
+                background: tab === t ? 'rgba(108, 230, 248, 0.18)' : 'transparent',
+                color: tab === t ? '#aaf6ff' : 'rgba(108, 230, 248, 0.6)',
+                textShadow: tab === t ? '0 0 4px rgba(108, 230, 248, 0.5)' : 'none',
+              }}
             >
-              {t === 'threads' ? 'Threads' : 'Working memory'}
+              {t === 'threads' ? 'THREADS' : 'WORKING MEM'}
             </button>
           ))}
         </div>

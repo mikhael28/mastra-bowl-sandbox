@@ -28,10 +28,10 @@ function StalenessIndicator({ score }: { score: number }) {
 
   return (
     <div className="flex items-center gap-1.5" title={`Staleness: ${score}/100`}>
-      <div className="w-12 h-1.5 bg-[#21262d] rounded-full overflow-hidden">
+      <div className="w-12 h-1.5 bg-[#0a2b37] rounded-full overflow-hidden">
         <div className={`h-full ${color} rounded-full`} style={{ width: `${score}%` }} />
       </div>
-      <span className="text-[10px] text-[#8b949e] w-6">{score}</span>
+      <span className="text-[10px] text-[#5395a8] w-6">{score}</span>
     </div>
   );
 }
@@ -62,8 +62,8 @@ export function ItemRow({
     <div
       onClick={onClick}
       onContextMenu={onContextMenu}
-      className={`flex items-start gap-3 px-6 py-3 border-b border-[#21262d] hover:bg-[#161b22] cursor-pointer transition-colors group ${
-        isFocused ? 'bg-[#161b22] ring-1 ring-inset ring-[#58a6ff44]' : ''
+      className={`flex items-start gap-3 px-6 py-3 border-b border-[#0a2b37] hover:bg-[#04141a] cursor-pointer transition-colors group ${
+        isFocused ? 'bg-[#04141a] ring-1 ring-inset ring-[#aaf6ff44]' : ''
       } ${isHidden ? 'opacity-50' : ''}`}
     >
       <div className="mt-1 flex-shrink-0">
@@ -74,8 +74,8 @@ export function ItemRow({
           }}
           className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
             favorited
-              ? 'bg-[#58a6ff] border-[#58a6ff] text-white'
-              : 'border-[#30363d] text-transparent hover:border-[#58a6ff] hover:text-[#58a6ff33] group-hover:border-[#484f58]'
+              ? 'bg-[#aaf6ff] border-[#aaf6ff] text-white'
+              : 'border-[#143a48] text-transparent hover:border-[#aaf6ff] hover:text-[#aaf6ff33] group-hover:border-[#235e6f]'
           }`}
           title={favorited ? 'Remove from favorites' : 'Add to favorites'}
         >
@@ -93,8 +93,8 @@ export function ItemRow({
           }}
           className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
             isHidden
-              ? 'border-[#d29922] text-[#d29922] bg-[#d2992222]'
-              : 'border-[#30363d] text-transparent hover:border-[#d29922] hover:text-[#d29922] group-hover:border-[#484f58] group-hover:text-[#484f58]'
+              ? 'border-[#ffb84d] text-[#ffb84d] bg-[#ffb84d22]'
+              : 'border-[#143a48] text-transparent hover:border-[#ffb84d] hover:text-[#ffb84d] group-hover:border-[#235e6f] group-hover:text-[#235e6f]'
           }`}
           title={isHidden ? 'Unhide' : 'Hide until next sync'}
         >
@@ -117,19 +117,19 @@ export function ItemRow({
           <span
             className={`text-lg ${
               pr?.isDraft
-                ? 'text-[#8b949e]'
+                ? 'text-[#5395a8]'
                 : pr?.reviewDecision === 'APPROVED'
-                  ? 'text-[#3fb950]'
+                  ? 'text-[#36e3a8]'
                   : pr?.reviewDecision === 'CHANGES_REQUESTED'
-                    ? 'text-[#f85149]'
-                    : 'text-[#58a6ff]'
+                    ? 'text-[#ff5874]'
+                    : 'text-[#aaf6ff]'
             }`}
             title={pr?.isDraft ? 'Draft' : pr?.reviewDecision || 'Open'}
           >
             ↗
           </span>
         ) : (
-          <span className="text-lg text-[#3fb950]" title="Issue">
+          <span className="text-lg text-[#36e3a8]" title="Issue">
             ●
           </span>
         )}
@@ -137,12 +137,12 @@ export function ItemRow({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-semibold text-sm text-[#e6edf3] group-hover:text-[#58a6ff] transition-colors">
+          <span className="font-semibold text-sm text-[#cdf2fb] group-hover:text-[#aaf6ff] transition-colors">
             {searchQuery ? highlightText(item.title, searchQuery) : item.title}
           </span>
-          <span className="text-xs text-[#484f58]">#{item.number}</span>
+          <span className="text-xs text-[#235e6f]">#{item.number}</span>
           {pr?.isDraft && (
-            <span className="px-1.5 py-0.5 text-[10px] border border-[#30363d] text-[#8b949e] rounded-full">
+            <span className="px-1.5 py-0.5 text-[10px] border border-[#143a48] text-[#5395a8] rounded-full">
               Draft
             </span>
           )}
@@ -169,14 +169,14 @@ export function ItemRow({
           </div>
         )}
 
-        <div className="flex items-center gap-3 mt-1.5 text-xs text-[#8b949e]">
+        <div className="flex items-center gap-3 mt-1.5 text-xs text-[#5395a8]">
           <span>@{item.author.login}</span>
           <span title={`Created ${item.createdAt}`}>opened {timeAgo(item.createdAt)}</span>
           <span title={`Updated ${item.updatedAt}`}>updated {timeAgo(item.updatedAt)}</span>
           {comments > 0 && <span>💬 {comments}</span>}
           {reactions > 0 && <span>👍 {reactions}</span>}
           {isPR && pr && (
-            <span className="text-[#3fb950]">
+            <span className="text-[#36e3a8]">
               +{pr.additions} -{pr.deletions}
             </span>
           )}
@@ -185,7 +185,7 @@ export function ItemRow({
           )}
           {topDev && (
             <span
-              className="text-[#388bfd]"
+              className="text-[#88efff]"
               title={`Suggested: ${topDev.name} (${topDev.role})`}
             >
               ◆ {topDev.name}
@@ -194,7 +194,7 @@ export function ItemRow({
         </div>
 
         {item.body && (
-          <p className="mt-1 text-xs text-[#484f58] leading-relaxed">
+          <p className="mt-1 text-xs text-[#235e6f] leading-relaxed">
             {truncate(item.body.replace(/\r?\n/g, ' ').replace(/#{1,6}\s/g, ''), 200)}
           </p>
         )}

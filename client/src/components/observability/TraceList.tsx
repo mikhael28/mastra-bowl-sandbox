@@ -64,39 +64,55 @@ export function TraceList({ selectedTraceId, onSelectTrace, refreshNonce }: Prop
   }, [spans]);
 
   return (
-    <aside className="w-[340px] border-r border-slate-800 bg-slate-950/60 flex flex-col min-h-0">
-      <div className="px-3 py-2 border-b border-slate-800 flex items-center gap-2">
-        <div className="text-[11px] uppercase tracking-wider text-slate-500 flex-1">
-          Recent traces {loading ? '…' : `(${counts.total})`}
+    <aside
+      className="w-[340px] flex flex-col min-h-0 scan-lines"
+      style={{
+        borderRight: '1px solid rgba(108, 230, 248, 0.22)',
+        background: 'rgba(2, 14, 20, 0.55)',
+      }}
+    >
+      <div className="px-3 py-2 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
+        <div className="holo-eyebrow flex-1">
+          // RECENT TRACES [{loading ? '...' : counts.total.toString().padStart(2, '0')}]
         </div>
       </div>
 
-      <div className="flex gap-1 p-2 border-b border-slate-800 text-[11px]">
+      <div className="flex gap-1 p-2 text-[10px]" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
         {(['all', 'agent', 'workflow'] as const).map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-2 py-1 rounded flex-1 ${
+            className="px-2 py-1 flex-1 font-mono uppercase tracking-widest"
+            style={
               filter === f
-                ? 'bg-indigo-500/15 text-indigo-200 border border-indigo-500/40'
-                : 'border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
-            }`}
+                ? {
+                    background: 'rgba(108, 230, 248, 0.15)',
+                    color: '#aaf6ff',
+                    border: '1px solid rgba(108, 230, 248, 0.55)',
+                    textShadow: '0 0 4px rgba(108, 230, 248, 0.5)',
+                  }
+                : {
+                    background: 'rgba(2, 14, 20, 0.55)',
+                    color: 'rgba(108, 230, 248, 0.6)',
+                    border: '1px solid rgba(108, 230, 248, 0.18)',
+                  }
+            }
           >
-            {f === 'all' ? `All · ${counts.total}` : f === 'agent' ? `Agents · ${counts.agents}` : `Workflows · ${counts.workflows}`}
+            {f === 'all' ? `ALL [${counts.total}]` : f === 'agent' ? `AGT [${counts.agents}]` : `WKF [${counts.workflows}]`}
           </button>
         ))}
       </div>
 
       {error && (
-        <div className="p-3 m-2 text-xs text-rose-300 border border-rose-500/30 bg-rose-500/10 rounded">
-          {error}
+        <div className="p-3 m-2 text-xs holo-panel-red glow-red" style={{ color: '#ff859a' }}>
+          ⚠ {error}
         </div>
       )}
 
       <ul className="flex-1 overflow-y-auto">
         {spans.length === 0 && !loading && (
-          <li className="p-4 text-[12px] text-slate-500">
-            No traces yet. Send a message on the Chat tab to produce one.
+          <li className="p-4 text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+            // No traces yet. Send a message on the Chat tab to produce one.
           </li>
         )}
         {spans.map((s) => (
@@ -135,36 +151,51 @@ function TraceRow({
     <li>
       <button
         onClick={onClick}
-        className={`w-full text-left px-3 py-2 border-l-2 ${
-          active
-            ? 'bg-indigo-500/10 border-l-indigo-500'
-            : 'border-l-transparent hover:bg-slate-800/40'
-        }`}
+        className="w-full text-left px-3 py-2 transition-all"
+        style={{
+          borderLeft: active ? '2px solid #aaf6ff' : '2px solid transparent',
+          background: active
+            ? 'linear-gradient(90deg, rgba(108, 230, 248, 0.14), transparent 90%)'
+            : 'transparent',
+        }}
+        onMouseEnter={(e) => {
+          if (!active) e.currentTarget.style.background = 'rgba(108, 230, 248, 0.05)';
+        }}
+        onMouseLeave={(e) => {
+          if (!active) e.currentTarget.style.background = 'transparent';
+        }}
       >
         <div className="flex items-center gap-2 mb-1">
           <span
-            className={`text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded ${meta.bg} ${meta.textOn}`}
+            className={`text-[9px] uppercase tracking-widest px-1.5 py-0.5 font-mono ${meta.bg} ${meta.textOn}`}
           >
             {meta.label}
           </span>
           {errored && (
-            <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
-              error
+            <span
+              className="text-[9px] uppercase tracking-widest px-1.5 py-0.5 glow-red"
+              style={{
+                background: 'rgba(255, 88, 116, 0.15)',
+                color: '#ff859a',
+                border: '1px solid rgba(255, 88, 116, 0.45)',
+              }}
+            >
+              ⚠ ERR
             </span>
           )}
-          <span className="text-[10px] text-slate-500 ml-auto">
+          <span className="text-[10px] holo-readout ml-auto" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
             {formatRelativeTime(span.startedAt)}
           </span>
         </div>
-        <div className="text-sm font-medium text-slate-200 truncate">
+        <div className="text-sm font-display uppercase tracking-wider truncate" style={{ color: active ? '#aaf6ff' : '#cdf2fb' }}>
           {span.entityName ?? span.entityId ?? span.name}
         </div>
         {span.input && typeof span.input === 'string' && (
-          <div className="text-[11px] text-slate-500 truncate mt-0.5">
+          <div className="text-[11px] truncate mt-0.5" style={{ color: 'rgba(108, 230, 248, 0.6)' }}>
             {span.input}
           </div>
         )}
-        <div className="flex items-center gap-3 mt-1 text-[10px] text-slate-500 font-mono">
+        <div className="flex items-center gap-3 mt-1 text-[10px] font-mono" style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
           <span>{formatDuration(duration)}</span>
           {totalTokens > 0 && <span>{totalTokens.toLocaleString()} tok</span>}
           <span className="truncate ml-auto">{span.traceId.slice(0, 10)}…</span>

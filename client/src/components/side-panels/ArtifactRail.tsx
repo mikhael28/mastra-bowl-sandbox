@@ -274,54 +274,70 @@ export function ArtifactRail({ agentId, sessionId, messages, refreshNonce }: Pro
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      <div className="px-3 py-2 border-b border-slate-800 flex items-center gap-2">
-        <span className="text-[10px] uppercase tracking-wider text-slate-500">
-          Build
-        </span>
-        <span className="text-[10px] font-mono text-slate-500 truncate">
-          artifacts/{sessionId.slice(0, 8)}
+      <div className="px-3 py-2 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
+        <span className="holo-eyebrow">// BUILD</span>
+        <span className="text-[10px] font-mono truncate" style={{ color: 'rgba(170, 246, 255, 0.7)' }}>
+          &gt; artifacts/{sessionId.slice(0, 8)}
         </span>
         <button
           onClick={() => {
             refreshFiles();
             setIframeKey((k) => k + 1);
           }}
-          className="ml-auto text-[10px] text-slate-500 hover:text-slate-200"
+          className="ml-auto text-[10px] uppercase tracking-widest font-mono transition-colors"
+          style={{ color: 'rgba(108, 230, 248, 0.6)' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#aaf6ff')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(108, 230, 248, 0.6)')}
           title="Refresh files + preview"
         >
-          ⟳
+          ↻
         </button>
       </div>
 
-      <div className="flex border-b border-slate-800 text-[11px]">
+      <div className="flex text-[10px]" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
         {(['preview', 'code', 'files', 'terminal'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 py-1.5 ${
+            className="flex-1 py-1.5 font-mono uppercase tracking-widest"
+            style={
               tab === t
-                ? 'bg-slate-800 text-white'
-                : 'text-slate-400 hover:bg-slate-800/60'
-            }`}
+                ? {
+                    background: 'rgba(108, 230, 248, 0.15)',
+                    color: '#aaf6ff',
+                    borderBottom: '1px solid #aaf6ff',
+                    textShadow: '0 0 5px rgba(108, 230, 248, 0.5)',
+                  }
+                : {
+                    color: 'rgba(108, 230, 248, 0.6)',
+                    borderBottom: '1px solid transparent',
+                  }
+            }
           >
-            {t === 'files' && files.length > 0 ? `Files (${files.length})` : null}
+            {t === 'files' && files.length > 0 ? `FILES [${files.length}]` : null}
             {t === 'terminal' && terminal.length > 0
-              ? `Terminal (${terminal.length})`
+              ? `TERM [${terminal.length}]`
               : null}
-            {t !== 'files' && t !== 'terminal' && t}
-            {t === 'files' && files.length === 0 && 'Files'}
-            {t === 'terminal' && terminal.length === 0 && 'Terminal'}
+            {t !== 'files' && t !== 'terminal' && t.toUpperCase()}
+            {t === 'files' && files.length === 0 && 'FILES'}
+            {t === 'terminal' && terminal.length === 0 && 'TERM'}
           </button>
         ))}
       </div>
 
       {/* Active file picker (always visible above the body). */}
       {(tab === 'preview' || tab === 'code') && (
-        <div className="px-2 py-1 border-b border-slate-800 flex items-center gap-2">
+        <div className="px-2 py-1 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.22)' }}>
           <select
             value={activeFile ?? ''}
             onChange={(e) => setActiveFile(e.target.value || null)}
-            className="bg-slate-900 border border-slate-700 rounded text-[10px] py-0.5 px-1 text-slate-200 max-w-full truncate"
+            className="text-[10px] py-0.5 px-1 max-w-full truncate"
+            style={{
+              background: 'rgba(2, 14, 20, 0.8)',
+              border: '1px solid rgba(108, 230, 248, 0.3)',
+              color: '#cdf2fb',
+              fontFamily: 'var(--font-mono)',
+            }}
           >
             {!activeFile && <option value="">— no file —</option>}
             {files.map((f) => (
@@ -334,13 +350,18 @@ export function ArtifactRail({ agentId, sessionId, messages, refreshNonce }: Pro
             <button
               onClick={saveActiveFile}
               disabled={savingFile || editorBuffer === activeFileContent}
-              className="ml-auto text-[10px] px-2 py-0.5 rounded bg-emerald-600 text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-emerald-500"
+              className="ml-auto text-[10px] px-2 py-0.5 font-mono uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              style={{
+                background: 'rgba(54, 227, 168, 0.15)',
+                color: '#66f5c2',
+                border: '1px solid rgba(54, 227, 168, 0.55)',
+              }}
             >
               {savingFile
-                ? 'saving…'
+                ? '◌ SAVING'
                 : editorBuffer === activeFileContent
-                  ? 'saved'
-                  : 'save'}
+                  ? '✓ SAVED'
+                  : '▸ SAVE'}
             </button>
           )}
         </div>
@@ -407,9 +428,9 @@ function PreviewBody({
 }) {
   if (!filePath) {
     return (
-      <div className="h-full w-full flex items-center justify-center text-slate-600 text-[11px] px-4 text-center">
-        No artifact files yet. Ask the agent to build something — files written
-        to <code className="text-slate-400">artifacts/{sessionId.slice(0, 8)}/</code>{' '}
+      <div className="h-full w-full flex items-center justify-center text-[10px] px-4 text-center holo-readout" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+        // No artifact files yet. Ask the agent to build something — files written
+        to <code style={{ color: '#aaf6ff' }}>artifacts/{sessionId.slice(0, 8)}/</code>{' '}
         will appear here live.
       </div>
     );
@@ -426,7 +447,7 @@ function PreviewBody({
   }
   if (mode === 'image') {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-900 p-4 overflow-auto">
+      <div className="w-full h-full flex items-center justify-center p-4 overflow-auto" style={{ background: 'rgba(2, 14, 20, 0.7)' }}>
         <img
           alt={relPath}
           src={artifactUrl(sessionId, filePath)}
@@ -437,13 +458,16 @@ function PreviewBody({
   }
   if (mode === 'markdown') {
     return (
-      <div className="h-full overflow-auto p-3 text-xs text-slate-200">
+      <div className="h-full overflow-auto p-3 text-xs" style={{ color: '#cdf2fb' }}>
         <pre className="whitespace-pre-wrap font-sans">{content}</pre>
       </div>
     );
   }
   return (
-    <pre className="h-full overflow-auto m-0 p-2 text-[11px] font-mono text-slate-200 bg-slate-950 leading-relaxed whitespace-pre-wrap">
+    <pre
+      className="h-full overflow-auto m-0 p-2 text-[11px] font-mono leading-relaxed whitespace-pre-wrap"
+      style={{ background: 'rgba(2, 14, 20, 0.85)', color: '#cdf2fb' }}
+    >
       {content || '(empty)'}
     </pre>
   );
@@ -464,21 +488,20 @@ function FilesPane({
 }) {
   return (
     <div className="text-xs h-full overflow-y-auto">
-      <div className="px-3 py-2 border-b border-slate-800 flex items-center gap-2">
-        <span className="text-[10px] uppercase tracking-wide text-slate-500">
-          artifacts/{sessionId.slice(0, 8)}
-        </span>
+      <div className="px-3 py-2 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(108, 230, 248, 0.18)' }}>
+        <span className="holo-eyebrow">// artifacts/{sessionId.slice(0, 8)}</span>
         <button
           onClick={onRefresh}
-          className="ml-auto text-[10px] text-slate-500 hover:text-slate-200"
+          className="ml-auto text-[10px] uppercase tracking-widest font-mono"
+          style={{ color: 'rgba(108, 230, 248, 0.6)' }}
           title="Refresh"
         >
-          ⟳
+          ↻
         </button>
       </div>
       {files.length === 0 && (
-        <div className="px-3 py-3 text-[11px] text-slate-500">
-          No files yet.
+        <div className="px-3 py-3 text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+          // No files yet.
         </div>
       )}
       <ul className="py-1">
@@ -486,20 +509,28 @@ function FilesPane({
           <li key={f.path}>
             <button
               onClick={() => onSelect(f.path)}
-              className={`w-full text-left px-3 py-1 text-[11px] font-mono flex items-center gap-2 ${
+              className="w-full text-left px-3 py-1 text-[11px] font-mono flex items-center gap-2 transition-all"
+              style={
                 activeFile === f.path
-                  ? 'bg-slate-800 text-white'
-                  : 'text-slate-300 hover:bg-slate-800/60'
-              }`}
+                  ? {
+                      background: 'linear-gradient(90deg, rgba(108, 230, 248, 0.18), transparent 90%)',
+                      borderLeft: '2px solid #aaf6ff',
+                      color: '#aaf6ff',
+                    }
+                  : {
+                      borderLeft: '2px solid transparent',
+                      color: '#a8e0ec',
+                    }
+              }
             >
-              <span className="text-slate-500">
-                {f.type === 'directory' ? '📁' : '📄'}
+              <span style={{ color: 'rgba(108, 230, 248, 0.55)' }}>
+                {f.type === 'directory' ? '▤' : '▢'}
               </span>
               <span className="truncate">
                 {relativeToSession(f.path, sessionId)}
               </span>
               {f.size != null && f.type === 'file' && (
-                <span className="ml-auto text-[10px] text-slate-500">
+                <span className="ml-auto text-[10px]" style={{ color: 'rgba(108, 230, 248, 0.45)' }}>
                   {humanSize(f.size)}
                 </span>
               )}
@@ -514,8 +545,8 @@ function FilesPane({
 function TerminalPane({ entries }: { entries: TerminalEntry[] }) {
   if (entries.length === 0) {
     return (
-      <div className="px-3 py-3 text-[11px] text-slate-500">
-        No commands run yet.
+      <div className="px-3 py-3 text-[10px] holo-readout" style={{ color: 'rgba(108, 230, 248, 0.5)' }}>
+        // No commands executed yet.
       </div>
     );
   }
@@ -524,28 +555,37 @@ function TerminalPane({ entries }: { entries: TerminalEntry[] }) {
       {entries.map((e) => (
         <div
           key={e.id}
-          className="rounded border border-slate-800 bg-slate-950 overflow-hidden"
+          className="overflow-hidden"
+          style={{ border: '1px solid rgba(108, 230, 248, 0.18)', background: 'rgba(2, 14, 20, 0.85)' }}
         >
-          <div className="px-2 py-1 bg-slate-900 text-slate-300 truncate flex items-center gap-2">
-            <span className="text-slate-500">$</span>
+          <div
+            className="px-2 py-1 truncate flex items-center gap-2"
+            style={{ background: 'rgba(4, 30, 38, 0.6)', color: '#cdf2fb' }}
+          >
+            <span className="glow-cyan" style={{ color: '#aaf6ff' }}>▸</span>
             <span className="truncate flex-1">{e.command}</span>
             <span
-              className={`text-[10px] ${
-                e.exitCode != null && e.exitCode !== 0
-                  ? 'text-rose-300'
-                  : 'text-emerald-300'
-              }`}
+              className="text-[10px] uppercase tracking-widest"
+              style={{
+                color:
+                  e.exitCode != null && e.exitCode !== 0
+                    ? '#ff859a'
+                    : '#66f5c2',
+              }}
             >
-              {e.exitCode != null ? `exit ${e.exitCode}` : 'done'}
+              {e.exitCode != null ? `EXIT ${e.exitCode}` : 'DONE'}
             </span>
           </div>
           {e.stdout && (
-            <pre className="m-0 px-2 py-1 text-slate-200 whitespace-pre-wrap break-all">
+            <pre className="m-0 px-2 py-1 whitespace-pre-wrap break-all" style={{ color: '#cdf2fb' }}>
               {e.stdout}
             </pre>
           )}
           {e.stderr && (
-            <pre className="m-0 px-2 py-1 text-rose-300 whitespace-pre-wrap break-all border-t border-slate-800">
+            <pre
+              className="m-0 px-2 py-1 whitespace-pre-wrap break-all glow-red"
+              style={{ color: '#ff859a', borderTop: '1px solid rgba(108, 230, 248, 0.15)' }}
+            >
               {e.stderr}
             </pre>
           )}
