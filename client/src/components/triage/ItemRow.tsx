@@ -13,6 +13,7 @@ import { useFavorites } from './FavoritesContext';
 interface Props {
   item: (GitHubIssue | GitHubPullRequest) & { _kind: 'issue' | 'pr' };
   onClick: () => void;
+  onContextMenu?: (e: React.MouseEvent) => void;
   searchQuery?: string;
   isFocused?: boolean;
   triage?: TriageResult | null;
@@ -38,6 +39,7 @@ function StalenessIndicator({ score }: { score: number }) {
 export function ItemRow({
   item,
   onClick,
+  onContextMenu,
   searchQuery,
   isFocused,
   triage,
@@ -59,6 +61,7 @@ export function ItemRow({
   return (
     <div
       onClick={onClick}
+      onContextMenu={onContextMenu}
       className={`flex items-start gap-3 px-6 py-3 border-b border-[#21262d] hover:bg-[#161b22] cursor-pointer transition-colors group ${
         isFocused ? 'bg-[#161b22] ring-1 ring-inset ring-[#58a6ff44]' : ''
       } ${isHidden ? 'opacity-50' : ''}`}

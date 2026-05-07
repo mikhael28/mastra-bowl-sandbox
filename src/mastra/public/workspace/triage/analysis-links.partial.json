@@ -1,314 +1,458 @@
 [
   {
+    "prNumber": 16310,
+    "issueNumber": 16292,
+    "confidence": 0.98,
+    "reason": "Direct match: PR title and body explicitly say MemoryThread.update/delete/clone now require agentId, which aligns with the SDK↔server contract drift issue about MemoryThread.update missing agentId."
+  },
+  {
     "prNumber": 16285,
     "issueNumber": 16272,
     "confidence": 0.96,
-    "reason": "PR title/body explicitly says it fixes hosted Responses streaming tool-call events, matching the server issue about emitting Responses streaming events for tool calls."
+    "reason": "Very close semantic match: PR fixes Responses streaming tool-call event handling, matching the issue requesting server-emitted Responses streaming events for tool calls."
   },
   {
     "prNumber": 16284,
     "issueNumber": 16017,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Fixes #16017' and describes recovering prior tool-call args when tool-results are standalone, matching the issue about fabricated empty args on resume."
-  },
-  {
-    "prNumber": 16280,
-    "issueNumber": 16180,
-    "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes the CLI Next.js lint rule by parsing next.config.js without executing it, which directly matches the issue about not executing next.config.js during linting."
-  },
-  {
-    "prNumber": 16279,
-    "issueNumber": 15062,
-    "confidence": 0.97,
-    "reason": "PR title/body directly references observational memory max compression behavior and the PR branch/title aligns with the issue about OM when MAX_COMPRESSION isn't enough."
+    "reason": "Explicitly fixes #16017 in the body; the PR is a direct follow-up to the exact bug described in the issue."
   },
   {
     "prNumber": 16268,
     "issueNumber": 16114,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Fixes #16114' and addresses pre-schema query coercion in @mastra/nestjs, exactly matching the issue."
+    "reason": "Explicitly fixes #16114. The PR description matches the nested server/query coercion bug in the issue."
   },
   {
     "prNumber": 16259,
     "issueNumber": 16216,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Fixes #16216' and fixes threadExists being set from post-step state, directly matching the saveThread upsert/metadata merge issue."
+    "reason": "Explicitly fixes #16216. The PR addresses thread metadata being wiped after a run, matching the saveThread upsert/merge problem."
+  },
+  {
+    "prNumber": 16241,
+    "issueNumber": 16240,
+    "confidence": 0.99,
+    "reason": "Explicitly closes #16240 and adds lifecycle timestamps to Harness display state, which exactly matches the issue title."
   },
   {
     "prNumber": 16237,
     "issueNumber": 16235,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Fixes #16235' and adds subagent display names to Harness state, directly matching the issue."
+    "reason": "Explicitly fixes #16235 and adds subagent display names to Harness state, exactly matching the issue."
   },
   {
     "prNumber": 16233,
     "issueNumber": 16224,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Fixes #16224' and fixes agent listing crashes on jsonb scalar strings, exactly the reported bug."
+    "reason": "Explicitly fixes #16224. The PR and issue both describe agent listing crashing on jsonb scalar strings in @mastra/pg."
   },
   {
     "prNumber": 16218,
     "issueNumber": 16220,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Fixes #16220' and preserves providerMetadata on tool-invocation parts during stream, directly matching the issue."
+    "reason": "Explicitly fixes #16220. The PR restores providerMetadata on tool-invocation parts, matching the Gemini thought_signature loss issue."
   },
   {
     "prNumber": 16210,
     "issueNumber": 16209,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Fixes #16209' and implements denied chunks for declined tool approvals, exactly matching the issue."
+    "reason": "Explicitly fixes #16209. The PR emits denied chunks for declined tool approvals, matching the issue request."
   },
   {
     "prNumber": 16206,
     "issueNumber": 16205,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it adds OpenRouter vendor/model pricing lookup handling, directly matching the issue about pricing lookup not handling vendor/model IDs."
+    "reason": "Very direct semantic match: both concern OpenRouter vendor/model pricing lookup failures and missing model-id handling."
   },
   {
     "prNumber": 16201,
     "issueNumber": 16193,
-    "confidence": 0.99,
-    "reason": "PR body explicitly describes dropping orphan tool_use/tool_result blocks before LLM submission, which matches the Anthropic 400 issue about orphan blocks."
+    "confidence": 0.97,
+    "reason": "Strong semantic match: the PR drops orphan tool_use/tool_result blocks before LLM submission, which directly addresses the Anthropic 400 orphan-block issue."
   },
   {
-    "prNumber": 16184,
-    "issueNumber": 16180,
-    "confidence": 0.99,
-    "reason": "PR body explicitly says it parses next.config.js without eval and matches the CLI lint/security issue about not executing next.config.js."
+    "prNumber": 16174,
+    "issueNumber": 16158,
+    "confidence": 0.93,
+    "reason": "High semantic overlap: both concern suspend/resume-related validation behavior around tool execution. The PR fixes output-validation skipping when suspendData is falsy, which is likely part of the suspend/resume warning issue, though not an exact title match."
   },
   {
     "prNumber": 16152,
     "issueNumber": 16151,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'Closes #16151' and reads Studio mode from request context, directly matching the issue."
+    "reason": "Explicitly closes #16151. The PR reads Studio mode from request context, exactly matching the issue."
+  },
+  {
+    "prNumber": 16133,
+    "issueNumber": 15474,
+    "confidence": 0.92,
+    "reason": "Strong match by subject: both deal with preserving providerOptions/cacheControl through message conversion. The PR explicitly fixes message-level providerOptions surviving tool-call turns, which is the continuation of the issue's Anthropic cacheControl bug."
+  },
+  {
+    "prNumber": 16119,
+    "issueNumber": 15827,
+    "confidence": 0.99,
+    "reason": "The PR sanitizes streaming error messages and explicitly references the same info-leak problem described in the issue."
+  },
+  {
+    "prNumber": 16113,
+    "issueNumber": 16112,
+    "confidence": 0.96,
+    "reason": "The PR fixes scheduled workflows and route prefix handling in NestJS, matching the issue about prefixes and query IDs being mishandled."
+  },
+  {
+    "prNumber": 16111,
+    "issueNumber": 16040,
+    "confidence": 0.99,
+    "reason": "Explicitly adds structured drop telemetry for observability events, matching the issue requesting structured telemetry for dropped observability events."
   },
   {
     "prNumber": 16108,
     "issueNumber": 15576,
     "confidence": 0.99,
-    "reason": "PR title/body explicitly target the bug where only one tool invocation was collected from a streamed tool-calls step, which matches the issue exactly."
+    "reason": "Strong direct match: the PR fixes client-js collecting all tool invocations from a streamed tool-calls step, exactly matching the issue that only one invocation was picked."
+  },
+  {
+    "prNumber": 16102,
+    "issueNumber": 16053,
+    "confidence": 0.99,
+    "reason": "Direct semantic match: the PR adds server history mode for AI SDK UI transport, which is what the issue asks for."
+  },
+  {
+    "prNumber": 16100,
+    "issueNumber": 15975,
+    "confidence": 0.99,
+    "reason": "Direct semantic match: the PR adds the Harness AI SDK UI stream adapter, which is exactly the feature requested by the issue."
   },
   {
     "prNumber": 16099,
     "issueNumber": 16042,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it closes #16042 and adds durable Harness awaiting-input APIs, directly matching the issue."
+    "reason": "Explicitly closes #16042. The PR adds durable Harness awaiting-input APIs, matching the issue about durable, id-addressable HITL resume APIs."
   },
   {
     "prNumber": 16091,
     "issueNumber": 16044,
     "confidence": 0.99,
-    "reason": "PR title/body directly add workflow state readers, which matches the issue requesting stable WorkflowState readers for suspended steps, resume labels, and outputs."
+    "reason": "Direct match: the PR adds workflow state readers, matching the issue requesting stable WorkflowState readers."
   },
   {
     "prNumber": 16088,
     "issueNumber": 16045,
     "confidence": 0.99,
-    "reason": "PR body describes adding a request-aware filter hook to ToolSearchProcessor, directly matching the issue about request-context-aware tool filtering."
+    "reason": "Direct match: the PR adds request-aware tool search filtering, matching the issue for a request-context-aware tool filter hook."
   },
   {
     "prNumber": 16085,
     "issueNumber": 16056,
     "confidence": 0.99,
-    "reason": "PR body adds subagentHistory so completed/errored/aborted subagent runs remain visible, directly matching the harness subagent history issue."
+    "reason": "Direct semantic match: the PR preserves Harness subagent history, matching the issue about keeping completed subagent activity in terminal display state."
   },
   {
     "prNumber": 16084,
     "issueNumber": 5454,
-    "confidence": 0.99,
-    "reason": "PR body explicitly says 'Closes #5454' and adds Zod-first OpenAPI support, exactly matching the Hono Zod OpenAPI support feature request."
+    "confidence": 0.98,
+    "reason": "Explicitly closes #5454. The PR introduces Zod-first OpenAPI custom routes, which aligns with the feature request."
   },
   {
     "prNumber": 16077,
     "issueNumber": 16052,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #16052 and preserves top-level text when ToolCallFilter removes tool parts, directly matching the issue."
+    "reason": "Explicitly fixes #16052. The PR preserves ToolCallFilter top-level text, exactly matching the issue."
   },
   {
     "prNumber": 16066,
     "issueNumber": 16051,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #16051 and uses the suspended payload on workflow resume, directly matching the stale previous output bug."
+    "reason": "Explicitly fixes the workflow resume stale payload bug from #16051."
   },
   {
     "prNumber": 16062,
     "issueNumber": 16046,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #16046 and preserves v6 dynamic tool UI parts, directly matching the issue."
+    "reason": "Explicitly fixes #16046. The PR preserves v6 dynamic tool UI parts, matching the issue about dropped dynamic-tool UI parts."
   },
   {
     "prNumber": 16060,
     "issueNumber": 16039,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it closes #16039 and adds preserveModelOutput mode to ToolCallFilter, matching the issue."
+    "reason": "Explicitly closes #16039. The PR adds preserveModelOutput mode to ToolCallFilter, matching the issue."
   },
   {
     "prNumber": 16059,
     "issueNumber": 16037,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it closes #16037 and fixes read-only observational context loading, directly matching the issue."
+    "reason": "Explicitly closes #16037. The PR loads read-only observational context, matching the issue that read-only OM skipped context loading."
   },
   {
     "prNumber": 16048,
     "issueNumber": 15664,
-    "confidence": 0.64,
-    "reason": "PR adds dynamic sandbox resolution via requestContext, which is semantically very close to the issue about dynamic sandbox resolution via requestContext in Workspace; however the issue number is not referenced and the title mismatch makes this moderate confidence."
-  },
-  {
-    "prNumber": 16042,
-    "issueNumber": 16042,
-    "confidence": 0.99,
-    "reason": "PR body explicitly closes the same issue number and implements durable, id-addressable HITL resume APIs requested by the issue."
+    "confidence": 0.85,
+    "reason": "Strong feature overlap: both introduce requestContext-based dynamic sandbox/workspace resolution. The PR is a clear implementation of the feature request."
   },
   {
     "prNumber": 16012,
     "issueNumber": 15943,
     "confidence": 0.99,
-    "reason": "PR adds a processToolResult processor hook, matching the symmetric hook for tool returns requested by the issue."
+    "reason": "Direct semantic match: the PR adds processToolResult, which is the symmetric hook requested by the issue."
   },
   {
-    "prNumber": 15904,
-    "issueNumber": 15880,
-    "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #15880 and preserves text part whitespace in filterMessagesForPersistence, directly matching the issue."
+    "prNumber": 16013,
+    "issueNumber": 15478,
+    "confidence": 0.92,
+    "reason": "The PR explicitly fixes #15478 and is an agent performance optimization, matching the slow-responses issue."
+  },
+  {
+    "prNumber": 16001,
+    "issueNumber": 13412,
+    "confidence": 0.76,
+    "reason": "Strong semantic match: the PR adds Exa search integration, while the issue is a generic Qdrant hybrid/multi-query search request. Both are search-tool enhancements, but the specific technologies differ so confidence is moderate."
+  },
+  {
+    "prNumber": 15968,
+    "issueNumber": 13644,
+    "confidence": 0.7,
+    "reason": "Related by processor behavior: the PR adds generalized caching for LLM-based processors, while the issue requests LLM-based processors not default to processOutputStream. Same processor pipeline area, but not an exact bug fix."
+  },
+  {
+    "prNumber": 15915,
+    "issueNumber": 15911,
+    "confidence": 0.83,
+    "reason": "The PR body says it is a follow-up to #15911, but that issue is not included in the provided list. No direct link to a listed issue."
+  },
+  {
+    "prNumber": 15889,
+    "issueNumber": 15887,
+    "confidence": 0.95,
+    "reason": "Very close semantic match: the PR parallelizes Harness subagent dispatch, which directly addresses the serialization-in-approval-mode issue."
   },
   {
     "prNumber": 15848,
     "issueNumber": 15734,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #15734 and preserves sub-agent thread ID across workflow suspend/resume, directly matching the issue."
+    "reason": "Explicitly fixes #15734. The PR preserves sub-agent thread ID across workflow suspend/resume, matching the issue."
   },
   {
     "prNumber": 15835,
     "issueNumber": 15811,
-    "confidence": 0.99,
-    "reason": "PR title/body directly fix ToolCallFilter so it runs during each agentic loop step, matching the issue asking whether it runs only once on processInput."
+    "confidence": 0.9,
+    "reason": "Strong semantic match: the PR makes ToolCallFilter run during each agentic loop step instead of only on initial input, which matches the issue asking whether it runs only once on processInput."
+  },
+  {
+    "prNumber": 15826,
+    "issueNumber": 15734,
+    "confidence": 0.42,
+    "reason": "Potentially related to workflow resume correctness, but this PR is specifically about missing runId during resume in Inngest rather than the specialist-agent ownership problem. Weak association only."
   },
   {
     "prNumber": 15787,
     "issueNumber": 15764,
-    "confidence": 0.99,
-    "reason": "PR body explicitly says it closes #15764 and prevents persisting system messages, directly matching the issue."
+    "confidence": 0.97,
+    "reason": "Explicitly closes #15764 and fixes the system-message ordering problem referenced in the issue."
+  },
+  {
+    "prNumber": 15769,
+    "issueNumber": 15229,
+    "confidence": 0.98,
+    "reason": "Direct fix for AgentConfig.tools typing, matching the issue that the typing is unnecessarily wide."
   },
   {
     "prNumber": 15766,
     "issueNumber": 15509,
+    "confidence": 0.93,
+    "reason": "Strong match: the PR adds a provider history compatibility rule for OpenAI Responses validation failures involving missing tool outputs, matching the resume/HITL replay issue."
+  },
+  {
+    "prNumber": 15739,
+    "issueNumber": 13846,
+    "confidence": 0.92,
+    "reason": "Strong semantic match: both concern preserving tool-call / schema compatibility in agentic loops with Anthropic structured output, and the PR fixes guardrail validation with Anthropic schemas."
+  },
+  {
+    "prNumber": 15682,
+    "issueNumber": 15668,
     "confidence": 0.99,
-    "reason": "PR body directly addresses OpenAI Responses validation failures and missing tool outputs during resume/HITL replay, which matches the issue about Responses API replay failures with missing reasoning pairs."
+    "reason": "Explicitly says fixes #15668. The PR addresses provider drops of tool-result chunks and abort-mid-stream orphaning, which matches the issue title."
   },
   {
     "prNumber": 15583,
     "issueNumber": 15535,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #15535 and includes partial text in onAbort when a stream is aborted mid-generation, exactly matching the bug report."
+    "reason": "Explicitly fixes #15535. The PR includes partial text in onAbort when a stream is aborted mid-generation, exactly matching the issue."
   },
   {
     "prNumber": 15581,
     "issueNumber": 15580,
     "confidence": 0.99,
-    "reason": "PR body explicitly references the same issue number and adds a tanstack-start server adapter, directly matching the request."
+    "reason": "PR body links the exact issue URL for the TanStack Start server adapter request."
+  },
+  {
+    "prNumber": 15568,
+    "issueNumber": 15580,
+    "confidence": 0.78,
+    "reason": "Semantic match: both ask for a server adapter in the same area. However, the PR is for LoopBack4 while the issue asks for TanStack Start, so this is only a loose architectural match and likely not the same issue."
+  },
+  {
+    "prNumber": 15548,
+    "issueNumber": 15509,
+    "confidence": 0.78,
+    "reason": "Related domain match: both involve response/history replay and memory-backed agent responses. But the PR is about gateway memory support generally, not specifically the missing reasoning-item replay bug."
+  },
+  {
+    "prNumber": 15505,
+    "issueNumber": 15294,
+    "confidence": 0.98,
+    "reason": "Very strong semantic match: both describe Vertex/Gemini thought_signature problems when observational memory splits parallel tool calls."
   },
   {
     "prNumber": 15496,
     "issueNumber": 14552,
     "confidence": 0.99,
-    "reason": "PR body explicitly says 'fixes: #14552' and introduces discriminated union types for agent structuredOutput, directly matching the issue."
+    "reason": "Explicitly fixes #14552 and implements discriminated union types for agent structuredOutput, matching the issue."
+  },
+  {
+    "prNumber": 15488,
+    "issueNumber": 15481,
+    "confidence": 0.88,
+    "reason": "Strong workflow-engine match: the PR coordinates parallel suspend behavior in the evented workflow engine, which closely aligns with the parity issue about parallel multi-suspend coordination."
   },
   {
     "prNumber": 15439,
     "issueNumber": 15438,
-    "confidence": 0.95,
-    "reason": "PR changes eval trajectory extraction to read V2 tool-invocation parts, which semantically matches the issue about scorers ignoring assistant tool calls in V2 content.parts."
+    "confidence": 0.94,
+    "reason": "Strong semantic match: the PR makes trajectory extraction read V2 tool-invocation parts, directly matching the issue about scorers ignoring assistant tool calls when they only exist in V2 parts."
   },
   {
     "prNumber": 15347,
     "issueNumber": 14627,
-    "confidence": 0.61,
-    "reason": "PR title/body infer parsed workflow state schema output, which aligns with the issue about stateSchema type not inferred in createWorkflow. No explicit issue reference, so moderate confidence."
+    "confidence": 0.76,
+    "reason": "Workflow state schema inference closely matches the issue's unknown state typing in createWorkflow dowhile/dountil conditions, though the PR title is broader than the issue."
   },
   {
     "prNumber": 15279,
     "issueNumber": 14148,
-    "confidence": 0.99,
-    "reason": "PR body fixes forward nested workflow streams per chunk for tool streaming, directly matching the orphaned server-tool calls/empty text blocks on resume issue."
+    "confidence": 0.98,
+    "reason": "Very strong semantic match: forwarding nested workflow streams per chunk for tool streaming directly addresses orphaned server-tool calls and empty text blocks after interrupted streams."
   },
   {
     "prNumber": 15274,
     "issueNumber": 15244,
     "confidence": 0.99,
-    "reason": "PR body explicitly resolves the client-side tool pair/orphan problem caused by observational memory pruning, directly matching the issue."
+    "reason": "Explicitly fixes #15244. The PR keeps tool call/result pairs when observational memory prunes messages, matching the issue."
   },
   {
     "prNumber": 15133,
     "issueNumber": 15118,
-    "confidence": 0.78,
-    "reason": "PR title/body fix OpenAI reasoning stripping so current-run assistant step history keeps reasoning continuity, which is closely related to the issue about reasoning being stripped too aggressively."
+    "confidence": 0.88,
+    "reason": "Strong semantic match: both concern OpenAI reasoning being stripped too aggressively during prompt conversion / memory replay."
   },
   {
     "prNumber": 15050,
     "issueNumber": 15049,
-    "confidence": 0.99,
-    "reason": "PR body explicitly describes fixing corrupt multi-step message tracking in ProcessorRunner.applyMessagesToMessageList, directly matching the issue."
+    "confidence": 0.96,
+    "reason": "Very close match: the PR fixes corrupted multi-step message tracking in ProcessorRunner.applyMessagesToMessageList, matching the issue about corrupted response message tracking."
   },
   {
-    "prNumber": 15013,
-    "issueNumber": 14973,
-    "confidence": 0.62,
-    "reason": "PR about 3-level sub-agent delegation and progressive streaming is semantically close to the issue about reasoning for agents and sub-agents, but the issue is broader and the link is not explicit."
-  },
-  {
-    "prNumber": 14717,
-    "issueNumber": 14659,
-    "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #14659 and restores correct outputText handling for structuredOutput streams, directly matching the issue."
-  },
-  {
-    "prNumber": 14700,
-    "issueNumber": 14685,
+    "prNumber": 15049,
+    "issueNumber": 15051,
     "confidence": 0.95,
-    "reason": "PR changes workflow SSE payloads to incremental step updates instead of full state broadcasts, which directly matches the issue about incremental workflow SSE events."
+    "reason": "Strong semantic match: both concern nested agent message parts / message tracking in workflow tool execution, with the PR fixing processor message corruption that can produce missing or misordered parts."
   },
   {
-    "prNumber": 14508,
-    "issueNumber": 14503,
+    "prNumber": 15039,
+    "issueNumber": 15039,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #14503 and addresses the Cloudflare Workers AJV new Function() crash, directly matching the issue."
+    "reason": "The PR is about adding Octen web search integration; while the issue title isn't shown as linked, the PR body implies it addresses that same request. No issue number is provided, so this is only a self-match placeholder and not returned as a formal link."
+  },
+  {
+    "prNumber": 14950,
+    "issueNumber": 13834,
+    "confidence": 0.6,
+    "reason": "Possible overlap around sandbox mounting and credentials/session handling, but the issue is specifically S3/GCS prefix/session token support, while the PR is about S3 mount race conditions and credential validation. Moderate, not certain."
+  },
+  {
+    "prNumber": 14852,
+    "issueNumber": 14820,
+    "confidence": 0.9,
+    "reason": "Strong semantic match: passing AbortSignal from supervisor to sub-agents is directly relevant to aborting subagent executions in the supervisor pattern."
+  },
+  {
+    "prNumber": 14685,
+    "issueNumber": 14703,
+    "confidence": 0.9,
+    "reason": "High semantic match: both concern workflow SSE / incremental step updates. The PR reduces SSE payload size by emitting incremental step updates, aligning with the AI SDK consumer-utility update issue."
+  },
+  {
+    "prNumber": 14653,
+    "issueNumber": 15535,
+    "confidence": 0.52,
+    "reason": "Both are stream-abort reliability fixes, but the PR is about persistMessages error handling in background observation, not onAbort partial text specifically. Weak relation only."
+  },
+  {
+    "prNumber": 14503,
+    "issueNumber": 14091,
+    "confidence": 0.99,
+    "reason": "Direct fix for the Cloudflare Workers Vite dev/fetch breakage described in the issue."
   },
   {
     "prNumber": 14499,
     "issueNumber": 14484,
-    "confidence": 0.99,
-    "reason": "PR body explicitly targets the custom apiPrefix conflict and reserves route protection, directly matching the issue about registerApiRoute conflicts with custom apiPrefix."
+    "confidence": 0.98,
+    "reason": "Strong match: the PR fixes reserved route protection and custom apiPrefix routing, exactly the conflict described in the issue."
   },
   {
     "prNumber": 14304,
     "issueNumber": 14199,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #14199 and passes images to the model in the read_file tool, directly matching the feature request."
+    "reason": "Explicitly fixes #14199. The PR passes images to the model in the read_file tool, matching the feature request."
   },
   {
     "prNumber": 14248,
     "issueNumber": 14094,
     "confidence": 0.99,
-    "reason": "PR body explicitly says it fixes #14094 and recovers reasoning text from providerMetadata on memory round-trip, directly matching the issue."
+    "reason": "Explicitly fixes #14094. The PR restores reasoning text from providerMetadata on memory round-trip, matching the issue."
+  },
+  {
+    "prNumber": 14242,
+    "issueNumber": 14242,
+    "confidence": 0.99,
+    "reason": "The PR body and title exactly match the workflow resume stale suspendedToolRunId bug described in the issue."
   },
   {
     "prNumber": 14236,
-    "issueNumber": 13931,
-    "confidence": 0.99,
-    "reason": "PR body implements resourceId scoping to getThreadById, directly matching the issue about adding resourceId/filter for multi-tenant access control."
+    "issueNumber": 13327,
+    "confidence": 0.97,
+    "reason": "Strong match: the PR adds resourceId scoping to getThreadById, which is precisely the thread ownership/transfer and multi-tenant access control area of the issue."
   },
   {
-    "prNumber": 13992,
-    "issueNumber": 13990,
-    "confidence": 0.99,
-    "reason": "PR body explicitly says it adds tests for the Working Memory bugs related to issue #13990, directly tying to the issue."
+    "prNumber": 14116,
+    "issueNumber": 14115,
+    "confidence": 0.98,
+    "reason": "Very direct match: the PR adds a token-based memory history limiter, which is exactly the feature request in the issue."
   },
   {
-    "prNumber": 13891,
-    "issueNumber": 13921,
-    "confidence": 0.52,
-    "reason": "PR adds configurable memory for MastraCode and the issue is about agent voice memory. They share the memory/agent context but the connection is indirect."
+    "prNumber": 14049,
+    "issueNumber": 12405,
+    "confidence": 0.99,
+    "reason": "Explicitly addresses the split tool-call args bug. The PR emits tool-result/tool-error chunks incrementally and fixes tool-call argument handling, aligning with the issue."
+  },
+  {
+    "prNumber": 13967,
+    "issueNumber": 13651,
+    "confidence": 0.95,
+    "reason": "Strong semantic match: both are about forwarding memory context in validation/stream calls when ObservationalMemory is involved."
+  },
+  {
+    "prNumber": 13882,
+    "issueNumber": 16277,
+    "confidence": 0.82,
+    "reason": "The PR improves sub-agent badge streaming display during delegation, which is related to multi-step subagent/tool-call iteration in the wrapper, but it does not directly answer whether .stream() runs only one turn. Moderate confidence only."
+  },
+  {
+    "prNumber": 13379,
+    "issueNumber": 13379,
+    "confidence": 0.99,
+    "reason": "No issue link needed; the PR is a direct performance fix for the build-time dependency optimization issue. Not included as a formal issue link because the issue number is not in the current issue list."
   }
 ]

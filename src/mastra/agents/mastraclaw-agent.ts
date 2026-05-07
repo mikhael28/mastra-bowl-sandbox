@@ -36,6 +36,14 @@ import {
 } from '../tools/rag';
 import { todoAdd, todoList, todoComplete } from '../tools/todo-tools';
 import { qualifyLead } from '../tools/qualify-lead-tool';
+import {
+  fetchGithubIssuesTool,
+  fetchGithubPRsTool,
+  writeFetchMetadataTool,
+  readTriageBundleTool,
+  lookupItemTool,
+  assignDevelopersTool,
+} from '../tools/triage-tools';
 import { basedScorer } from '../scorers/based-scorer';
 import { researchPlannerAgent } from './research-planner-agent';
 import { retrievalEvaluatorAgent } from './retrieval-evaluator-agent';
@@ -43,6 +51,7 @@ import { emailAgent } from './email-agent';
 import { techTouchdownWorkflow } from '../workflows/tech-touchdown-workflow';
 import { deepSearch } from '../workflows/deep-search-workflow';
 import { ragWorkflow } from '../workflows/rag-workflow';
+import { triageWorkflow } from '../workflows/triage-workflow';
 import { resolveIntegrationTools } from '../tool-providers';
 import { filesystemMcp } from '../mcp/filesystem-client';
 import { createSlackAdapter } from '@chat-adapter/slack';
@@ -276,6 +285,24 @@ Standard content flow: research-planner → search (or deep-research) → draft 
 - \`techTouchdownWorkflow\`: tech-update digest.
 - \`deepSearch\`: multi-agent deep research with human-in-the-loop clarification.
 - \`ragWorkflow\`: agentic RAG with a clarification step before searching.
+- \`triageWorkflow\`: full GitHub triage pipeline (fetch → AI analysis → duplicate detection → developer assignment). Run only on user request — it hits the GitHub API and writes ~MBs of JSON to \`workspace/triage/\`.
+
+## GitHub triage (mastra-ai/mastra)
+You're the OSS-maintainer copilot for the Triage dashboard. The dashboard reads from \`workspace/triage/\`; your job is to help the maintainer reason about the backlog and act on it.
+
+- **Read first, fetch only on request**: \`triage-read-bundle\` (counts + freshness) and \`triage-lookup-item\` (single issue/PR by number, with AI analysis + assigned experts) are the default tools. Never invent issue numbers — look them up.
+- **Refresh tools** (call only when the user asks for fresh data, since they hit GitHub): \`triage-fetch-issues\`, \`triage-fetch-prs\`, \`triage-write-metadata\`, \`triage-assign-developers\`. For a full refresh prefer the \`triageWorkflow\` workflow over individual tools.
+- **When the user references "#1234", "PR #567", or "this issue"**: resolve it via \`triage-lookup-item\` and ground every claim in the returned record (labels, comments, staleness, suggested experts).
+- **When summarizing the backlog**: lead with the headline (e.g. "12 stale issues, 4 PRs need review"), then the top items with numbers and links. Cite \`fetchedAt\` so the user knows the data's age.
+- **Maintainer quick actions** the dashboard sends as prompts — handle each by reading the bundle, then producing a short, actionable answer:
+  - *Daily digest*: top 5 items the maintainer should act on today.
+  - *Stale cleanup*: stale issues/PRs ranked, with suggested ping/close actions and draft messages.
+  - *Find duplicates*: surface duplicate groups from \`analysis.json\` with merge recommendations.
+  - *Plan sprint*: pick 5–10 items for the next sprint, justify each with priority + impact.
+  - *Good first issues*: identify newcomer-friendly issues (small scope, clear description, no blockers).
+  - *Unreviewed PRs*: PRs without an approval/changes-requested decision, with suggested reviewers.
+  - *Bug sweep*: open bugs by priority, with reproduction-steps quality + suggested next step.
+- **Drafting outreach** (comments, ping messages, close notes): write the prose yourself; never auto-post — surface the draft so the maintainer can copy/paste into GitHub.
 
 ## Knowledge base (Pinecone-backed RAG)
 Each **collection** is an isolated namespace (e.g. \`mastra-docs\`, a client manual).
@@ -384,6 +411,7 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
     techTouchdownWorkflow,
     deepSearch,
     ragWorkflow,
+    triageWorkflow,
   },
 
   tools: async ({ requestContext }) => {
@@ -406,6 +434,13 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
       todoAdd,
       todoList,
       todoComplete,
+      // GitHub triage (mastra-ai/mastra) — read & refresh issue/PR backlog
+      fetchGithubIssuesTool,
+      fetchGithubPRsTool,
+      writeFetchMetadataTool,
+      readTriageBundleTool,
+      lookupItemTool,
+      assignDevelopersTool,
     };
 
     const userId =

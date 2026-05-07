@@ -1,10 +1,61 @@
 [
   {
-    "canonical": 16281,
+    "canonical": 14148,
     "duplicates": [
-      16005,
-      16205
+      16277,
+      15509
     ],
-    "reason": "Both issues report that pricing/cost estimation fails for OpenRouter model IDs that include a vendor prefix like `google/gemini-2.5-flash` because the pricing lookup logic does not match those routes."
+    "reason": "These all describe interrupted/resumed streaming flows failing because tool-call or response replay state becomes inconsistent or orphaned, causing resume/stream continuation to break."
+  },
+  {
+    "canonical": 15244,
+    "duplicates": [
+      15150,
+      15476,
+      14094,
+      11552
+    ],
+    "reason": "These issues all report client-side or memory round-trips losing tool/result or assistant message fidelity, leading to duplicated or missing assistant text/tool results after persistence and reload."
+  },
+  {
+    "canonical": 16179,
+    "duplicates": [
+      15294,
+      14651,
+      13651,
+      13990,
+      14613,
+      16037
+    ],
+    "reason": "These are closely related observational/working memory bugs where memory processing, compaction, or validation corrupts model context or throws errors, especially around multi-step or tool-heavy runs."
+  },
+  {
+    "canonical": 16017,
+    "duplicates": [
+      13846,
+      15706,
+      12405,
+      13268,
+      14093,
+      15576,
+      16220
+    ],
+    "reason": "Each issue is about agent/client tool-call continuation logic dropping, corrupting, or mishandling tool invocation state across steps or messages, especially in streamed or recursive tool flows."
+  },
+  {
+    "canonical": 16272,
+    "duplicates": [
+      14703,
+      14685
+    ],
+    "reason": "These all concern server/workflow streaming and event translation gaps where workflow/tool activity is not emitted in the expected Responses/AI SDK streaming format."
+  },
+  {
+    "canonical": 16232,
+    "duplicates": [
+      15470,
+      12845
+    ],
+    "reason": "These are Studio/server-auth issues where Studio UI requests bypass or incorrectly interact with server-side auth/state, causing unauthorized or cross-request behavior in the Studio interface."
   }
 ]

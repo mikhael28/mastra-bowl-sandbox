@@ -23,6 +23,7 @@ interface Props {
   allPRs: GitHubPullRequest[];
   onClose: () => void;
   onToggleHidden: (kind: 'issue' | 'pr', number: number, hidden: boolean) => void;
+  onAskCopilot?: () => void;
 }
 
 export function DetailPanel({
@@ -33,6 +34,7 @@ export function DetailPanel({
   allPRs,
   onClose,
   onToggleHidden,
+  onAskCopilot,
 }: Props) {
   const isPR = item._kind === 'pr';
   const pr = isPR ? (item as GitHubPullRequest) : null;
@@ -102,6 +104,18 @@ export function DetailPanel({
               </h2>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
+              {onAskCopilot && (
+                <button
+                  onClick={onAskCopilot}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-md border border-[#bc8cff44] bg-[#bc8cff15] text-[#bc8cff] hover:bg-[#bc8cff22] hover:border-[#bc8cff] transition-all text-xs font-semibold"
+                  title="Ask the copilot about this item"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                  </svg>
+                  Ask copilot
+                </button>
+              )}
               <a
                 href={item.url}
                 target="_blank"

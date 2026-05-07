@@ -5,7 +5,6 @@ import { timeAgo, computeStaleness, labelColor } from './utils';
 
 interface Props {
   onClose: () => void;
-  onOpenChat: () => void;
   onSelectItem: (item: FavoriteItem) => void;
 }
 
@@ -93,7 +92,7 @@ function FavoriteRow({
   );
 }
 
-export function FavoritesPanel({ onClose, onOpenChat, onSelectItem }: Props) {
+export function FavoritesPanel({ onClose, onSelectItem }: Props) {
   const { favorites, removeFavorite, clearFavorites } = useFavorites();
   const issueCount = favorites.filter((f) => f._kind === 'issue').length;
   const prCount = favorites.filter((f) => f._kind === 'pr').length;
@@ -162,16 +161,6 @@ export function FavoritesPanel({ onClose, onOpenChat, onSelectItem }: Props) {
         </div>
 
         <div className="flex items-center gap-2 px-6 py-3 border-b border-[#21262d] flex-wrap">
-          <button
-            onClick={onOpenChat}
-            disabled={favorites.length === 0}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#238636] text-white rounded-md hover:bg-[#2ea043] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            Analyze with AI
-          </button>
           <button
             onClick={exportMarkdown}
             disabled={favorites.length === 0}

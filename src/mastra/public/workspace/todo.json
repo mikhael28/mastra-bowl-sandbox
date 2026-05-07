@@ -96,5 +96,12 @@
     "completed": false,
     "createdAt": "2026-04-28T23:18:04.362Z",
     "completedAt": null
+  },
+  {
+    "id": "todo-1778103058507-cfivmf",
+    "text": "Investigate issue #16287 (Mastra Server Compute pricing clarification), assign owner, and drive next action.",
+    "completed": true,
+    "createdAt": "2026-05-06T21:30:58.507Z",
+    "completedAt": "2026-05-06T21:39:20.631Z"
   }
 ]
