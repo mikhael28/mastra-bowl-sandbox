@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Toaster } from 'sonner';
 import {
   AgentSummary,
   ToolSummary,
@@ -93,6 +94,7 @@ export default function App() {
 
   return (
     <div className="h-screen flex flex-col">
+      <Toaster theme="dark" position="bottom-right" richColors closeButton />
       <TopBar
         onTeach={setTeaching}
         errorLogOpen={errorLogOpen}

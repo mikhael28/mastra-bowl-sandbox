@@ -295,10 +295,66 @@ function parseRepo(repo: string): { owner: string; name: string } {
   return { owner, name };
 }
 
-async function fetchAllOpenIssues(repo: string): Promise<GitHubIssue[]> {
-  const octokit = getOctokit();
-  const { owner, name } = parseRepo(repo);
+async function enrichIssue(
+  octokit: Octokit,
+  owner: string,
+  name: string,
+  raw: any,
+): Promise<GitHubIssue> {
+  let comments: GitHubComment[] = [];
+  if ((raw.comments ?? 0) > 0) {
+    try {
+      const list = await octokit.paginate(octokit.rest.issues.listComments, {
+        owner,
+        repo: name,
+        issue_number: raw.number,
+        per_page: 100,
+      });
+      comments = list.map(commentFromApi);
+    } catch {
+      comments = [];
+    }
+  }
+  return {
+    number: raw.number,
+    title: raw.title ?? '',
+    body: raw.body ?? '',
+    state: raw.state,
+    stateReason: raw.state_reason ?? null,
+    author: userFromApi(raw.user),
+    assignees: (raw.assignees ?? []).map(userFromApi),
+    labels: (raw.labels ?? []).map(labelFromApi),
+    milestone: milestoneFromApi(raw.milestone),
+    comments,
+    reactionGroups: reactionsToGroups(raw.reactions),
+    createdAt: raw.created_at,
+    updatedAt: raw.updated_at,
+    closedAt: raw.closed_at,
+    url: raw.html_url,
+    isPinned: false,
+    closedByPullRequestsReferences: [],
+  };
+}
 
+async function enrichInBatches<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += concurrency) {
+    const slice = items.slice(i, i + concurrency);
+    const done = await Promise.all(slice.map(fn));
+    out.push(...done);
+  }
+  return out;
+}
+
+async function listOpenIssueRecords(
+  octokit: Octokit,
+  owner: string,
+  name: string,
+): Promise<any[]> {
   // listForRepo returns issues AND PRs by default. Filter PRs out via the
   // pull_request field; pulls have it set, real issues don't.
   const rawItems = await octokit.paginate(octokit.rest.issues.listForRepo, {
@@ -307,154 +363,207 @@ async function fetchAllOpenIssues(repo: string): Promise<GitHubIssue[]> {
     state: 'open',
     per_page: 100,
   });
-  const issuesOnly = rawItems.filter((i: any) => !i.pull_request);
-
-  // Fetch comments only for issues with comments > 0, in parallel-but-bounded.
-  const out: GitHubIssue[] = [];
-  const concurrency = 8;
-  for (let i = 0; i < issuesOnly.length; i += concurrency) {
-    const slice = issuesOnly.slice(i, i + concurrency);
-    const enriched = await Promise.all(
-      slice.map(async (issue: any) => {
-        let comments: GitHubComment[] = [];
-        if ((issue.comments ?? 0) > 0) {
-          try {
-            const raw = await octokit.paginate(octokit.rest.issues.listComments, {
-              owner,
-              repo: name,
-              issue_number: issue.number,
-              per_page: 100,
-            });
-            comments = raw.map(commentFromApi);
-          } catch {
-            comments = [];
-          }
-        }
-        const out: GitHubIssue = {
-          number: issue.number,
-          title: issue.title ?? '',
-          body: issue.body ?? '',
-          state: issue.state,
-          stateReason: issue.state_reason ?? null,
-          author: userFromApi(issue.user),
-          assignees: (issue.assignees ?? []).map(userFromApi),
-          labels: (issue.labels ?? []).map(labelFromApi),
-          milestone: milestoneFromApi(issue.milestone),
-          comments,
-          reactionGroups: reactionsToGroups(issue.reactions),
-          createdAt: issue.created_at,
-          updatedAt: issue.updated_at,
-          closedAt: issue.closed_at,
-          url: issue.html_url,
-          isPinned: false,
-          // The REST endpoint doesn't include linked-PR refs; leave empty.
-          closedByPullRequestsReferences: [],
-        };
-        return out;
-      }),
-    );
-    out.push(...enriched);
-  }
-  return out;
+  return rawItems.filter((i: any) => !i.pull_request);
 }
 
-async function fetchAllOpenPRs(repo: string): Promise<GitHubPullRequest[]> {
+async function fetchAllOpenIssues(repo: string): Promise<GitHubIssue[]> {
   const octokit = getOctokit();
   const { owner, name } = parseRepo(repo);
+  const records = await listOpenIssueRecords(octokit, owner, name);
+  return enrichInBatches(records, 8, (r) => enrichIssue(octokit, owner, name, r));
+}
 
-  // Bulk list — light fields only.
-  const list = await octokit.paginate(octokit.rest.pulls.list, {
+export interface IncrementalFetchResult<T> {
+  full: T[];
+  newNumbers: number[];
+  closedNumbers: number[];
+  changedNumbers: number[];
+}
+
+async function fetchOpenIssuesIncremental(
+  repo: string,
+  existing: GitHubIssue[],
+): Promise<IncrementalFetchResult<GitHubIssue>> {
+  const octokit = getOctokit();
+  const { owner, name } = parseRepo(repo);
+  const records = await listOpenIssueRecords(octokit, owner, name);
+
+  const existingByNumber = new Map(existing.map((i) => [i.number, i]));
+  const reused: GitHubIssue[] = [];
+  const toEnrich: any[] = [];
+  const newNumbers: number[] = [];
+  const changedNumbers: number[] = [];
+
+  for (const r of records) {
+    const cached = existingByNumber.get(r.number);
+    if (!cached) {
+      newNumbers.push(r.number);
+      toEnrich.push(r);
+    } else if (cached.updatedAt !== r.updated_at) {
+      changedNumbers.push(r.number);
+      toEnrich.push(r);
+    } else {
+      reused.push(cached);
+    }
+  }
+
+  const enriched = await enrichInBatches(toEnrich, 8, (r) =>
+    enrichIssue(octokit, owner, name, r),
+  );
+
+  const currentOpen = new Set(records.map((r: any) => r.number));
+  const closedNumbers = existing
+    .filter((i) => !currentOpen.has(i.number))
+    .map((i) => i.number);
+
+  return {
+    full: [...reused, ...enriched],
+    newNumbers,
+    closedNumbers,
+    changedNumbers,
+  };
+}
+
+async function enrichPR(
+  octokit: Octokit,
+  owner: string,
+  name: string,
+  pr: any,
+): Promise<GitHubPullRequest> {
+  let detail: any = pr;
+  try {
+    const res = await octokit.rest.pulls.get({
+      owner,
+      repo: name,
+      pull_number: pr.number,
+    });
+    detail = res.data;
+  } catch {
+    /* fall back to list-level fields */
+  }
+
+  let comments: GitHubComment[] = [];
+  let reviews: GitHubReview[] = [];
+  try {
+    const [c, r] = await Promise.all([
+      octokit.paginate(octokit.rest.issues.listComments, {
+        owner,
+        repo: name,
+        issue_number: pr.number,
+        per_page: 100,
+      }),
+      octokit.paginate(octokit.rest.pulls.listReviews, {
+        owner,
+        repo: name,
+        pull_number: pr.number,
+        per_page: 100,
+      }),
+    ]);
+    comments = c.map(commentFromApi);
+    reviews = r.map(reviewFromApi);
+  } catch {
+    /* keep empties */
+  }
+
+  const reviewDecision: string = detail.merged
+    ? 'APPROVED'
+    : reviews.find((r) => r.state === 'CHANGES_REQUESTED')
+      ? 'CHANGES_REQUESTED'
+      : reviews.find((r) => r.state === 'APPROVED')
+        ? 'APPROVED'
+        : 'REVIEW_REQUIRED';
+
+  return {
+    number: pr.number,
+    title: pr.title ?? '',
+    body: pr.body ?? '',
+    state: pr.state,
+    author: userFromApi(pr.user),
+    assignees: (pr.assignees ?? []).map(userFromApi),
+    labels: (pr.labels ?? []).map(labelFromApi),
+    milestone: milestoneFromApi(pr.milestone),
+    comments,
+    reviews,
+    reactionGroups: reactionsToGroups(detail.reactions),
+    createdAt: pr.created_at,
+    updatedAt: pr.updated_at,
+    closedAt: pr.closed_at,
+    mergedAt: pr.merged_at,
+    mergedBy: pr.merged_by ? userFromApi(pr.merged_by) : null,
+    url: pr.html_url,
+    isDraft: !!pr.draft,
+    additions: detail.additions ?? 0,
+    deletions: detail.deletions ?? 0,
+    changedFiles: detail.changed_files ?? 0,
+    headRefName: pr.head?.ref ?? '',
+    baseRefName: pr.base?.ref ?? '',
+    reviewDecision,
+    mergeable: detail.mergeable_state ?? detail.mergeable ?? 'unknown',
+  };
+}
+
+async function listOpenPRRecords(
+  octokit: Octokit,
+  owner: string,
+  name: string,
+): Promise<any[]> {
+  return octokit.paginate(octokit.rest.pulls.list, {
     owner,
     repo: name,
     state: 'open',
     per_page: 100,
   });
+}
 
-  // Per-PR detail (additions/deletions/changedFiles/mergeable need .get),
-  // plus reviews and comments. Bound concurrency to keep the API happy.
-  const out: GitHubPullRequest[] = [];
-  const concurrency = 6;
-  for (let i = 0; i < list.length; i += concurrency) {
-    const slice = list.slice(i, i + concurrency);
-    const enriched = await Promise.all(
-      slice.map(async (pr: any) => {
-        let detail: any = pr;
-        try {
-          const res = await octokit.rest.pulls.get({
-            owner,
-            repo: name,
-            pull_number: pr.number,
-          });
-          detail = res.data;
-        } catch {
-          /* fall back to list-level fields */
-        }
+async function fetchAllOpenPRs(repo: string): Promise<GitHubPullRequest[]> {
+  const octokit = getOctokit();
+  const { owner, name } = parseRepo(repo);
+  const list = await listOpenPRRecords(octokit, owner, name);
+  return enrichInBatches(list, 6, (p) => enrichPR(octokit, owner, name, p));
+}
 
-        let comments: GitHubComment[] = [];
-        let reviews: GitHubReview[] = [];
-        try {
-          const [c, r] = await Promise.all([
-            octokit.paginate(octokit.rest.issues.listComments, {
-              owner,
-              repo: name,
-              issue_number: pr.number,
-              per_page: 100,
-            }),
-            octokit.paginate(octokit.rest.pulls.listReviews, {
-              owner,
-              repo: name,
-              pull_number: pr.number,
-              per_page: 100,
-            }),
-          ]);
-          comments = c.map(commentFromApi);
-          reviews = r.map(reviewFromApi);
-        } catch {
-          /* keep empties */
-        }
+async function fetchOpenPRsIncremental(
+  repo: string,
+  existing: GitHubPullRequest[],
+): Promise<IncrementalFetchResult<GitHubPullRequest>> {
+  const octokit = getOctokit();
+  const { owner, name } = parseRepo(repo);
+  const list = await listOpenPRRecords(octokit, owner, name);
 
-        const reviewDecision: string =
-          detail.merged
-            ? 'APPROVED'
-            : reviews.find((r) => r.state === 'CHANGES_REQUESTED')
-              ? 'CHANGES_REQUESTED'
-              : reviews.find((r) => r.state === 'APPROVED')
-                ? 'APPROVED'
-                : 'REVIEW_REQUIRED';
+  const existingByNumber = new Map(existing.map((p) => [p.number, p]));
+  const reused: GitHubPullRequest[] = [];
+  const toEnrich: any[] = [];
+  const newNumbers: number[] = [];
+  const changedNumbers: number[] = [];
 
-        const result: GitHubPullRequest = {
-          number: pr.number,
-          title: pr.title ?? '',
-          body: pr.body ?? '',
-          state: pr.state,
-          author: userFromApi(pr.user),
-          assignees: (pr.assignees ?? []).map(userFromApi),
-          labels: (pr.labels ?? []).map(labelFromApi),
-          milestone: milestoneFromApi(pr.milestone),
-          comments,
-          reviews,
-          reactionGroups: reactionsToGroups(detail.reactions),
-          createdAt: pr.created_at,
-          updatedAt: pr.updated_at,
-          closedAt: pr.closed_at,
-          mergedAt: pr.merged_at,
-          mergedBy: pr.merged_by ? userFromApi(pr.merged_by) : null,
-          url: pr.html_url,
-          isDraft: !!pr.draft,
-          additions: detail.additions ?? 0,
-          deletions: detail.deletions ?? 0,
-          changedFiles: detail.changed_files ?? 0,
-          headRefName: pr.head?.ref ?? '',
-          baseRefName: pr.base?.ref ?? '',
-          reviewDecision,
-          mergeable: detail.mergeable_state ?? detail.mergeable ?? 'unknown',
-        };
-        return result;
-      }),
-    );
-    out.push(...enriched);
+  for (const r of list) {
+    const cached = existingByNumber.get(r.number);
+    if (!cached) {
+      newNumbers.push(r.number);
+      toEnrich.push(r);
+    } else if (cached.updatedAt !== r.updated_at) {
+      changedNumbers.push(r.number);
+      toEnrich.push(r);
+    } else {
+      reused.push(cached);
+    }
   }
-  return out;
+
+  const enriched = await enrichInBatches(toEnrich, 6, (p) =>
+    enrichPR(octokit, owner, name, p),
+  );
+
+  const currentOpen = new Set(list.map((r: any) => r.number));
+  const closedNumbers = existing
+    .filter((p) => !currentOpen.has(p.number))
+    .map((p) => p.number);
+
+  return {
+    full: [...reused, ...enriched],
+    newNumbers,
+    closedNumbers,
+    changedNumbers,
+  };
 }
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -824,6 +933,8 @@ export const assignDevelopersTool = createTool({
 export const triageInternal = {
   fetchAllOpenIssues,
   fetchAllOpenPRs,
+  fetchOpenIssuesIncremental,
+  fetchOpenPRsIncremental,
   readJson,
   writeJson,
   ensureTriageDir,

@@ -448,10 +448,14 @@ export async function* streamWorkflow(
     const { done, value } = await reader.read();
     if (done) break;
     buf += decoder.decode(value, { stream: true });
-    let nl: number;
-    while ((nl = buf.indexOf('\n')) >= 0) {
-      const rawLine = buf.slice(0, nl).trim();
-      buf = buf.slice(nl + 1);
+    // The Mastra deployer writes workflow stream chunks as JSON Text Sequences
+    // (RFC 7464) — each record terminated by ASCII RS (0x1E). SSE-style `\n`
+    // delimited chunks may also appear (older builds / proxies), so accept
+    // either. The agent stream route uses SSE, so it's parsed in streamAgent.
+    let i: number;
+    while ((i = firstDelim(buf)) >= 0) {
+      const rawLine = buf.slice(0, i).trim();
+      buf = buf.slice(i + 1);
       if (!rawLine) continue;
       const line = rawLine.startsWith('data:') ? rawLine.slice(5).trim() : rawLine;
       if (!line || line === '[DONE]') continue;
@@ -462,6 +466,21 @@ export async function* streamWorkflow(
       }
     }
   }
+  if (buf.trim()) {
+    try {
+      yield JSON.parse(buf.trim()) as Chunk;
+    } catch {
+      /* ignore trailing garbage */
+    }
+  }
+}
+
+function firstDelim(s: string): number {
+  const a = s.indexOf('\x1e');
+  const b = s.indexOf('\n');
+  if (a < 0) return b;
+  if (b < 0) return a;
+  return a < b ? a : b;
 }
 
 export async function resumeWorkflow(

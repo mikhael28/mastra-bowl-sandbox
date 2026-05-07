@@ -1,4 +1,4 @@
-import { Band, Lane, parseStepGraph } from '../lib/workflow-graph';
+import { Band, Lane, collectStepIds, parseStepGraph } from '../lib/workflow-graph';
 
 export type StepRunState =
   | 'idle'
@@ -15,6 +15,8 @@ interface Props {
   loopIterations?: Record<string, number>;
   /** Output per step id (shown as a preview under completed nodes). */
   stepOutputs?: Record<string, unknown>;
+  /** Currently-selected step (visually highlighted). */
+  selectedStepId?: string | null;
   onStepClick?: (stepId: string) => void;
 }
 
@@ -31,6 +33,7 @@ export function WorkflowGraph({
   stepStatus,
   loopIterations = {},
   stepOutputs = {},
+  selectedStepId,
   onStepClick,
 }: Props) {
   const bands = parseStepGraph(stepGraph);
@@ -44,8 +47,30 @@ export function WorkflowGraph({
     );
   }
 
+  const stepIds = collectStepIds(bands);
+  const total = stepIds.length;
+  const completedCount = stepIds.filter(
+    (id) => stepStatus[id] === 'completed',
+  ).length;
+  const runningIds = stepIds.filter((id) => stepStatus[id] === 'running');
+  const failedIds = stepIds.filter((id) => stepStatus[id] === 'failed');
+  const suspendedIds = stepIds.filter((id) => stepStatus[id] === 'suspended');
+  const anyStarted = stepIds.some((id) => stepStatus[id] && stepStatus[id] !== 'idle');
+  const finishedAll =
+    total > 0 && completedCount === total && runningIds.length === 0;
+
   return (
     <div className="flex flex-col items-stretch gap-1">
+      {anyStarted && (
+        <ProgressHeader
+          total={total}
+          completed={completedCount}
+          running={runningIds}
+          failed={failedIds}
+          suspended={suspendedIds}
+          finished={finishedAll}
+        />
+      )}
       {bands.map((band, i) => (
         <BandRenderer
           key={i}
@@ -55,9 +80,70 @@ export function WorkflowGraph({
           stepStatus={stepStatus}
           loopIterations={loopIterations}
           stepOutputs={stepOutputs}
+          selectedStepId={selectedStepId}
           onStepClick={onStepClick}
         />
       ))}
+    </div>
+  );
+}
+
+function ProgressHeader({
+  total,
+  completed,
+  running,
+  failed,
+  suspended,
+  finished,
+}: {
+  total: number;
+  completed: number;
+  running: string[];
+  failed: string[];
+  suspended: string[];
+  finished: boolean;
+}) {
+  const tone = failed.length > 0
+    ? { dot: 'bg-rose-400', text: 'text-rose-200', border: 'border-rose-500/40', bg: 'bg-rose-500/5', label: 'Failed' }
+    : suspended.length > 0
+      ? { dot: 'bg-amber-400', text: 'text-amber-200', border: 'border-amber-500/40', bg: 'bg-amber-500/5', label: 'Suspended' }
+      : finished
+        ? { dot: 'bg-emerald-400', text: 'text-emerald-200', border: 'border-emerald-500/40', bg: 'bg-emerald-500/5', label: 'Completed' }
+        : running.length > 0
+          ? { dot: 'bg-indigo-400 animate-pulse', text: 'text-indigo-100', border: 'border-indigo-500/40', bg: 'bg-indigo-500/5', label: 'Running' }
+          : { dot: 'bg-slate-500', text: 'text-slate-300', border: 'border-slate-700', bg: 'bg-slate-900/40', label: 'Pending' };
+
+  const detail = failed[0] ?? suspended[0] ?? running[0];
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  return (
+    <div className={`mb-3 rounded border ${tone.border} ${tone.bg} px-3 py-2`}>
+      <div className="flex items-center gap-2">
+        <span className={`w-2 h-2 rounded-full ${tone.dot}`} aria-hidden />
+        <span className={`text-[11px] uppercase tracking-wider ${tone.text}`}>
+          {tone.label}
+        </span>
+        {detail && !finished && (
+          <span className="text-xs font-mono text-slate-200 truncate" title={detail}>
+            {detail}
+          </span>
+        )}
+        <span className="ml-auto text-[11px] font-mono text-slate-400 tabular-nums">
+          {completed}/{total} {pct ? `· ${pct}%` : ''}
+        </span>
+      </div>
+      <div className="mt-1.5 h-1 w-full rounded-full bg-slate-800 overflow-hidden">
+        <div
+          className={`h-full transition-all duration-300 ${
+            failed.length > 0
+              ? 'bg-rose-400'
+              : finished
+                ? 'bg-emerald-400'
+                : 'bg-indigo-400'
+          }`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
     </div>
   );
 }
@@ -69,6 +155,7 @@ function BandRenderer({
   stepStatus,
   loopIterations,
   stepOutputs,
+  selectedStepId,
   onStepClick,
 }: {
   band: Band;
@@ -77,6 +164,7 @@ function BandRenderer({
   stepStatus: Record<string, StepRunState>;
   loopIterations: Record<string, number>;
   stepOutputs: Record<string, unknown>;
+  selectedStepId?: string | null;
   onStepClick?: (stepId: string) => void;
 }) {
   // Incoming connector: vertical bar from the previous band into this one.
@@ -102,6 +190,7 @@ function BandRenderer({
             status={stepStatus[band.lane.step.id] ?? 'idle'}
             iterations={loopIterations[band.lane.step.id]}
             output={stepOutputs[band.lane.step.id]}
+            selected={selectedStepId === band.lane.step.id}
             onClick={onStepClick}
           />
         </div>
@@ -154,6 +243,7 @@ function BandRenderer({
               status={stepStatus[lane.step.id] ?? 'idle'}
               iterations={loopIterations[lane.step.id]}
               output={stepOutputs[lane.step.id]}
+              selected={selectedStepId === lane.step.id}
               onClick={onStepClick}
             />
           </div>
@@ -208,12 +298,14 @@ function LaneCard({
   status,
   iterations,
   output,
+  selected,
   onClick,
 }: {
   lane: Lane;
   status: StepRunState;
   iterations?: number;
   output?: unknown;
+  selected?: boolean;
   onClick?: (stepId: string) => void;
 }) {
   const step = lane.step;
@@ -223,11 +315,17 @@ function LaneCard({
   const clickable = !!onClick;
   const outputPreview = formatOutputPreview(output);
 
+  const ring = selected
+    ? 'ring-2 ring-sky-400/70 ring-offset-1 ring-offset-slate-950'
+    : status === 'running'
+      ? 'ring-2 ring-indigo-400/60'
+      : '';
+
   return (
     <button
       onClick={clickable ? () => onClick!(step.id) : undefined}
       disabled={!clickable}
-      className={`text-left w-full max-w-[280px] rounded-md border p-2 transition-colors ${palette.bg} ${palette.border} ${
+      className={`text-left w-full max-w-[280px] rounded-md border p-2 transition-colors ${palette.bg} ${palette.border} ${ring} ${
         clickable ? 'hover:brightness-125 cursor-pointer' : 'cursor-default'
       } ${status === 'running' ? 'animate-pulse' : ''}`}
     >

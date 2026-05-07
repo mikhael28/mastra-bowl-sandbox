@@ -96,22 +96,6 @@
     "riskReason": "Primarily versioning and release metadata across packages, with little direct product/runtime risk beyond release coordination."
   },
   {
-    "prNumber": 16294,
-    "summary": "Adjusts the Codex OAuth callback flow to prefer localhost port 1455 before falling back to 1457, and uses the selected port consistently in redirect and token exchange. It also adds tests and user-facing warnings when neither supported port is available.",
-    "staleness": {
-      "score": 6,
-      "factors": [
-        "Recent update with approval already present",
-        "No outstanding requested changes",
-        "Appears ready to merge"
-      ],
-      "lastMeaningfulActivity": "2026-05-07T00:45:26Z"
-    },
-    "reviewStatus": "approved by 1, awaiting merge",
-    "riskLevel": "medium",
-    "riskReason": "Auth/login flow changes are user-visible and security-adjacent, but the diff is contained and includes test coverage."
-  },
-  {
     "prNumber": 16291,
     "summary": "Protects bundled Studio refresh, hot-reload status, and refresh-trigger routes behind configured server auth so they cannot bypass the API auth boundary. This closes an auth gap in deployer/studio control endpoints.",
     "staleness": {
@@ -684,23 +668,6 @@
     "riskReason": "It modifies core tool approval semantics and downstream adapter behavior across many files, which creates compatibility risk for tool execution flows."
   },
   {
-    "prNumber": 16207,
-    "summary": "Adds server-side Agent Card signing and experimental client-side verification for signed A2A cards. The feature introduces new configuration for private key/header settings and verification logic across several files.",
-    "staleness": {
-      "score": 32,
-      "factors": [
-        "Recently updated",
-        "Review is still required",
-        "Actionable and nitpick bot comments present",
-        "Moderate-to-large security-related feature change"
-      ],
-      "lastMeaningfulActivity": "2026-05-06T10:03:33Z"
-    },
-    "reviewStatus": "review required; bot feedback present, no approval yet",
-    "riskLevel": "high",
-    "riskReason": "This is a security-sensitive feature involving signing and verification, so mistakes could affect trust guarantees and interoperability."
-  },
-  {
     "prNumber": 16206,
     "summary": "Expands observability pricing lookup so OpenRouter `vendor/model` IDs resolve correctly through additional normalized variants. It dedupes lookup candidates and keeps native provider lookups unchanged.",
     "staleness": {
@@ -835,23 +802,6 @@
     "reviewStatus": "review required; bot comments present, no approval yet",
     "riskLevel": "high",
     "riskReason": "This is a very large auth-related feature across 17 files with many moving parts, including token handling and enterprise host support."
-  },
-  {
-    "prNumber": 16126,
-    "summary": "Updates the AI SDK dependency set across many packages, with a broad package-lock and manifest diff. The PR is already approved and appears to be a routine dependency refresh.",
-    "staleness": {
-      "score": 12,
-      "factors": [
-        "Approved and likely ready to merge",
-        "Recent activity from automation",
-        "No unresolved review issues",
-        "Dependency update with no functional code focus"
-      ],
-      "lastMeaningfulActivity": "2026-05-07T01:12:53Z"
-    },
-    "reviewStatus": "approved by 2, awaiting merge",
-    "riskLevel": "low",
-    "riskReason": "This is a dependency bump with approval already in place; the main risk is standard compatibility drift rather than new application logic."
   },
   {
     "prNumber": 16124,
@@ -2384,22 +2334,6 @@
     "riskReason": "The change is small, but it touches dependency resolution in deploy/build logic, which can affect workspace package loading across the monorepo."
   },
   {
-    "prNumber": 14508,
-    "summary": "Fixes a server-side observability query-param crash caused by zod v3/v4 cross-instance schema mixing. The PR simplifies query-param handling and aligns schema imports to avoid extend/parse incompatibilities.",
-    "staleness": {
-      "score": 48,
-      "factors": [
-        "Draft PR with no merge-ready status",
-        "No explicit approval or request-changes resolution shown",
-        "Updated on the same day as creation, but then inactive"
-      ],
-      "lastMeaningfulActivity": "2026-03-19T16:43:36Z"
-    },
-    "reviewStatus": "no reviews yet; draft PR awaiting review",
-    "riskLevel": "medium",
-    "riskReason": "It changes server/runtime request parsing and schema compatibility, so regressions could surface in observability endpoints."
-  },
-  {
     "prNumber": 14499,
     "summary": "Reworks reserved-route protection so custom API prefixes are supported without over-restrictive type checks. It also moves some runtime validation into route registration and makes custom route registration abstract for adapters.",
     "staleness": {
@@ -3102,5 +3036,72 @@
     "reviewStatus": "review required, light feedback only",
     "riskLevel": "medium",
     "riskReason": "This changes semantic recall behavior in memory code, which is important user-facing logic even though the diff size is moderate."
+  },
+  {
+    "prNumber": 16317,
+    "summary": "Adds a CLI pre-deploy validation step that runs after `mastra build` and before upload to catch common deploy failures locally. It currently checks for missing env vars referenced in the bundle and is aimed at both studio and server deploy flows.",
+    "staleness": {
+      "score": 18,
+      "factors": [
+        "Updated at creation time with no follow-up activity",
+        "Draft PR",
+        "Review required and no human review yet",
+        "No indication that any requested changes were addressed"
+      ],
+      "lastMeaningfulActivity": "2026-05-07T17:26:16Z"
+    },
+    "reviewStatus": "review required; no reviews yet",
+    "riskLevel": "high",
+    "riskReason": "This is a sizable change in core CLI/deploy behavior with 512 lines added and no test coverage or review history yet."
+  },
+  {
+    "prNumber": 16316,
+    "summary": "Adds `tsx` as a devDependency in `examples/agent` so the external MCP server can be launched reliably via `npx tsx`. This fixes an environment-specific failure where the example could not resolve `tsx` in pnpm/workspace setups.",
+    "staleness": {
+      "score": 14,
+      "factors": [
+        "Very recent update with minimal follow-up time",
+        "Review required and no human review yet",
+        "Small change with no outstanding requested changes noted"
+      ],
+      "lastMeaningfulActivity": "2026-05-07T17:01:46Z"
+    },
+    "reviewStatus": "review required; no reviews yet",
+    "riskLevel": "low",
+    "riskReason": "A tiny example-only dependency fix with minimal surface area and low regression risk."
+  },
+  {
+    "prNumber": 16314,
+    "summary": "Expands the Observational Memory docs with a note about a Gemini 2.5 Flash compression caveat and adds additional tested model alternatives. The change is documentation-only and updates the recommended model guidance.",
+    "staleness": {
+      "score": 20,
+      "factors": [
+        "Updated recently but still open",
+        "Draft PR",
+        "Review required and no human review yet",
+        "No requested changes to reconcile"
+      ],
+      "lastMeaningfulActivity": "2026-05-07T16:01:58Z"
+    },
+    "reviewStatus": "review required; no reviews yet",
+    "riskLevel": "low",
+    "riskReason": "Docs-only changes with no runtime impact and a very small edit surface."
+  },
+  {
+    "prNumber": 16313,
+    "summary": "Introduces initial A2A documentation, including an overview, remote agent setup, and client connection flow, plus a placeholder for subagent usage. This appears to establish the structure for a broader docs section.",
+    "staleness": {
+      "score": 24,
+      "factors": [
+        "Recently updated but still in draft state",
+        "Review required and no human review yet",
+        "No indication of requested changes being addressed",
+        "Moderate-sized docs PR spanning multiple files"
+      ],
+      "lastMeaningfulActivity": "2026-05-07T15:54:36Z"
+    },
+    "reviewStatus": "review required; no reviews yet",
+    "riskLevel": "low",
+    "riskReason": "Although fairly large, it is documentation-only and does not touch runtime code or tests."
   }
 ]

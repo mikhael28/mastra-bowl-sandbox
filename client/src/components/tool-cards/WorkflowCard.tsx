@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PrimitiveBadge } from '../PrimitiveBadge';
 import { ToolCardProps, statusColor, unwrap, safeStringify } from './types';
-import { getWorkflowRun } from '../../lib/mastraClient';
+import { getWorkflowRun, listWorkflowRuns } from '../../lib/mastraClient';
 
 /**
  * When the parent agent calls a workflow-as-tool, the chat stream only shows
@@ -20,26 +20,86 @@ export function WorkflowCard(props: ToolCardProps) {
   const workflowId = tc.toolName;
   const result = unwrap(tc.result) as any;
 
-  // If the streaming chunk included a runId we can look it up later.
-  const runId: string | undefined =
+  // The result.runId is only available once the call completes. While the tool
+  // is `calling` we discover the runId by polling /api/workflows/:id/runs and
+  // picking the most recent run that started after this card mounted.
+  const resultRunId: string | undefined =
     result?.runId ?? result?.workflowRunId ?? result?.id;
+  const [discoveredRunId, setDiscoveredRunId] = useState<string | null>(null);
+  const runId = resultRunId ?? discoveredRunId ?? undefined;
 
   const [run, setRun] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
+  const mountTimeRef = useRef<number>(Date.now());
 
+  // Discover the runId while the tool call is still in flight by sampling the
+  // workflow's run list. Mastra writes a snapshot when each run is created.
   useEffect(() => {
-    if (!runId || tc.status !== 'done') return;
+    if (runId) return;
+    if (tc.status !== 'calling') return;
     let alive = true;
-    setLoading(true);
-    getWorkflowRun(workflowId, runId)
-      .then((r) => {
-        if (alive) setRun(r);
-      })
-      .finally(() => {
-        if (alive) setLoading(false);
-      });
+    let cancelled = false;
+    const startedAt = mountTimeRef.current;
+
+    async function tick() {
+      while (alive && !cancelled) {
+        try {
+          const runs = await listWorkflowRuns(workflowId);
+          // Pick the freshest run that postdates this card. Allow a small
+          // skew to absorb clock differences between client and server.
+          const candidate = runs
+            .map((r: any) => ({
+              runId: r.runId ?? r.id,
+              ts: new Date(r.createdAt ?? r.created_at ?? 0).getTime(),
+              status: r.status,
+            }))
+            .filter((r) => r.runId && r.ts >= startedAt - 5_000)
+            .sort((a, b) => b.ts - a.ts)[0];
+          if (candidate?.runId && alive) {
+            setDiscoveredRunId(candidate.runId);
+            return;
+          }
+        } catch {
+          /* swallow — try again next tick */
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    }
+    tick();
     return () => {
       alive = false;
+      cancelled = true;
+    };
+  }, [workflowId, runId, tc.status]);
+
+  // Once we know the runId, poll the run snapshot. Stop when the tool is done
+  // and we've fetched at least one final snapshot (so progress stays on screen).
+  useEffect(() => {
+    const id = runId;
+    if (!id) return;
+    let alive = true;
+    let cancelled = false;
+
+    async function tick() {
+      while (alive && !cancelled) {
+        if (!run) setLoading(true);
+        try {
+          const r = await getWorkflowRun(workflowId, id!);
+          if (!alive) return;
+          setRun(r);
+          if (tc.status === 'done') return;
+        } catch {
+          /* swallow */
+        } finally {
+          if (alive) setLoading(false);
+        }
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    }
+    tick();
+    return () => {
+      alive = false;
+      cancelled = true;
     };
   }, [workflowId, runId, tc.status]);
 
@@ -54,8 +114,13 @@ export function WorkflowCard(props: ToolCardProps) {
       </div>
 
       {tc.status === 'calling' && (
-        <div className="mt-2 text-[11px] text-slate-500 italic">
-          workflow is running…
+        <div className="mt-2 flex items-center gap-2 text-[11px] text-amber-300/80 italic">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse" />
+          {steps.length > 0
+            ? `running — ${steps.filter((s) => s.status === 'completed').length}/${steps.length} steps complete`
+            : runId
+              ? 'running — waiting for first step snapshot…'
+              : 'starting workflow run…'}
         </div>
       )}
 
@@ -156,7 +221,24 @@ function normalizeStep(id: string, raw: any): StepView {
 }
 
 function StepRow({ step, index }: { step: StepView; index: number }) {
-  const [open, setOpen] = useState(false);
+  // Default-open while running and once a terminal state arrives (so outputs
+  // are visible at the end of the workflow without an extra click). Users can
+  // collapse manually; we don't fight that.
+  const [open, setOpen] = useState<boolean>(
+    step.status === 'running' || step.output !== undefined,
+  );
+  const touchedRef = useRef(false);
+  useEffect(() => {
+    if (touchedRef.current) return;
+    if (
+      step.output !== undefined ||
+      step.status === 'completed' ||
+      step.status === 'failed' ||
+      step.status === 'suspended'
+    ) {
+      setOpen(true);
+    }
+  }, [step.output, step.status]);
   const icon: Record<StepView['status'], string> = {
     running: '◐',
     completed: '✓',
@@ -174,7 +256,10 @@ function StepRow({ step, index }: { step: StepView; index: number }) {
   return (
     <li className="border border-slate-800 rounded bg-slate-900/40 text-[11px]">
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          touchedRef.current = true;
+          setOpen((o) => !o);
+        }}
         className="w-full flex items-center gap-2 px-2 py-1 text-left"
       >
         <span className="text-slate-600 font-mono w-4 text-right">

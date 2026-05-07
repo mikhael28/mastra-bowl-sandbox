@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-07T15:19:03.492Z",
+  "generatedAt": "2026-05-07T17:26:56.957Z",
   "assignments": [
     {
       "itemNumber": 16307,
@@ -26,36 +26,6 @@
       "matchedTags": [
         "Workflows",
         "MCP"
-      ]
-    },
-    {
-      "itemNumber": 16304,
-      "itemType": "issue",
-      "assignedDevelopers": [
-        {
-          "name": "NikAiyer",
-          "role": "Memory / RAG / Storage Specialist",
-          "matchedTags": [
-            "RAG",
-            "Storage"
-          ],
-          "score": 158
-        },
-        {
-          "name": "Ward Peeters",
-          "role": "Infrastructure & Platform Generalist",
-          "matchedTags": [
-            "RAG",
-            "Storage",
-            "Observability (AI Telemetry)"
-          ],
-          "score": 98
-        }
-      ],
-      "matchedTags": [
-        "RAG",
-        "Storage",
-        "Observability (AI Telemetry)"
       ]
     },
     {
@@ -165,40 +135,6 @@
         "Workflows",
         "Tools",
         "Mastra Server"
-      ]
-    },
-    {
-      "itemNumber": 16251,
-      "itemType": "issue",
-      "assignedDevelopers": [
-        {
-          "name": "Abhi Aiyer",
-          "role": "Core Architect / Tech Lead",
-          "matchedTags": [
-            "Agents",
-            "Workflows",
-            "CLI",
-            "Client SDK - JS"
-          ],
-          "score": 341
-        },
-        {
-          "name": "Ehindero Israel",
-          "role": "Full-Stack Platform Engineer",
-          "matchedTags": [
-            "Agents",
-            "Workflows",
-            "CLI",
-            "Client SDK - JS"
-          ],
-          "score": 321
-        }
-      ],
-      "matchedTags": [
-        "Agents",
-        "Workflows",
-        "CLI",
-        "Client SDK - JS"
       ]
     },
     {
@@ -1445,31 +1381,6 @@
       ]
     },
     {
-      "itemNumber": 15860,
-      "itemType": "issue",
-      "assignedDevelopers": [
-        {
-          "name": "Ward Peeters",
-          "role": "Infrastructure & Platform Generalist",
-          "matchedTags": [
-            "Deployment"
-          ],
-          "score": 192
-        },
-        {
-          "name": "Ehindero Israel",
-          "role": "Full-Stack Platform Engineer",
-          "matchedTags": [
-            "Deployment"
-          ],
-          "score": 85
-        }
-      ],
-      "matchedTags": [
-        "Deployment"
-      ]
-    },
-    {
       "itemNumber": 15856,
       "itemType": "issue",
       "assignedDevelopers": [
@@ -1655,31 +1566,6 @@
       ],
       "matchedTags": [
         "Agents"
-      ]
-    },
-    {
-      "itemNumber": 15734,
-      "itemType": "issue",
-      "assignedDevelopers": [
-        {
-          "name": "dayo",
-          "role": "Workflows Architect",
-          "matchedTags": [
-            "Workflows"
-          ],
-          "score": 280
-        },
-        {
-          "name": "Taofeeq Oluderu",
-          "role": "Workflows, CLI & Playground Engineer",
-          "matchedTags": [
-            "Workflows"
-          ],
-          "score": 85
-        }
-      ],
-      "matchedTags": [
-        "Workflows"
       ]
     },
     {
@@ -3455,34 +3341,6 @@
       ],
       "matchedTags": [
         "Workflows"
-      ]
-    },
-    {
-      "itemNumber": 14659,
-      "itemType": "issue",
-      "assignedDevelopers": [
-        {
-          "name": "Tyler Barnes",
-          "role": "Memory & Agent Systems Lead",
-          "matchedTags": [
-            "Agents",
-            "Memory"
-          ],
-          "score": 225
-        },
-        {
-          "name": "Abhi Aiyer",
-          "role": "Core Architect / Tech Lead",
-          "matchedTags": [
-            "Agents",
-            "Memory"
-          ],
-          "score": 168
-        }
-      ],
-      "matchedTags": [
-        "Agents",
-        "Memory"
       ]
     },
     {
@@ -5815,13 +5673,149 @@
       ]
     },
     {
-      "itemNumber": 16311,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
+      "itemNumber": 16304,
+      "itemType": "issue",
+      "assignedDevelopers": [
+        {
+          "name": "NikAiyer",
+          "role": "Memory / RAG / Storage Specialist",
+          "matchedTags": [
+            "RAG",
+            "Storage"
+          ],
+          "score": 158
+        },
+        {
+          "name": "Ward Peeters",
+          "role": "Infrastructure & Platform Generalist",
+          "matchedTags": [
+            "RAG",
+            "Storage",
+            "Observability (AI Telemetry)"
+          ],
+          "score": 98
+        }
+      ],
+      "matchedTags": [
+        "RAG",
+        "Storage",
+        "Observability (AI Telemetry)"
+      ]
     },
     {
-      "itemNumber": 16310,
+      "itemNumber": 16251,
+      "itemType": "issue",
+      "assignedDevelopers": [
+        {
+          "name": "Abhi Aiyer",
+          "role": "Core Architect / Tech Lead",
+          "matchedTags": [
+            "Agents",
+            "Workflows",
+            "CLI",
+            "Client SDK - JS"
+          ],
+          "score": 341
+        },
+        {
+          "name": "Ehindero Israel",
+          "role": "Full-Stack Platform Engineer",
+          "matchedTags": [
+            "Agents",
+            "Workflows",
+            "CLI",
+            "Client SDK - JS"
+          ],
+          "score": 321
+        }
+      ],
+      "matchedTags": [
+        "Agents",
+        "Workflows",
+        "CLI",
+        "Client SDK - JS"
+      ]
+    },
+    {
+      "itemNumber": 15860,
+      "itemType": "issue",
+      "assignedDevelopers": [
+        {
+          "name": "Ward Peeters",
+          "role": "Infrastructure & Platform Generalist",
+          "matchedTags": [
+            "Deployment"
+          ],
+          "score": 192
+        },
+        {
+          "name": "Ehindero Israel",
+          "role": "Full-Stack Platform Engineer",
+          "matchedTags": [
+            "Deployment"
+          ],
+          "score": 85
+        }
+      ],
+      "matchedTags": [
+        "Deployment"
+      ]
+    },
+    {
+      "itemNumber": 15734,
+      "itemType": "issue",
+      "assignedDevelopers": [
+        {
+          "name": "dayo",
+          "role": "Workflows Architect",
+          "matchedTags": [
+            "Workflows"
+          ],
+          "score": 280
+        },
+        {
+          "name": "Taofeeq Oluderu",
+          "role": "Workflows, CLI & Playground Engineer",
+          "matchedTags": [
+            "Workflows"
+          ],
+          "score": 85
+        }
+      ],
+      "matchedTags": [
+        "Workflows"
+      ]
+    },
+    {
+      "itemNumber": 14659,
+      "itemType": "issue",
+      "assignedDevelopers": [
+        {
+          "name": "Tyler Barnes",
+          "role": "Memory & Agent Systems Lead",
+          "matchedTags": [
+            "Agents",
+            "Memory"
+          ],
+          "score": 225
+        },
+        {
+          "name": "Abhi Aiyer",
+          "role": "Core Architect / Tech Lead",
+          "matchedTags": [
+            "Agents",
+            "Memory"
+          ],
+          "score": 168
+        }
+      ],
+      "matchedTags": [
+        "Agents",
+        "Memory"
+      ]
+    },
+    {
+      "itemNumber": 16311,
       "itemType": "pr",
       "assignedDevelopers": [],
       "matchedTags": []
@@ -5853,24 +5847,6 @@
     },
     {
       "itemNumber": 16300,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
-      "itemNumber": 16296,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
-      "itemNumber": 16295,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
-      "itemNumber": 16294,
       "itemType": "pr",
       "assignedDevelopers": [],
       "matchedTags": []
@@ -5917,31 +5893,6 @@
       "itemType": "pr",
       "assignedDevelopers": [],
       "matchedTags": []
-    },
-    {
-      "itemNumber": 16283,
-      "itemType": "pr",
-      "assignedDevelopers": [
-        {
-          "name": "Sam Bhagwat",
-          "role": "Docs & Content Strategist",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 238
-        },
-        {
-          "name": "Kenny",
-          "role": "CLI & Docs Lead",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 196
-        }
-      ],
-      "matchedTags": [
-        "Documentation"
-      ]
     },
     {
       "itemNumber": 16282,
@@ -6176,37 +6127,6 @@
       "matchedTags": []
     },
     {
-      "itemNumber": 16210,
-      "itemType": "pr",
-      "assignedDevelopers": [
-        {
-          "name": "Sam Bhagwat",
-          "role": "Docs & Content Strategist",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 238
-        },
-        {
-          "name": "Kenny",
-          "role": "CLI & Docs Lead",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 196
-        }
-      ],
-      "matchedTags": [
-        "Documentation"
-      ]
-    },
-    {
-      "itemNumber": 16207,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
       "itemNumber": 16206,
       "itemType": "pr",
       "assignedDevelopers": [],
@@ -6244,12 +6164,6 @@
       ]
     },
     {
-      "itemNumber": 16184,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
       "itemNumber": 16174,
       "itemType": "pr",
       "assignedDevelopers": [],
@@ -6263,18 +6177,6 @@
     },
     {
       "itemNumber": 16133,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
-      "itemNumber": 16129,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
-      "itemNumber": 16126,
       "itemType": "pr",
       "assignedDevelopers": [],
       "matchedTags": []
@@ -6342,31 +6244,6 @@
       "matchedTags": []
     },
     {
-      "itemNumber": 16111,
-      "itemType": "pr",
-      "assignedDevelopers": [
-        {
-          "name": "Sam Bhagwat",
-          "role": "Docs & Content Strategist",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 238
-        },
-        {
-          "name": "Kenny",
-          "role": "CLI & Docs Lead",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 196
-        }
-      ],
-      "matchedTags": [
-        "Documentation"
-      ]
-    },
-    {
       "itemNumber": 16108,
       "itemType": "pr",
       "assignedDevelopers": [],
@@ -6392,31 +6269,6 @@
     },
     {
       "itemNumber": 16103,
-      "itemType": "pr",
-      "assignedDevelopers": [
-        {
-          "name": "Sam Bhagwat",
-          "role": "Docs & Content Strategist",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 238
-        },
-        {
-          "name": "Kenny",
-          "role": "CLI & Docs Lead",
-          "matchedTags": [
-            "Documentation"
-          ],
-          "score": 196
-        }
-      ],
-      "matchedTags": [
-        "Documentation"
-      ]
-    },
-    {
-      "itemNumber": 16102,
       "itemType": "pr",
       "assignedDevelopers": [
         {
@@ -6626,19 +6478,7 @@
       "matchedTags": []
     },
     {
-      "itemNumber": 16065,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
       "itemNumber": 16064,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
-      "itemNumber": 16062,
       "itemType": "pr",
       "assignedDevelopers": [],
       "matchedTags": []
@@ -7610,12 +7450,6 @@
       "matchedTags": []
     },
     {
-      "itemNumber": 14508,
-      "itemType": "pr",
-      "assignedDevelopers": [],
-      "matchedTags": []
-    },
-    {
       "itemNumber": 14499,
       "itemType": "pr",
       "assignedDevelopers": [
@@ -8040,6 +7874,210 @@
     },
     {
       "itemNumber": 9256,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16317,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16316,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16314,
+      "itemType": "pr",
+      "assignedDevelopers": [
+        {
+          "name": "Sam Bhagwat",
+          "role": "Docs & Content Strategist",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 238
+        },
+        {
+          "name": "Kenny",
+          "role": "CLI & Docs Lead",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 196
+        }
+      ],
+      "matchedTags": [
+        "Documentation"
+      ]
+    },
+    {
+      "itemNumber": 16313,
+      "itemType": "pr",
+      "assignedDevelopers": [
+        {
+          "name": "Sam Bhagwat",
+          "role": "Docs & Content Strategist",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 238
+        },
+        {
+          "name": "Kenny",
+          "role": "CLI & Docs Lead",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 196
+        }
+      ],
+      "matchedTags": [
+        "Documentation"
+      ]
+    },
+    {
+      "itemNumber": 16310,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16296,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16295,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16283,
+      "itemType": "pr",
+      "assignedDevelopers": [
+        {
+          "name": "Sam Bhagwat",
+          "role": "Docs & Content Strategist",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 238
+        },
+        {
+          "name": "Kenny",
+          "role": "CLI & Docs Lead",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 196
+        }
+      ],
+      "matchedTags": [
+        "Documentation"
+      ]
+    },
+    {
+      "itemNumber": 16210,
+      "itemType": "pr",
+      "assignedDevelopers": [
+        {
+          "name": "Sam Bhagwat",
+          "role": "Docs & Content Strategist",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 238
+        },
+        {
+          "name": "Kenny",
+          "role": "CLI & Docs Lead",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 196
+        }
+      ],
+      "matchedTags": [
+        "Documentation"
+      ]
+    },
+    {
+      "itemNumber": 16184,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16129,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16111,
+      "itemType": "pr",
+      "assignedDevelopers": [
+        {
+          "name": "Sam Bhagwat",
+          "role": "Docs & Content Strategist",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 238
+        },
+        {
+          "name": "Kenny",
+          "role": "CLI & Docs Lead",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 196
+        }
+      ],
+      "matchedTags": [
+        "Documentation"
+      ]
+    },
+    {
+      "itemNumber": 16102,
+      "itemType": "pr",
+      "assignedDevelopers": [
+        {
+          "name": "Sam Bhagwat",
+          "role": "Docs & Content Strategist",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 238
+        },
+        {
+          "name": "Kenny",
+          "role": "CLI & Docs Lead",
+          "matchedTags": [
+            "Documentation"
+          ],
+          "score": 196
+        }
+      ],
+      "matchedTags": [
+        "Documentation"
+      ]
+    },
+    {
+      "itemNumber": 16065,
+      "itemType": "pr",
+      "assignedDevelopers": [],
+      "matchedTags": []
+    },
+    {
+      "itemNumber": 16062,
       "itemType": "pr",
       "assignedDevelopers": [],
       "matchedTags": []

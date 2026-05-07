@@ -29,6 +29,7 @@ import { techTouchdownWorkflow } from './workflows/tech-touchdown-workflow';
 import { deepSearch } from './workflows/deep-search-workflow';
 import { ragWorkflow } from './workflows/rag-workflow';
 import { triageWorkflow } from './workflows/triage-workflow';
+import { triageUpdateWorkflow } from './workflows/triage-update-workflow';
 
 // Custom routes
 import { voiceSpeakRoute } from './routes/voice-speak-route';
@@ -49,7 +50,7 @@ import { docsMcpServer } from './mcp/docs-server';
 import { composioProvider, arcadeProvider } from './tool-providers';
 
 export const mastra = new Mastra({
-  workflows: { techTouchdownWorkflow, deepSearch, ragWorkflow, triageWorkflow },
+  workflows: { techTouchdownWorkflow, deepSearch, ragWorkflow, triageWorkflow, triageUpdateWorkflow },
   agents: {
     newsAgent,
     mastraclawAgent,

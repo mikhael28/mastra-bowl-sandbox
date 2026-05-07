@@ -14,7 +14,7 @@ const DEFAULT_REPO = triageInternal.DEFAULT_REPO;
 
 // ── State + per-step schemas ─────────────────────────────────────────────
 
-const issueAnalysisSchema = z.object({
+export const issueAnalysisSchema = z.object({
   issueNumber: z.number(),
   category: z.enum([
     'bug',
@@ -39,7 +39,7 @@ const issueAnalysisSchema = z.object({
   relatedIssues: z.array(z.number()),
 });
 
-const prAnalysisSchema = z.object({
+export const prAnalysisSchema = z.object({
   prNumber: z.number(),
   summary: z.string(),
   staleness: z.object({
@@ -52,14 +52,14 @@ const prAnalysisSchema = z.object({
   riskReason: z.string(),
 });
 
-const prIssueLinkSchema = z.object({
+export const prIssueLinkSchema = z.object({
   prNumber: z.number(),
   issueNumber: z.number(),
   confidence: z.number(),
   reason: z.string(),
 });
 
-const duplicateGroupSchema = z.object({
+export const duplicateGroupSchema = z.object({
   canonical: z.number(),
   duplicates: z.array(z.number()),
   reason: z.string(),
@@ -128,7 +128,7 @@ const fetchStep = createStep({
 
 // ── Helpers shared by analyze steps ──────────────────────────────────────
 
-function issueSummaryForAI(issue: GitHubIssue): string {
+export function issueSummaryForAI(issue: GitHubIssue): string {
   const commentSummary = issue.comments
     ?.slice(0, 5)
     .map((c) => `  [${c.author?.login}]: ${c.body?.slice(0, 150)}`)
@@ -144,7 +144,7 @@ function issueSummaryForAI(issue: GitHubIssue): string {
     .join('\n');
 }
 
-function prSummaryForAI(pr: GitHubPullRequest): string {
+export function prSummaryForAI(pr: GitHubPullRequest): string {
   const commentSummary = pr.comments
     ?.slice(0, 3)
     .map((c) => `  [${c.author?.login}]: ${c.body?.slice(0, 150)}`)
