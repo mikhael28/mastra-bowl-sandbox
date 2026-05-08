@@ -20,7 +20,6 @@ import {
   createAnswerRelevancyScorer,
   createToxicityScorer,
 } from '@mastra/evals/scorers/prebuilt';
-import { readDocsTool } from '../mcp/docs-server';
 import { tavilySearch } from '../tools/tavily-search';
 import { exaSearch } from '../tools/exa-search';
 import { deepResearchTool } from '../tools/deep-research-tool';
@@ -416,7 +415,6 @@ Before any tool call, subagent delegation, or long-running step, stream ONE shor
 
   tools: async ({ requestContext }) => {
     const staticTools = {
-      readDocsTool,
       tavilySearch,
       exaSearch,
       deepResearchTool,

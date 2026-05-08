@@ -317,7 +317,6 @@ Trace data lands in DuckDB; threads, messages, and entities land in LibSQL. Doma
 
 ### MCP — `@mastra/mcp`
 
-- **Server** (`mcp/docs-server.ts`) — exposes Mastra docs as MCP resources, surfaced to clients via `GET /api/mcp/servers`.
 - **Client** (`mcp/filesystem-client.ts`) — connects to an external MCP server, lists its tools, and merges them into the agent's tool map at runtime.
 
 ### Vector store — `@mastra/pinecone`
@@ -368,7 +367,7 @@ src/mastra/
   tools/                   # Static tools + tools/rag (Pinecone KB)
   scorers/                 # basedScorer (custom LLM-judged)
   processors/              # content-moderation (input/output regex + LLM)
-  mcp/                     # docs-server (MCP server) + filesystem-client (MCP client)
+  mcp/                     # filesystem-client (MCP client)
   routes/                  # Custom HTTP routes wired into mastra.server.apiRoutes
   sandbox/                 # Studio Sandbox-tab assets (inject.js + page.html)
   public/                  # Pinecone-shaped DuckDB cache

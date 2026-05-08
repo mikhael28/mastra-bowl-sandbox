@@ -192,7 +192,6 @@ export const EDUCATION: Record<PrimitiveId, EducationEntry> = {
     why:
       'Model Context Protocol is the emerging standard for tool-calling across AI clients. Mastra can both run an MCP server AND consume remote MCP tools.',
     howHere: [
-      'docs-server exposes the Mastra docs overview as a resource and as a read_docs tool.',
       'filesystem-client consumes an external MCP server for workspace file access.',
       'Inspect servers + tools via /api/mcp/servers.',
     ],
@@ -585,7 +584,5 @@ export function toolProvenance(toolName: string): {
   if (toolName.startsWith('fs_')) return { source: 'Workspace', color: 'slate' };
   if (/-agent$/i.test(toolName) || /Agent$/.test(toolName))
     return { source: 'Subagent', color: 'violet' };
-  if (toolName === 'read_docs' || toolName === 'readDocsTool')
-    return { source: 'MCP', color: 'fuchsia' };
   return { source: 'Tool', color: 'emerald' };
 }

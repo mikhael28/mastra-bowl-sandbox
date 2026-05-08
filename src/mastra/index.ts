@@ -46,7 +46,6 @@ import { triageDataRoute, triageHiddenRoute } from './routes/triage-data-route';
 import { basedScorer } from './scorers/based-scorer';
 
 // MCP
-import { docsMcpServer } from './mcp/docs-server';
 import { composioProvider, arcadeProvider } from './tool-providers';
 
 export const mastra = new Mastra({
@@ -71,9 +70,6 @@ export const mastra = new Mastra({
   },
   scorers: {
     basedScorer,
-  },
-  mcpServers: {
-    docsMcpServer,
   },
   vectors: {
     [VECTOR_STORE_NAME]: getKnowledgeBaseStore(),
