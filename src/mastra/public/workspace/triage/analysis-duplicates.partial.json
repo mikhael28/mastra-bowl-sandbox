@@ -1,61 +1,69 @@
 [
   {
-    "canonical": 14148,
+    "canonical": 16307,
     "duplicates": [
-      16277,
-      15509
+      15481,
+      14148
     ],
-    "reason": "These all describe interrupted/resumed streaming flows failing because tool-call or response replay state becomes inconsistent or orphaned, causing resume/stream continuation to break."
+    "reason": "All three describe workflow/stream disconnect or interruption handling gaps that leave the harness or streaming state inconsistent after a mid-stream disconnect."
   },
   {
-    "canonical": 15244,
+    "canonical": 16272,
     "duplicates": [
-      15150,
-      15476,
-      14094,
-      11552
+      14685,
+      14703
     ],
-    "reason": "These issues all report client-side or memory round-trips losing tool/result or assistant message fidelity, leading to duplicated or missing assistant text/tool results after persistence and reload."
+    "reason": "These issues all ask for workflow/tool execution to emit proper structured streaming events instead of losing or flattening tool-call state in server/UI streams."
+  },
+  {
+    "canonical": 16277,
+    "duplicates": [
+      15013,
+      15502,
+      15887,
+      15712,
+      16042
+    ],
+    "reason": "They all concern Harness/supervisor/subagent orchestration behavior around multi-step execution, streaming, and coordinating subagents or HITL flows."
   },
   {
     "canonical": 16179,
     "duplicates": [
       15294,
-      14651,
       13651,
-      13990,
-      14613,
-      16037
+      16216,
+      15118,
+      13990
     ],
-    "reason": "These are closely related observational/working memory bugs where memory processing, compaction, or validation corrupts model context or throws errors, especially around multi-step or tool-heavy runs."
+    "reason": "These are closely related bugs in memory/observational memory and history replay where model/tool context becomes corrupted across turns or after compaction."
   },
   {
-    "canonical": 16017,
+    "canonical": 16220,
     "duplicates": [
-      13846,
-      15706,
-      12405,
-      13268,
+      15729,
+      14559,
+      14094,
+      15244,
+      15150
+    ],
+    "reason": "Each reports client/server message reconstruction losing important provider or tool-call metadata during recursive or memory round-trips, leading to broken replay or continuation."
+  },
+  {
+    "canonical": 16054,
+    "duplicates": [
+      14257,
+      16039,
+      15486
+    ],
+    "reason": "These issues all request a better first-class tool-result projection/persistence path for user-visible transcripts, model history, or observability."
+  },
+  {
+    "canonical": 16193,
+    "duplicates": [
       14093,
-      15576,
-      16220
+      13268,
+      14148
     ],
-    "reason": "Each issue is about agent/client tool-call continuation logic dropping, corrupting, or mishandling tool invocation state across steps or messages, especially in streamed or recursive tool flows."
-  },
-  {
-    "canonical": 16272,
-    "duplicates": [
-      14703,
-      14685
-    ],
-    "reason": "These all concern server/workflow streaming and event translation gaps where workflow/tool activity is not emitted in the expected Responses/AI SDK streaming format."
-  },
-  {
-    "canonical": 16232,
-    "duplicates": [
-      15470,
-      12845
-    ],
-    "reason": "These are Studio/server-auth issues where Studio UI requests bypass or incorrectly interact with server-side auth/state, causing unauthorized or cross-request behavior in the Studio interface."
+    "reason": "They all describe malformed tool-call/tool-result sequences in multi-step agent runs that later cause provider errors or corrupted context on the next turn."
   }
 ]

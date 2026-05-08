@@ -771,34 +771,6 @@
     ]
   },
   {
-    "issueNumber": 16120,
-    "category": "bug",
-    "priority": "high",
-    "priorityReason": "Missing `userId` propagation breaks editor tool provider integrations and can prevent authorization or user-scoped behavior from working correctly.",
-    "staleness": {
-      "score": 12,
-      "factors": [
-        "Recent activity",
-        "Clear docs mismatch",
-        "Limited but concrete reproduction path"
-      ],
-      "lastMeaningfulActivity": "2026-05-04T15:26:28Z"
-    },
-    "summary": "Editor tool providers such as Composio and Arcade are not receiving `userId` from `requestContext` as expected from the documentation. This looks like a propagation bug in the agent/tool integration path.",
-    "suggestedLabels": [
-      "bug",
-      "Agents",
-      "Tools",
-      "impact:high",
-      "effort:medium"
-    ],
-    "relatedIssues": [
-      16158,
-      16163,
-      16179
-    ]
-  },
-  {
     "issueNumber": 16114,
     "category": "bug",
     "priority": "medium",
@@ -1515,35 +1487,6 @@
     ]
   },
   {
-    "issueNumber": 15860,
-    "category": "bug",
-    "priority": "high",
-    "priorityReason": "The issue blocks Vercel deployment for a freshly created Mastra project, which is a high-impact onboarding and hosting problem.",
-    "staleness": {
-      "score": 35,
-      "factors": [
-        "Ongoing Discord-sourced discussion",
-        "Maintainer asked for more logging",
-        "Some follow-up still happening",
-        "Marked waiting for author"
-      ],
-      "lastMeaningfulActivity": "2026-05-07T15:01:28Z"
-    },
-    "summary": "A new Mastra project fails to deploy correctly on Vercel, with the problem surfacing from a freshly scaffolded setup. The report points to deployment-specific behavior rather than application code issues.",
-    "suggestedLabels": [
-      "bug",
-      "Vercel Deployment",
-      "impact:high",
-      "effort:medium",
-      "trio-wp",
-      "discord",
-      "status:waiting for author"
-    ],
-    "relatedIssues": [
-      15926
-    ]
-  },
-  {
     "issueNumber": 15856,
     "category": "feature-request",
     "priority": "high",
@@ -1724,30 +1667,6 @@
     "relatedIssues": []
   },
   {
-    "issueNumber": 15764,
-    "category": "bug",
-    "priority": "medium",
-    "priorityReason": "It blocks a specific model/workspace path and has a reproducible error, but appears low-impact and needs confirmation from the maintainer comments.",
-    "staleness": {
-      "score": 41,
-      "factors": [
-        "Updated recently enough to still be active",
-        "3 comments with some troubleshooting but no clear resolution",
-        "Not assigned",
-        "Reproduction appears incomplete / path forward unclear from thread"
-      ],
-      "lastMeaningfulActivity": "2026-05-01T19:51:08Z"
-    },
-    "summary": "Using Mastra workspace with a local Qwen3.6-27B model triggers a provider error: \"system message must be at the beginning.\" The reporter says it matches an earlier issue (#14384), and maintainers have asked for version and repro clarification.",
-    "suggestedLabels": [
-      "bug",
-      "Agents",
-      "needs reproduction",
-      "provider-specific"
-    ],
-    "relatedIssues": []
-  },
-  {
     "issueNumber": 15734,
     "category": "bug",
     "priority": "high",
@@ -1891,31 +1810,6 @@
       "Studio",
       "UX",
       "observability"
-    ],
-    "relatedIssues": []
-  },
-  {
-    "issueNumber": 15668,
-    "category": "bug",
-    "priority": "high",
-    "priorityReason": "This is described as an empty-response cascade caused by orphan tool calls, which can break all subsequent turns on a thread and severely impacts reliability.",
-    "staleness": {
-      "score": 73,
-      "factors": [
-        "No comments yet",
-        "No discussion/triage progress visible",
-        "Not assigned",
-        "Root cause and reproduction appear partially described but not yet validated in-thread"
-      ],
-      "lastMeaningfulActivity": "2026-04-23T12:33:58Z"
-    },
-    "summary": "Gemini code execution via Vertex AI can leave orphaned tool calls when a `codeExecutionResult` part is missing, causing the thread to enter an empty-response failure state on every subsequent turn. It is described as the same class of issue as an earlier Anthropic tool-use bug.",
-    "suggestedLabels": [
-      "bug",
-      "Agents",
-      "Tools",
-      "Gemini",
-      "Vertex AI"
     ],
     "relatedIssues": []
   },
@@ -2603,30 +2497,6 @@
       15426,
       15294
     ]
-  },
-  {
-    "issueNumber": 15322,
-    "category": "bug",
-    "priority": "high",
-    "priorityReason": "Intermittent 502s from Mastra Cloud are a serious production reliability issue and directly impact client requests.",
-    "staleness": {
-      "score": 58,
-      "factors": [
-        "A support conversation is ongoing",
-        "Recent update indicates possible misclassification",
-        "Likely needs backend investigation"
-      ],
-      "lastMeaningfulActivity": "2026-04-14T17:36:39Z"
-    },
-    "summary": "Users are seeing intermittent 502 responses when calling `agent.stream()` against Mastra Cloud from a Next.js/Vercel app. The thread suggests this may involve deployment or product-version differences.",
-    "suggestedLabels": [
-      "bug",
-      "Mastra Cloud",
-      "Cloudflare Deployment",
-      "trio-wp",
-      "reliability"
-    ],
-    "relatedIssues": []
   },
   {
     "issueNumber": 15294,
@@ -4950,33 +4820,6 @@
     "relatedIssues": []
   },
   {
-    "issueNumber": 12405,
-    "category": "bug",
-    "priority": "high",
-    "priorityReason": "It causes tool arguments to be dropped in client tool flows, which can break actual agent/tool execution rather than just types or UX.",
-    "staleness": {
-      "score": 35,
-      "factors": [
-        "Recent update",
-        "Repro details improved",
-        "No assignee mentioned",
-        "Clear fix path in message lookup logic"
-      ],
-      "lastMeaningfulActivity": "2026-03-03T12:48:15Z"
-    },
-    "summary": "When a tool call is split across multiple stored messages, argument recovery returns the first matching empty args and sends incomplete data to the LLM. The reporter added an end-to-end reproduction and logs.",
-    "suggestedLabels": [
-      "bug",
-      "tools",
-      "workflows",
-      "client-tools",
-      "impact:high"
-    ],
-    "relatedIssues": [
-      12426
-    ]
-  },
-  {
     "issueNumber": 12260,
     "category": "feature-request",
     "priority": "medium",
@@ -5887,5 +5730,59 @@
       "storage"
     ],
     "relatedIssues": []
+  },
+  {
+    "issueNumber": 16325,
+    "category": "bug",
+    "priority": "medium",
+    "priorityReason": "The Deploys tab appears to show incorrect deployment status information, which can confuse users but does not indicate immediate service failure or security impact.",
+    "staleness": {
+      "score": 18,
+      "factors": [
+        "Updated very recently",
+        "Only one follow-up comment so far",
+        "Clear repro context from the report",
+        "No assigned owner or resolution yet"
+      ],
+      "lastMeaningfulActivity": "2026-05-07T23:12:45Z"
+    },
+    "summary": "The user reports that the Mastra Projects Deploys tab is misrepresenting deployment state, showing many active studios and stopped servers despite having both studio and server deployed. This looks like a dashboard/status-sync accuracy bug in the deployment UI or backend data source.",
+    "suggestedLabels": [
+      "bug",
+      "Deployment",
+      "trio-wp",
+      "dashboard",
+      "status-sync"
+    ],
+    "relatedIssues": [
+      16319
+    ]
+  },
+  {
+    "issueNumber": 16319,
+    "category": "bug",
+    "priority": "high",
+    "priorityReason": "The build size exceeds common Cloudflare deployment limits and directly blocks deployment for affected users, making this a significant release-blocking issue.",
+    "staleness": {
+      "score": 16,
+      "factors": [
+        "Updated very recently",
+        "Multiple concrete size details provided",
+        "Community response indicates active investigation",
+        "No clear fix path yet"
+      ],
+      "lastMeaningfulActivity": "2026-05-07T22:23:55Z"
+    },
+    "summary": "The reporter says Mastra's build output is 17.58 MiB, preventing deployment on Cloudflare's free and even paid size limits. They identify major bundle contributors and suggest the framework is shipping too much code by default.",
+    "suggestedLabels": [
+      "bug",
+      "Deployment",
+      "bundle-size",
+      "performance",
+      "trio-wp"
+    ],
+    "relatedIssues": [
+      16325
+    ]
   }
 ]

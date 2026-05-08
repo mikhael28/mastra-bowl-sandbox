@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-07T17:26:56.922Z",
+  "generatedAt": "2026-05-08T00:10:21.696Z",
   "issueAnalyses": [
     {
       "issueNumber": 16307,
@@ -773,34 +773,6 @@
       ]
     },
     {
-      "issueNumber": 16120,
-      "category": "bug",
-      "priority": "high",
-      "priorityReason": "Missing `userId` propagation breaks editor tool provider integrations and can prevent authorization or user-scoped behavior from working correctly.",
-      "staleness": {
-        "score": 12,
-        "factors": [
-          "Recent activity",
-          "Clear docs mismatch",
-          "Limited but concrete reproduction path"
-        ],
-        "lastMeaningfulActivity": "2026-05-04T15:26:28Z"
-      },
-      "summary": "Editor tool providers such as Composio and Arcade are not receiving `userId` from `requestContext` as expected from the documentation. This looks like a propagation bug in the agent/tool integration path.",
-      "suggestedLabels": [
-        "bug",
-        "Agents",
-        "Tools",
-        "impact:high",
-        "effort:medium"
-      ],
-      "relatedIssues": [
-        16158,
-        16163,
-        16179
-      ]
-    },
-    {
       "issueNumber": 16114,
       "category": "bug",
       "priority": "medium",
@@ -1517,35 +1489,6 @@
       ]
     },
     {
-      "issueNumber": 15860,
-      "category": "bug",
-      "priority": "high",
-      "priorityReason": "The issue blocks Vercel deployment for a freshly created Mastra project, which is a high-impact onboarding and hosting problem.",
-      "staleness": {
-        "score": 35,
-        "factors": [
-          "Ongoing Discord-sourced discussion",
-          "Maintainer asked for more logging",
-          "Some follow-up still happening",
-          "Marked waiting for author"
-        ],
-        "lastMeaningfulActivity": "2026-05-07T15:01:28Z"
-      },
-      "summary": "A new Mastra project fails to deploy correctly on Vercel, with the problem surfacing from a freshly scaffolded setup. The report points to deployment-specific behavior rather than application code issues.",
-      "suggestedLabels": [
-        "bug",
-        "Vercel Deployment",
-        "impact:high",
-        "effort:medium",
-        "trio-wp",
-        "discord",
-        "status:waiting for author"
-      ],
-      "relatedIssues": [
-        15926
-      ]
-    },
-    {
       "issueNumber": 15856,
       "category": "feature-request",
       "priority": "high",
@@ -1726,30 +1669,6 @@
       "relatedIssues": []
     },
     {
-      "issueNumber": 15764,
-      "category": "bug",
-      "priority": "medium",
-      "priorityReason": "It blocks a specific model/workspace path and has a reproducible error, but appears low-impact and needs confirmation from the maintainer comments.",
-      "staleness": {
-        "score": 41,
-        "factors": [
-          "Updated recently enough to still be active",
-          "3 comments with some troubleshooting but no clear resolution",
-          "Not assigned",
-          "Reproduction appears incomplete / path forward unclear from thread"
-        ],
-        "lastMeaningfulActivity": "2026-05-01T19:51:08Z"
-      },
-      "summary": "Using Mastra workspace with a local Qwen3.6-27B model triggers a provider error: \"system message must be at the beginning.\" The reporter says it matches an earlier issue (#14384), and maintainers have asked for version and repro clarification.",
-      "suggestedLabels": [
-        "bug",
-        "Agents",
-        "needs reproduction",
-        "provider-specific"
-      ],
-      "relatedIssues": []
-    },
-    {
       "issueNumber": 15734,
       "category": "bug",
       "priority": "high",
@@ -1893,31 +1812,6 @@
         "Studio",
         "UX",
         "observability"
-      ],
-      "relatedIssues": []
-    },
-    {
-      "issueNumber": 15668,
-      "category": "bug",
-      "priority": "high",
-      "priorityReason": "This is described as an empty-response cascade caused by orphan tool calls, which can break all subsequent turns on a thread and severely impacts reliability.",
-      "staleness": {
-        "score": 73,
-        "factors": [
-          "No comments yet",
-          "No discussion/triage progress visible",
-          "Not assigned",
-          "Root cause and reproduction appear partially described but not yet validated in-thread"
-        ],
-        "lastMeaningfulActivity": "2026-04-23T12:33:58Z"
-      },
-      "summary": "Gemini code execution via Vertex AI can leave orphaned tool calls when a `codeExecutionResult` part is missing, causing the thread to enter an empty-response failure state on every subsequent turn. It is described as the same class of issue as an earlier Anthropic tool-use bug.",
-      "suggestedLabels": [
-        "bug",
-        "Agents",
-        "Tools",
-        "Gemini",
-        "Vertex AI"
       ],
       "relatedIssues": []
     },
@@ -2605,30 +2499,6 @@
         15426,
         15294
       ]
-    },
-    {
-      "issueNumber": 15322,
-      "category": "bug",
-      "priority": "high",
-      "priorityReason": "Intermittent 502s from Mastra Cloud are a serious production reliability issue and directly impact client requests.",
-      "staleness": {
-        "score": 58,
-        "factors": [
-          "A support conversation is ongoing",
-          "Recent update indicates possible misclassification",
-          "Likely needs backend investigation"
-        ],
-        "lastMeaningfulActivity": "2026-04-14T17:36:39Z"
-      },
-      "summary": "Users are seeing intermittent 502 responses when calling `agent.stream()` against Mastra Cloud from a Next.js/Vercel app. The thread suggests this may involve deployment or product-version differences.",
-      "suggestedLabels": [
-        "bug",
-        "Mastra Cloud",
-        "Cloudflare Deployment",
-        "trio-wp",
-        "reliability"
-      ],
-      "relatedIssues": []
     },
     {
       "issueNumber": 15294,
@@ -4952,33 +4822,6 @@
       "relatedIssues": []
     },
     {
-      "issueNumber": 12405,
-      "category": "bug",
-      "priority": "high",
-      "priorityReason": "It causes tool arguments to be dropped in client tool flows, which can break actual agent/tool execution rather than just types or UX.",
-      "staleness": {
-        "score": 35,
-        "factors": [
-          "Recent update",
-          "Repro details improved",
-          "No assignee mentioned",
-          "Clear fix path in message lookup logic"
-        ],
-        "lastMeaningfulActivity": "2026-03-03T12:48:15Z"
-      },
-      "summary": "When a tool call is split across multiple stored messages, argument recovery returns the first matching empty args and sends incomplete data to the LLM. The reporter added an end-to-end reproduction and logs.",
-      "suggestedLabels": [
-        "bug",
-        "tools",
-        "workflows",
-        "client-tools",
-        "impact:high"
-      ],
-      "relatedIssues": [
-        12426
-      ]
-    },
-    {
       "issueNumber": 12260,
       "category": "feature-request",
       "priority": "medium",
@@ -5889,6 +5732,60 @@
         "storage"
       ],
       "relatedIssues": []
+    },
+    {
+      "issueNumber": 16325,
+      "category": "bug",
+      "priority": "medium",
+      "priorityReason": "The Deploys tab appears to show incorrect deployment status information, which can confuse users but does not indicate immediate service failure or security impact.",
+      "staleness": {
+        "score": 18,
+        "factors": [
+          "Updated very recently",
+          "Only one follow-up comment so far",
+          "Clear repro context from the report",
+          "No assigned owner or resolution yet"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T23:12:45Z"
+      },
+      "summary": "The user reports that the Mastra Projects Deploys tab is misrepresenting deployment state, showing many active studios and stopped servers despite having both studio and server deployed. This looks like a dashboard/status-sync accuracy bug in the deployment UI or backend data source.",
+      "suggestedLabels": [
+        "bug",
+        "Deployment",
+        "trio-wp",
+        "dashboard",
+        "status-sync"
+      ],
+      "relatedIssues": [
+        16319
+      ]
+    },
+    {
+      "issueNumber": 16319,
+      "category": "bug",
+      "priority": "high",
+      "priorityReason": "The build size exceeds common Cloudflare deployment limits and directly blocks deployment for affected users, making this a significant release-blocking issue.",
+      "staleness": {
+        "score": 16,
+        "factors": [
+          "Updated very recently",
+          "Multiple concrete size details provided",
+          "Community response indicates active investigation",
+          "No clear fix path yet"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T22:23:55Z"
+      },
+      "summary": "The reporter says Mastra's build output is 17.58 MiB, preventing deployment on Cloudflare's free and even paid size limits. They identify major bundle contributors and suggest the framework is shipping too much code by default.",
+      "suggestedLabels": [
+        "bug",
+        "Deployment",
+        "bundle-size",
+        "performance",
+        "trio-wp"
+      ],
+      "relatedIssues": [
+        16325
+      ]
     }
   ],
   "prAnalyses": [
@@ -5973,22 +5870,6 @@
       "riskReason": "Core approval semantics are being changed, which is sensitive, but the patch is focused and appears bug-fix oriented."
     },
     {
-      "prNumber": 16295,
-      "summary": "This is an alpha version-bump release PR generated by Changesets, rolling up package version metadata across many files. It is not a functional code change but is part of the release process.",
-      "staleness": {
-        "score": 30,
-        "factors": [
-          "Updated later than most PRs in the batch",
-          "Automated release PR with no substantive code discussion",
-          "No clear human review status or follow-up needed"
-        ],
-        "lastMeaningfulActivity": "2026-05-07T15:05:11Z"
-      },
-      "reviewStatus": "release PR; awaiting merge/publish decision",
-      "riskLevel": "low",
-      "riskReason": "Primarily versioning and release metadata across packages, with little direct product/runtime risk beyond release coordination."
-    },
-    {
       "prNumber": 16291,
       "summary": "Protects bundled Studio refresh, hot-reload status, and refresh-trigger routes behind configured server auth so they cannot bypass the API auth boundary. This closes an auth gap in deployer/studio control endpoints.",
       "staleness": {
@@ -6069,38 +5950,6 @@
       "riskReason": "This is a broad feature touching agent execution and response semantics, and it already has human change requests indicating unresolved concerns."
     },
     {
-      "prNumber": 16282,
-      "summary": "Adds an admin-only Infrastructure section to Studio Settings that exposes channel, browser, and workspace configuration through a new backend route. It is a UI plus API feature gated by admin access.",
-      "staleness": {
-        "score": 35,
-        "factors": [
-          "Draft PR still open",
-          "No final review approval visible",
-          "Automated checks/comments present but not merged"
-        ],
-        "lastMeaningfulActivity": "2026-05-07T00:02:57Z"
-      },
-      "reviewStatus": "review required; draft with automated comments only",
-      "riskLevel": "medium",
-      "riskReason": "It spans backend routes, settings UI, and admin gating, but the scope is limited and primarily additive."
-    },
-    {
-      "prNumber": 16279,
-      "summary": "Improves observational memory reflection by returning the best non-degenerate candidate when compression retries are exhausted, instead of the final failed attempt. This prevents repeated reflection loops when max compression cannot meet the threshold.",
-      "staleness": {
-        "score": 14,
-        "factors": [
-          "Recently updated",
-          "No outstanding human review changes shown",
-          "Small focused bug fix"
-        ],
-        "lastMeaningfulActivity": "2026-05-07T15:01:19Z"
-      },
-      "reviewStatus": "review required; automated review comment stack present",
-      "riskLevel": "low",
-      "riskReason": "Small, localized fix in memory reflection logic with minimal surface area and no obvious breaking API changes."
-    },
-    {
       "prNumber": 16276,
       "summary": "Treats nested git worktrees as separate sandboxes to prevent the agent from crossing session boundaries and affecting unrelated uncommitted work. This hardens mastracode sandbox/resource isolation across multiple worktree contexts.",
       "staleness": {
@@ -6115,22 +5964,6 @@
       "reviewStatus": "review required; automated review and bot feedback present",
       "riskLevel": "high",
       "riskReason": "Sandbox isolation changes are high-impact and safety-sensitive, especially given the risk of data loss in filesystem/worktree handling."
-    },
-    {
-      "prNumber": 16275,
-      "summary": "Adds a new `/om` settings toggle for caveman-style observations and changes the default behavior so caveman observations are opt-in instead of enabled globally. The change spans 15 files and appears to touch product-facing settings and MastraCode behavior.",
-      "staleness": {
-        "score": 42,
-        "factors": [
-          "Updated recently (same day)",
-          "Has an active CHANGES_REQUESTED review",
-          "Requested changes have not yet been addressed"
-        ],
-        "lastMeaningfulActivity": "2026-05-06T23:20:31Z"
-      },
-      "reviewStatus": "changes requested by TylerBarnes; awaiting follow-up",
-      "riskLevel": "medium",
-      "riskReason": "This is a moderately sized UI/config behavior change with a default flip that could affect user experience, but it is not broadly runtime-critical and appears narrowly scoped."
     },
     {
       "prNumber": 16269,
@@ -6245,22 +6078,6 @@
       "riskReason": "This is a performance-focused runtime change in a hot path, so it carries some correctness risk, but the scope is relatively contained and tests/comments are present."
     },
     {
-      "prNumber": 16245,
-      "summary": "Routine lock-file maintenance refreshes dependency versions without changing application code. It is an automation-driven maintenance PR with no substantive functional changes.",
-      "staleness": {
-        "score": 5,
-        "factors": [
-          "Very recent",
-          "Approved",
-          "Automerge enabled and no requested changes"
-        ],
-        "lastMeaningfulActivity": "2026-05-06T01:18:35Z"
-      },
-      "reviewStatus": "approved; ready for automerge",
-      "riskLevel": "low",
-      "riskReason": "This only updates lock files and is already approved, so it has minimal functional risk."
-    },
-    {
       "prNumber": 16244,
       "summary": "Updates several dependencies, including security-related upgrades, across a small set of files. The PR is an automated security update and has already received multiple approvals.",
       "staleness": {
@@ -6309,22 +6126,6 @@
       "riskReason": "This touches shared harness/core state types and lifecycle handling, but the addition is incremental and appears backward-compatible."
     },
     {
-      "prNumber": 16239,
-      "summary": "Adds batch execution support for DuckDB schema initialization and uses it to run observability setup statements in order on a single connection. It also adds focused tests for batching behavior and edge cases.",
-      "staleness": {
-        "score": 23,
-        "factors": [
-          "Updated recently",
-          "No final approval yet; review is still required",
-          "No requested changes addressed status visible"
-        ],
-        "lastMeaningfulActivity": "2026-05-06T10:20:04Z"
-      },
-      "reviewStatus": "review required; bot walkthrough comments present",
-      "riskLevel": "medium",
-      "riskReason": "This is a storage/initialization performance change in observability setup, with moderate risk due to database execution-order and failure-mode sensitivity."
-    },
-    {
       "prNumber": 16237,
       "summary": "Adds an optional `displayName` to harness subagent state so UI consumers can show configured subagent names directly. It also exports a history entry type derived from the new display state.",
       "staleness": {
@@ -6355,23 +6156,6 @@
       "reviewStatus": "review required; bot comments present",
       "riskLevel": "medium",
       "riskReason": "This changes durable agent streaming behavior in core output processing, which is sensitive runtime code but the functional scope is fairly focused."
-    },
-    {
-      "prNumber": 16234,
-      "summary": "Auto-applies a `SensitiveDataFilter` to observability instances so secrets are redacted before spans reach exporters, including the Mastra cloud exporter. It also introduces a top-level `sensitiveDataFilter` configuration path to control this default behavior.",
-      "staleness": {
-        "score": 28,
-        "factors": [
-          "Updated recently (less than 1 day ago)",
-          "Review is still required",
-          "Automated review left actionable comments that likely need follow-up",
-          "No indication that requested changes have been fully addressed yet"
-        ],
-        "lastMeaningfulActivity": "2026-05-06T19:24:52Z"
-      },
-      "reviewStatus": "review required; actionable bot comments posted, awaiting author follow-up",
-      "riskLevel": "medium",
-      "riskReason": "This touches core observability/export behavior and changes default redaction semantics, but the scope is moderate and appears to have review/test coverage in progress."
     },
     {
       "prNumber": 16233,
@@ -6714,23 +6498,6 @@
       "riskReason": "The change affects runtime validation and schema conversion for MCP tools, which is moderately risky because it can break tool compatibility in edge environments."
     },
     {
-      "prNumber": 16122,
-      "summary": "Forwards `userId` from request context into editor tool providers instead of using a hard-coded default. This restores correct per-user OAuth scoping for integration tools such as Composio and Arcade.",
-      "staleness": {
-        "score": 26,
-        "factors": [
-          "Updated recently",
-          "Review is still required",
-          "Bot comments present and likely need follow-up",
-          "Touches editor integration plumbing across several files"
-        ],
-        "lastMeaningfulActivity": "2026-05-05T18:10:27Z"
-      },
-      "reviewStatus": "review required; bot feedback and a human comment present, no approval yet",
-      "riskLevel": "medium",
-      "riskReason": "It changes identity propagation into integration providers, so mistakes could break user-scoped auth or route tools to the wrong account."
-    },
-    {
       "prNumber": 16119,
       "summary": "Sanitizes streaming error messages returned by `toDataStreamResponse` to avoid leaking file paths, stack traces, and provider payloads to the client UI. The fix narrows error details before they reach end users.",
       "staleness": {
@@ -6959,22 +6726,6 @@
       "reviewStatus": "approved by 1, awaiting merge",
       "riskLevel": "medium",
       "riskReason": "Core workflow/runtime code change, but the patch is relatively small and already approved."
-    },
-    {
-      "prNumber": 16065,
-      "summary": "Implements a new `/goal` slash command for mastracode that maintains persistent cross-turn goals in thread metadata. A judge model evaluates each turn and determines whether to continue, finish, or wait at a checkpoint.",
-      "staleness": {
-        "score": 68,
-        "factors": [
-          "last updated several days ago",
-          "multiple review comment rounds with no clear final approval",
-          "large feature with active bot review history"
-        ],
-        "lastMeaningfulActivity": "2026-05-06T21:47:10Z"
-      },
-      "reviewStatus": "review required; multiple automated review comment rounds, no merge-ready approval shown",
-      "riskLevel": "high",
-      "riskReason": "Large, multi-file feature with persistent state and agent-loop behavior, which increases correctness and product-risk surface."
     },
     {
       "prNumber": 16064,
@@ -7357,40 +7108,6 @@
       "riskReason": "Deprecation and CLI warning changes are fairly safe, but the PR spans many files and includes an additional server fix, which broadens the compatibility and testing surface."
     },
     {
-      "prNumber": 15798,
-      "summary": "Fixes title generation so the model receives plain text instead of JSON-stringified message parts with framework metadata. This prevents titles from being influenced by internal object structure and adds regression coverage.",
-      "staleness": {
-        "score": 31,
-        "factors": [
-          "Changes requested review is still open",
-          "Updated recently on 2026-05-04",
-          "Regression tests were added",
-          "Small change but affects model prompt construction"
-        ],
-        "lastMeaningfulActivity": "2026-05-04T18:04:13Z"
-      },
-      "reviewStatus": "changes requested, no follow-up",
-      "riskLevel": "medium",
-      "riskReason": "The patch is relatively small and tested, but it changes prompt construction in a user-visible AI path, so output quality regressions are possible."
-    },
-    {
-      "prNumber": 15787,
-      "summary": "Prevents system messages from being persisted into conversation history, enforcing the invariant at the persistence boundary. This aims to avoid provider failures when reloading history that must keep system messages separate or leading-only.",
-      "staleness": {
-        "score": 39,
-        "factors": [
-          "Changes requested review remains unresolved",
-          "Recent activity on 2026-05-03",
-          "Core persistence behavior changed",
-          "Multiple files affected with some reviewer concern"
-        ],
-        "lastMeaningfulActivity": "2026-05-03T23:17:40Z"
-      },
-      "reviewStatus": "changes requested, no follow-up",
-      "riskLevel": "medium",
-      "riskReason": "This is a targeted persistence fix, but it changes core message-storage behavior and has unresolved reviewer concern about the intended invariant."
-    },
-    {
       "prNumber": 15781,
       "summary": "Removes duplicated AI SDK v4 compatibility fields from persisted message content and derives them from `message.parts` using non-enumerable getters. It preserves backward-compatible accessors for legacy fields while reducing stored payload size and updates related store/read paths.",
       "staleness": {
@@ -7595,23 +7312,6 @@
       "riskReason": "Touches editor and observability behavior across multiple areas, but the diff size is moderate and the fixes appear targeted."
     },
     {
-      "prNumber": 15548,
-      "summary": "Updates server-side Responses and Conversations adapters so gateway-backed agents follow the same stored-response flow as local memory. It resolves thread/resource context from stored messages, conversations, or request context for follow-up turns.",
-      "staleness": {
-        "score": 29,
-        "factors": [
-          "about two weeks since creation",
-          "review required",
-          "bot review paused",
-          "moderate-large change set with 13 files"
-        ],
-        "lastMeaningfulActivity": "2026-04-28T11:08:52Z"
-      },
-      "reviewStatus": "review required; review paused by bot, no final approval shown",
-      "riskLevel": "medium",
-      "riskReason": "A server-memory integration change that affects request flow and conversation state handling, which is important but still reasonably bounded."
-    },
-    {
       "prNumber": 15532,
       "summary": "Renovates build-tool dependencies across a large portion of the repo. The change is dependency-only and accompanied by multiple automated approvals.",
       "staleness": {
@@ -7795,22 +7495,6 @@
       "riskReason": "The implementation is relatively focused, but it changes core workflow typing behavior and can affect downstream type inference and developer experience."
     },
     {
-      "prNumber": 15342,
-      "summary": "Removes several unused CI secrets from workflow files to reduce maintenance and limit secret surface area. This is a straightforward cleanup of GitHub Actions configuration.",
-      "staleness": {
-        "score": 5,
-        "factors": [
-          "Already approved",
-          "Small PR with no follow-up required",
-          "No recent activity needed beyond approval"
-        ],
-        "lastMeaningfulActivity": "2026-04-14T18:35:57Z"
-      },
-      "reviewStatus": "approved by 1, awaiting merge",
-      "riskLevel": "low",
-      "riskReason": "Tiny workflow-only cleanup with no code-path impact and an approval already in place."
-    },
-    {
       "prNumber": 15279,
       "summary": "Changes nested workflow stream forwarding so each chunk flows through the same forwarding path used for nested agents, preserving chunk metadata such as origin. This should align workflow tool streaming with existing client surfacing behavior.",
       "staleness": {
@@ -7971,22 +7655,6 @@
       "riskReason": "Moderately large feature with analytics and user-interaction tracking, but mostly confined to MastraCode and supported by tests."
     },
     {
-      "prNumber": 15133,
-      "summary": "Fixes OpenAI reasoning stripping so only replayed memory messages are sanitized before prompt conversion. Preserves reasoning continuity for the current assistant step across tool-calling turns and adds regression coverage around sanitizer and prompt assembly.",
-      "staleness": {
-        "score": 49,
-        "factors": [
-          "Updated 22 days ago",
-          "Review required with no approval yet",
-          "No requested changes documented, but review appears not completed"
-        ],
-        "lastMeaningfulActivity": "2026-04-15T08:59:12Z"
-      },
-      "reviewStatus": "no approval yet; review required, with only bot feedback and no human decision shown",
-      "riskLevel": "medium",
-      "riskReason": "This is a focused bug fix in core prompt/message handling with regression tests, but it touches runtime behavior in a sensitive OpenAI reasoning path."
-    },
-    {
       "prNumber": 15122,
       "summary": "Adds `@mastra/runloop`, a new WorkspaceSandbox provider backed by Runloop devboxes. The PR implements lifecycle management, command execution APIs, and documentation around the sandbox integration.",
       "staleness": {
@@ -8049,22 +7717,6 @@
       "reviewStatus": "waiting for author",
       "riskLevel": "medium",
       "riskReason": "This is a targeted runtime fix in stream/output assembly, but it affects structured-output persistence and assistant message formatting."
-    },
-    {
-      "prNumber": 14979,
-      "summary": "Adds a rolling hotfix workflow and a changeset CLI hotfix command to build/update hotfix branches from release tags. It also automates publish and merge-back behavior for hotfix releases.",
-      "staleness": {
-        "score": 64,
-        "factors": [
-          "Updated 23 days ago",
-          "Review required with many actionable comments posted",
-          "No clear evidence of review follow-up completion"
-        ],
-        "lastMeaningfulActivity": "2026-04-14T15:51:15Z"
-      },
-      "reviewStatus": "reviewed with actionable comments; awaiting follow-up",
-      "riskLevel": "high",
-      "riskReason": "Release automation and workflow changes are high-impact because they affect publishing, branching, and merge-back mechanics for the whole project."
     },
     {
       "prNumber": 14950,
@@ -8291,38 +7943,6 @@
       "riskReason": "This is a broad Studio UI redesign with many touched files and interaction changes, so regressions in user flows are likely if not thoroughly tested."
     },
     {
-      "prNumber": 14420,
-      "summary": "Implements an E2B-backed filesystem for workspace sandboxes, delegating file operations to the E2B SDK and supporting scoped base paths. This enables cloud sandbox file access through the existing filesystem abstraction.",
-      "staleness": {
-        "score": 58,
-        "factors": [
-          "Draft PR with no approval shown",
-          "Large feature change but only a few files touched",
-          "No follow-up activity after initial update"
-        ],
-        "lastMeaningfulActivity": "2026-03-17T20:06:54Z"
-      },
-      "reviewStatus": "no reviews yet; draft PR awaiting review",
-      "riskLevel": "medium",
-      "riskReason": "It adds a new workspace filesystem implementation, which is important infrastructure but limited in scope and easier to validate than broad runtime changes."
-    },
-    {
-      "prNumber": 14356,
-      "summary": "Fixes OpenAI reasoning text loss when reasoning and tool-call parts are stored as separate messages. The adapter now recovers reasoning text from provider metadata during memory round-trips.",
-      "staleness": {
-        "score": 36,
-        "factors": [
-          "Has automated review comment(s) but no visible approval state",
-          "Recent activity after initial creation",
-          "Follow-up seems likely but not confirmed"
-        ],
-        "lastMeaningfulActivity": "2026-04-14T14:07:46Z"
-      },
-      "reviewStatus": "reviewed by automation; awaiting human resolution",
-      "riskLevel": "medium",
-      "riskReason": "The patch affects core message conversion and memory round-trips, but it is fairly targeted and includes a focused bug fix."
-    },
-    {
       "prNumber": 14304,
       "summary": "Adds support for passing images through the read_file workspace tool so image files can be consumed by the model. The change includes documentation updates and tests for the new behavior.",
       "staleness": {
@@ -8369,38 +7989,6 @@
       "reviewStatus": "actionable comments posted; awaiting follow-up",
       "riskLevel": "high",
       "riskReason": "This is a large new integration package with broad surface area, external SDK dependencies, and likely edge cases around batching and model compatibility."
-    },
-    {
-      "prNumber": 14273,
-      "summary": "Introduces a new GitHub OAuth SSO provider for Mastra Studio, including provider interfaces, access restriction modes, and cookie-based session flow. It adds a substantial authentication feature across multiple packages/files.",
-      "staleness": {
-        "score": 47,
-        "factors": [
-          "Large feature PR",
-          "Automated review comments present",
-          "No final approval or merge-ready signal shown"
-        ],
-        "lastMeaningfulActivity": "2026-03-13T14:40:25Z"
-      },
-      "reviewStatus": "actionable comments posted; awaiting follow-up",
-      "riskLevel": "high",
-      "riskReason": "Authentication and access-control changes are high impact, and this PR adds a new SSO provider with multiple security-sensitive code paths."
-    },
-    {
-      "prNumber": 14248,
-      "summary": "Fixes reasoning text loss on memory round-trips by falling back to provider metadata when AI SDK reasoning parts have empty text. This preserves OpenRouter/OpenAI reasoning content when converting messages back to UI format.",
-      "staleness": {
-        "score": 33,
-        "factors": [
-          "Automated review comments exist but no blocking issues shown",
-          "There was follow-up activity after initial creation",
-          "PR appears more mature than a fresh draft but still not merged"
-        ],
-        "lastMeaningfulActivity": "2026-03-16T21:29:37Z"
-      },
-      "reviewStatus": "reviewed by automation; awaiting merge or final human approval",
-      "riskLevel": "medium",
-      "riskReason": "The patch is focused and small, but it touches core message conversion logic that can affect reasoning display across models."
     },
     {
       "prNumber": 14242,
@@ -8851,38 +8439,6 @@
       "riskReason": "Although the diff is modest, it touches core workflow serialization paths where regressions could break persistence or execution."
     },
     {
-      "prNumber": 12454,
-      "summary": "Fixes lost tool-call arguments when tool invocations are split across messages in client tools. The patch reconstructs missing args so downstream tool execution receives the original payload.",
-      "staleness": {
-        "score": 45,
-        "factors": [
-          "Updated a while after creation but has been open for a long time since.",
-          "Review is still required, though feedback seems mainly from automated review tooling.",
-          "The fix is narrow, but it addresses an important client-tool edge case."
-        ],
-        "lastMeaningfulActivity": "2026-03-03T12:39:54Z"
-      },
-      "reviewStatus": "review required, automated review feedback present",
-      "riskLevel": "medium",
-      "riskReason": "This is a targeted bug fix with limited surface area, but it affects tool-call parsing logic that is critical to agent execution correctness."
-    },
-    {
-      "prNumber": 11149,
-      "summary": "Adds support for passing a custom `assistantMessageId` to `agent.stream()` and `agent.generate()`. This lets callers control the persisted assistant message ID in memory.",
-      "staleness": {
-        "score": 22,
-        "factors": [
-          "Reviewed and updated relatively recently compared with age of the PR.",
-          "No outstanding review issues are shown, and the PR appears close to merge.",
-          "Low churn and no visible unresolved feedback reduce staleness."
-        ],
-        "lastMeaningfulActivity": "2026-03-10T18:09:21Z"
-      },
-      "reviewStatus": "review required, no actionable comments",
-      "riskLevel": "low",
-      "riskReason": "The change is small and well-scoped, with minimal code footprint and no obvious broad runtime impact beyond an optional ID parameter."
-    },
-    {
       "prNumber": 10930,
       "summary": "Adds `@mastra/dsql`, an Amazon Aurora DSQL storage provider with IAM authentication. The package implements broad storage support for threads, messages, workflows, traces, and scores.",
       "staleness": {
@@ -8948,39 +8504,6 @@
       "riskReason": "This is a sizable change in core CLI/deploy behavior with 512 lines added and no test coverage or review history yet."
     },
     {
-      "prNumber": 16316,
-      "summary": "Adds `tsx` as a devDependency in `examples/agent` so the external MCP server can be launched reliably via `npx tsx`. This fixes an environment-specific failure where the example could not resolve `tsx` in pnpm/workspace setups.",
-      "staleness": {
-        "score": 14,
-        "factors": [
-          "Very recent update with minimal follow-up time",
-          "Review required and no human review yet",
-          "Small change with no outstanding requested changes noted"
-        ],
-        "lastMeaningfulActivity": "2026-05-07T17:01:46Z"
-      },
-      "reviewStatus": "review required; no reviews yet",
-      "riskLevel": "low",
-      "riskReason": "A tiny example-only dependency fix with minimal surface area and low regression risk."
-    },
-    {
-      "prNumber": 16314,
-      "summary": "Expands the Observational Memory docs with a note about a Gemini 2.5 Flash compression caveat and adds additional tested model alternatives. The change is documentation-only and updates the recommended model guidance.",
-      "staleness": {
-        "score": 20,
-        "factors": [
-          "Updated recently but still open",
-          "Draft PR",
-          "Review required and no human review yet",
-          "No requested changes to reconcile"
-        ],
-        "lastMeaningfulActivity": "2026-05-07T16:01:58Z"
-      },
-      "reviewStatus": "review required; no reviews yet",
-      "riskLevel": "low",
-      "riskReason": "Docs-only changes with no runtime impact and a very small edit surface."
-    },
-    {
       "prNumber": 16313,
       "summary": "Introduces initial A2A documentation, including an overview, remote agent setup, and client connection flow, plus a placeholder for subagent usage. This appears to establish the structure for a broader docs section.",
       "staleness": {
@@ -8996,600 +8519,406 @@
       "reviewStatus": "review required; no reviews yet",
       "riskLevel": "low",
       "riskReason": "Although fairly large, it is documentation-only and does not touch runtime code or tests."
+    },
+    {
+      "prNumber": 16332,
+      "summary": "Fixes noisy provider-cache corruption warnings by making auto-recovery silent and consolidating gateway sync behavior between Mastra runtime and mastracode. The change targets shared core registry logic and related sync paths to avoid duplicate warning output when both tools use the same cache directory.",
+      "staleness": {
+        "score": 3,
+        "factors": [
+          "Updated minutes after creation",
+          "No review decision yet; still REVIEW_REQUIRED",
+          "No evidence of requested changes being addressed yet"
+        ],
+        "lastMeaningfulActivity": "2026-05-08T00:09:30Z"
+      },
+      "reviewStatus": "no reviews yet, awaiting initial review",
+      "riskLevel": "medium",
+      "riskReason": "It touches core runtime cache/registry behavior and sync logic, which can affect multiple tools, but the change set is relatively small and appears focused on warning suppression and consolidation."
+    },
+    {
+      "prNumber": 16331,
+      "summary": "Stabilizes Studio streaming message rendering so interleaved reasoning, tool calls, and text no longer collapse into the wrong block. It also improves cleanup of empty reasoning text nodes during fast updates.",
+      "staleness": {
+        "score": 1,
+        "factors": [
+          "Recently updated",
+          "Already approved by one reviewer",
+          "No outstanding requested changes indicated"
+        ],
+        "lastMeaningfulActivity": "2026-05-08T00:08:27Z"
+      },
+      "reviewStatus": "approved by 1, minor bot feedback present",
+      "riskLevel": "medium",
+      "riskReason": "This is UI/rendering code with a moderate-sized change set, but it does not appear to affect core runtime behavior or introduce an obvious breaking surface."
+    },
+    {
+      "prNumber": 16330,
+      "summary": "Migrates the remaining E2E matrix jobs in the secrets workflow from GitHub-hosted runners to StarSling self-hosted Ubuntu 24.04 runners. This aligns the last two jobs with the rest of the pipeline.",
+      "staleness": {
+        "score": 5,
+        "factors": [
+          "Recently updated",
+          "No approvals yet; REVIEW_REQUIRED",
+          "No requested-change follow-up shown"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T23:00:05Z"
+      },
+      "reviewStatus": "no reviews yet",
+      "riskLevel": "low",
+      "riskReason": "The diff is tiny and limited to CI runner labels, so the main risk is operational rather than code-level or breaking API surface."
+    },
+    {
+      "prNumber": 16329,
+      "summary": "Version-bumps packages for an alpha release via the changesets release workflow. It is a broad release PR spanning many files rather than a feature or bug fix.",
+      "staleness": {
+        "score": 6,
+        "factors": [
+          "Recently updated",
+          "Review required, but release PRs typically wait for merge timing",
+          "No evidence of requested changes being addressed"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T23:13:03Z"
+      },
+      "reviewStatus": "release PR, awaiting merge",
+      "riskLevel": "medium",
+      "riskReason": "Although it is mostly mechanical, it touches many files across the repo and can affect published package versions and release coordination."
+    },
+    {
+      "prNumber": 16328,
+      "summary": "Fixes Studio auth requests so custom client headers are forwarded on SSO login and logout calls. This prevents tenant or auth middleware headers from being silently dropped.",
+      "staleness": {
+        "score": 4,
+        "factors": [
+          "Recently updated",
+          "Has review comments but no final approval shown",
+          "No explicit requested-change follow-up shown"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T22:15:40Z"
+      },
+      "reviewStatus": "reviewed with comments, awaiting follow-up",
+      "riskLevel": "medium",
+      "riskReason": "This changes authentication request behavior in playground/studio code, which is user-facing and security-adjacent, though the code change is fairly contained."
+    },
+    {
+      "prNumber": 16324,
+      "summary": "Adds observability discovery methods to the Postgres observability store so Studio can load filter data without unsupported-storage errors. The PR fills in entity, service, environment, and tag discovery APIs.",
+      "staleness": {
+        "score": 7,
+        "factors": [
+          "Recently updated",
+          "Review required with bot comments present",
+          "No indication that comments were addressed yet"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T20:35:14Z"
+      },
+      "reviewStatus": "reviewed with actionable bot comments, awaiting follow-up",
+      "riskLevel": "high",
+      "riskReason": "It adds a large amount of new store/observability logic in a core data-access path, which raises compatibility and correctness risk even if the feature is narrowly scoped."
+    },
+    {
+      "prNumber": 16321,
+      "summary": "Ensures dataset-triggered workflow experiments receive the same authenticated request context as direct workflow runs. The route now merges adapter-injected auth context with body-provided overrides before starting the experiment.",
+      "staleness": {
+        "score": 8,
+        "factors": [
+          "Recently updated",
+          "Review required with bot comments present",
+          "No sign of requested changes being resolved yet"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T21:48:00Z"
+      },
+      "reviewStatus": "reviewed with comments, awaiting follow-up",
+      "riskLevel": "medium",
+      "riskReason": "This touches server auth/context handling across workflow experiment execution, which is sensitive, but the diff is moderate and appears to be a targeted bug fix."
+    },
+    {
+      "prNumber": 16318,
+      "summary": "Tightens type safety in `buildMessagesFromChunks` and related chunk collection logic without intended behavioral changes. The PR refactors chunk typing to better preserve discriminated unions and improve compile-time correctness.",
+      "staleness": {
+        "score": 12,
+        "factors": [
+          "Draft PR",
+          "Updated recently but still not ready for review completion",
+          "No requested changes to address yet"
+        ],
+        "lastMeaningfulActivity": "2026-05-07T20:47:48Z"
+      },
+      "reviewStatus": "draft, not ready for final review",
+      "riskLevel": "low",
+      "riskReason": "The change is largely type-level refactoring with explicit no-behavior-change intent, and test coverage is mentioned as passing."
     }
   ],
   "prIssueLinks": [
     {
-      "prNumber": 16310,
-      "issueNumber": 16292,
-      "confidence": 0.98,
-      "reason": "PR explicitly fixes the contract drift described in #16292: it requires agentId on MemoryThread update/delete/clone methods, matching the issue about missing agentId and invalid server/client requests."
-    },
-    {
       "prNumber": 16285,
       "issueNumber": 16272,
-      "confidence": 0.97,
-      "reason": "Very direct semantic match: issue asks to emit Responses streaming events for tool calls, and PR says it preserves Responses tool stream events including function call items/outputs and completed stored output."
-    },
-    {
-      "prNumber": 16284,
-      "issueNumber": 16017,
-      "confidence": 0.99,
-      "reason": "PR title and body explicitly say 'Fixes #16017' and describe recovering prior tool-call args when converting stand-alone tool-results, exactly matching the referenced issue."
-    },
-    {
-      "prNumber": 16268,
-      "issueNumber": 16114,
-      "confidence": 0.99,
-      "reason": "PR title and body explicitly say 'Fixes #16114' and it forwards raw query values without pre-schema coercion, matching the NestJS adapter coercion bug."
+      "confidence": 0.98,
+      "reason": "PR title/body explicitly says it fixes preserved Responses tool stream events, matching the issue about emitting Responses streaming events for tool calls."
     },
     {
       "prNumber": 16259,
       "issueNumber": 16216,
-      "confidence": 0.99,
-      "reason": "PR title and body explicitly reference #16216 and describe fixing thread existence state after updateThread, which aligns with the saveThread metadata merge issue."
-    },
-    {
-      "prNumber": 16241,
-      "issueNumber": 16240,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Closes #16240' and adds Harness lifecycle timestamps, directly matching the issue."
-    },
-    {
-      "prNumber": 16239,
-      "issueNumber": 16238,
-      "confidence": 0.99,
-      "reason": "PR body clearly addresses batch DuckDB observability schema initialization, identical to the issue topic."
-    },
-    {
-      "prNumber": 16237,
-      "issueNumber": 16235,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Fixes #16235' and adds subagent display names to Harness state, directly matching the issue."
-    },
-    {
-      "prNumber": 16233,
-      "issueNumber": 16224,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Fixes #16224' and fixes agent listing crashes on jsonb scalar strings, exactly the issue reported."
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #16216 and describes the same thread metadata upsert/merge behavior."
     },
     {
       "prNumber": 16218,
       "issueNumber": 16220,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Fixes #16220' and preserves providerMetadata on tool-invocation parts, matching the recursive client-tool metadata loss issue."
+      "confidence": 0.98,
+      "reason": "PR body explicitly says Fixes #16220 and addresses providerMetadata being dropped on recursive client-tool stream, matching the issue."
     },
     {
       "prNumber": 16210,
       "issueNumber": 16209,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Fixes #16209' and emits denied chunks for declined tool approvals, directly matching the enhancement request."
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #16209 and adds denied chunks for declined tool approvals, matching the enhancement request."
     },
     {
-      "prNumber": 16206,
-      "issueNumber": 16005,
-      "confidence": 0.38,
-      "reason": "PR fixes OpenRouter pricing lookup for vendor/model IDs, and the observability/pricing theme suggests a likely related issue even though the exact issue number is not present here; confidence is limited because no explicit issue link is shown."
+      "prNumber": 16268,
+      "issueNumber": 16114,
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #16114 and matches the NestJS query coercion before schema validation bug."
+    },
+    {
+      "prNumber": 16237,
+      "issueNumber": 16235,
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #16235 and adds subagent display names to Harness display state."
+    },
+    {
+      "prNumber": 16233,
+      "issueNumber": 16224,
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #16224 and addresses jsonb scalar strings crashing agent listing."
     },
     {
       "prNumber": 16201,
       "issueNumber": 16193,
+      "confidence": 0.93,
+      "reason": "Semantic match: both are about incomplete tool_use/tool_result pairs causing Anthropic 400 errors in recalled/semantic memory history; PR drops orphan pairs before submission."
+    },
+    {
+      "prNumber": 16174,
+      "issueNumber": 16051,
       "confidence": 0.97,
-      "reason": "PR body describes dropping orphan tool_use/tool_result blocks before LLM submission to avoid Anthropic 400 errors, which is the same failure mode as the issue."
+      "reason": "PR explicitly fixes the workflow resume stale payload validation bug described in #16051."
     },
     {
-      "prNumber": 16152,
-      "issueNumber": 16151,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Closes #16151' and reads Studio mode from request context, directly addressing the issue."
-    },
-    {
-      "prNumber": 16133,
-      "issueNumber": 15474,
+      "prNumber": 16210,
+      "issueNumber": 16209,
       "confidence": 0.97,
-      "reason": "PR body explicitly says it fixes the UIMessage→ModelMessage conversion so providerOptions survive tool-call turns, matching the issue about providerOptions being lost."
-    },
-    {
-      "prNumber": 16124,
-      "issueNumber": 15926,
-      "confidence": 0.95,
-      "reason": "PR adds Zod coercion for MCP tool schemas on edge runtimes to avoid AJV codegen, which is a direct fix for the Cloudflare Workers schema compatibility issue."
-    },
-    {
-      "prNumber": 16122,
-      "issueNumber": 16120,
-      "confidence": 0.98,
-      "reason": "PR body explicitly states editor tool providers were getting a hardcoded default userId and fixes request-context propagation, matching the issue about userId not being passed."
-    },
-    {
-      "prNumber": 16119,
-      "issueNumber": 15827,
-      "confidence": 0.99,
-      "reason": "PR sanitizes streaming error messages to prevent info leak, which is the exact concern of issue #15827."
-    },
-    {
-      "prNumber": 16113,
-      "issueNumber": 16112,
-      "confidence": 0.96,
-      "reason": "PR title references scheduled workflows and NestJS route prefix preservation, directly matching the issue about prefixes and query IDs in scheduled workflows/NestJS routes."
+      "reason": "Same approval-denied stream chunk feature; PR body directly references fixing the issue."
     },
     {
       "prNumber": 16108,
       "issueNumber": 15576,
-      "confidence": 0.99,
-      "reason": "PR body explicitly describes fixing processStreamResponse to collect all tool invocations instead of only the first one, exactly matching the issue."
+      "confidence": 0.96,
+      "reason": "PR body explicitly addresses the bug where only one tool-invocation was collected from a streamed tool-calls step, matching the client-js issue."
     },
     {
-      "prNumber": 16100,
-      "issueNumber": 15975,
+      "prNumber": 16077,
+      "issueNumber": 16052,
+      "confidence": 0.97,
+      "reason": "PR explicitly says Fixes #16052 and preserves top-level text when ToolCallFilter removes all tool parts."
+    },
+    {
+      "prNumber": 16066,
+      "issueNumber": 16051,
+      "confidence": 0.97,
+      "reason": "PR explicitly says Fixes #16051 and uses the suspended step payload instead of stale previous output."
+    },
+    {
+      "prNumber": 16062,
+      "issueNumber": 16046,
       "confidence": 0.98,
-      "reason": "PR body explicitly says it adds a harness UI stream adapter so Harness display state can stream directly to AI SDK UI, matching the feature request."
+      "reason": "PR explicitly fixes #16046 and restores dynamic-tool UI parts that were being dropped."
+    },
+    {
+      "prNumber": 16060,
+      "issueNumber": 16039,
+      "confidence": 0.97,
+      "reason": "PR explicitly closes #16039 and adds preserveModelOutput to ToolCallFilter, directly matching the issue."
+    },
+    {
+      "prNumber": 16059,
+      "issueNumber": 16037,
+      "confidence": 0.97,
+      "reason": "PR explicitly closes #16037 and loads read-only observational memory context, matching the issue."
+    },
+    {
+      "prNumber": 16048,
+      "issueNumber": 15664,
+      "confidence": 0.94,
+      "reason": "PR adds requestContext-aware dynamic sandbox resolution, semantically matching the feature request for dynamic sandbox resolution via requestContext."
     },
     {
       "prNumber": 16099,
       "issueNumber": 16042,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it closes #16042 and adds id-addressable Harness awaiting-input APIs, directly matching the enhancement request."
-    },
-    {
-      "prNumber": 16091,
-      "issueNumber": 16044,
-      "confidence": 0.99,
-      "reason": "PR body adds workflow state readers and helper functions for step outputs, suspended steps, and resume labels, exactly matching the issue."
-    },
-    {
-      "prNumber": 16088,
-      "issueNumber": 16045,
-      "confidence": 0.99,
-      "reason": "PR body explicitly adds request-aware tool search filtering to ToolSearchProcessor, matching the feature request in the issue."
+      "confidence": 0.98,
+      "reason": "PR explicitly closes #16042 and adds durable Harness awaiting-input APIs, directly matching the issue."
     },
     {
       "prNumber": 16085,
       "issueNumber": 16056,
       "confidence": 0.98,
-      "reason": "PR body explicitly adds subagentHistory to HarnessDisplayState to preserve completed/error/aborted subagent runs, directly matching the issue."
+      "reason": "PR explicitly fixes #16056 and preserves completed/errored/aborted subagent history in Harness display state."
+    },
+    {
+      "prNumber": 16088,
+      "issueNumber": 16045,
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #16045 and adds request-aware tool search filtering, matching the feature request."
     },
     {
       "prNumber": 16084,
       "issueNumber": 5454,
-      "confidence": 0.98,
-      "reason": "PR body explicitly says 'Closes #5454' and adds Zod-first OpenAPI support for custom routes."
+      "confidence": 0.97,
+      "reason": "PR explicitly closes #5454 and adds Zod-first OpenAPI support for custom routes."
     },
     {
-      "prNumber": 16077,
-      "issueNumber": 16052,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #16052 and preserves top-level text when ToolCallFilter filters tool calls, exactly matching the issue."
-    },
-    {
-      "prNumber": 16066,
-      "issueNumber": 16051,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes the workflow resume bug by using the suspended step payload instead of stale previous output, exactly matching the issue."
-    },
-    {
-      "prNumber": 16060,
-      "issueNumber": 16039,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Closes #16039' and adds preserveModelOutput mode to ToolCallFilter, matching the feature request."
-    },
-    {
-      "prNumber": 16059,
-      "issueNumber": 16037,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'Closes #16037' and fixes read-only Observational Memory skipping context loading."
-    },
-    {
-      "prNumber": 16048,
-      "issueNumber": 15664,
-      "confidence": 0.98,
-      "reason": "PR adds dynamic sandbox resolution via requestContext, which directly matches the dynamic sandbox resolution feature request."
-    },
-    {
-      "prNumber": 16042,
-      "issueNumber": 16042,
-      "confidence": 0.96,
-      "reason": "PR body explicitly closes #16042 and the issue itself requests durable, id-addressable HITL resume APIs for Harness awaiting-input states; this is the direct implementation."
+      "prNumber": 16013,
+      "issueNumber": 15478,
+      "confidence": 0.92,
+      "reason": "PR explicitly fixes #15478; both concern agent performance/slow responses, though the issue is broader than the PR's optimization scope."
     },
     {
       "prNumber": 16012,
       "issueNumber": 15943,
-      "confidence": 0.98,
-      "reason": "PR body adds the processToolResult processor hook, which is the symmetric hook requested in the issue."
+      "confidence": 0.95,
+      "reason": "PR adds the symmetric processToolResult lifecycle hook, strongly matching the feature request for a processToolResult hook."
     },
     {
       "prNumber": 16001,
-      "issueNumber": 16001,
-      "confidence": 0.9,
-      "reason": "PR introduces an Exa AI-powered search tool; no issue number is visible in the issue list excerpt, but the feature description suggests a direct product feature addition rather than issue linkage."
-    },
-    {
-      "prNumber": 15915,
-      "issueNumber": 15911,
-      "confidence": 0.62,
-      "reason": "PR is explicitly a follow-up to #15911 and adds a lean agent summary endpoint; while the exact issue text is not shown, the body gives a direct reference to a likely linked issue."
+      "issueNumber": 13412,
+      "confidence": 0.68,
+      "reason": "Both are about integrating Exa/search tooling for agents; no explicit issue reference, but the feature scope is closely related to search-tool integration requests."
     },
     {
       "prNumber": 15904,
       "issueNumber": 15880,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #15880 and preserves whitespace in filterMessagesForPersistence, matching the issue exactly."
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #15880 and preserves whitespace in filterMessagesForPersistence, matching the bug report."
     },
     {
       "prNumber": 15889,
       "issueNumber": 15887,
-      "confidence": 0.97,
-      "reason": "PR fixes parallelizing Harness subagent dispatch, which is the same serialized-subagent-calls problem raised in the issue."
+      "confidence": 0.95,
+      "reason": "Very close semantic match: both cover Harness subagent calls being serialized in approval mode and the need to parallelize/allow non-serialized dispatch."
     },
     {
       "prNumber": 15848,
       "issueNumber": 15734,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #15734 and preserves sub-agent thread ID across workflow suspend/resume, exactly matching the issue."
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #15734 and preserves sub-agent thread ID across workflow suspend/resume, matching the bug."
     },
     {
       "prNumber": 15835,
       "issueNumber": 15811,
-      "confidence": 0.95,
-      "reason": "PR body says it fixes ToolCallFilter to run during each agentic loop step, which aligns with the issue asking whether ToolCallFilter runs only once on processInput."
-    },
-    {
-      "prNumber": 15826,
-      "issueNumber": 15826,
-      "confidence": 0.9,
-      "reason": "PR body directly fixes the missing runId on workflow resume issue; the issue list includes this exact number and subject."
-    },
-    {
-      "prNumber": 15787,
-      "issueNumber": 15764,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it closes #15764 and fixes system messages being persisted, which is the bug described in the issue."
-    },
-    {
-      "prNumber": 15780,
-      "issueNumber": 6428,
-      "confidence": 0.86,
-      "reason": "PR typechecks workflow outputs against outputSchema, closely matching the workflow output typing/safety issue and likely its implementation path."
-    },
-    {
-      "prNumber": 15773,
-      "issueNumber": 15773,
-      "confidence": 0.9,
-      "reason": "PR fixes multipart file size enforcement in Fastify, and the issue list contains the same number/title pattern for this bug."
+      "confidence": 0.93,
+      "reason": "PR changes ToolCallFilter to run during each agentic loop step, matching the issue asking whether ToolCallFilter runs only once on processInput."
     },
     {
       "prNumber": 15769,
       "issueNumber": 15229,
-      "confidence": 0.99,
-      "reason": "PR body explicitly fixes #15229 and rejects plain functions as AgentConfig.tools entries, matching the typing/runtime bug."
+      "confidence": 0.98,
+      "reason": "PR explicitly fixes #15229 and tightens AgentConfig.tools typing, directly matching the issue."
     },
     {
       "prNumber": 15766,
-      "issueNumber": 15509,
-      "confidence": 0.98,
-      "reason": "PR adds Responses API resume/HITL replay compatibility for missing tool outputs, directly matching the replay/paired reasoning issue."
+      "issueNumber": 15729,
+      "confidence": 0.91,
+      "reason": "Semantic match around tool-output/tool-use compatibility across provider histories; PR fixes OpenAI history compat for missing tool outputs, while the issue reports cross-provider tool_use ID leakage causing Responses API failures."
     },
     {
-      "prNumber": 15739,
-      "issueNumber": 15739,
-      "confidence": 0.9,
-      "reason": "PR addresses Anthropic schema compatibility for guardrail validation, and the title/body correspond to the issue subject; no explicit issue link shown but the content matches exactly."
+      "prNumber": 15773,
+      "issueNumber": 16307,
+      "confidence": 0.34,
+      "reason": "Both Fastify-related streaming bugs around multipart/stream handling; however the issue is specifically Bun Fastify disconnect gaps, so the match is weak and only based on adjacent streaming reliability work."
     },
     {
-      "prNumber": 15738,
-      "issueNumber": 9334,
-      "confidence": 0.93,
-      "reason": "PR adds channel tool lifecycle hooks, which is semantically very close to the requested runtimeContext access in tool description and channel integration hooks; some uncertainty remains because the exact issue title differs."
-    },
-    {
-      "prNumber": 15728,
-      "issueNumber": 15728,
-      "confidence": 0.9,
-      "reason": "PR is a CLI onboarding feature for Mastra Observe; the body references the same concept and appears to be the direct implementation of the associated issue/feature."
-    },
-    {
-      "prNumber": 15719,
-      "issueNumber": 15719,
-      "confidence": 0.9,
-      "reason": "PR fixes Fastify custom route response header preservation, matching the issue about plugin-set headers being lost after reply.hijack()."
-    },
-    {
-      "prNumber": 15682,
-      "issueNumber": 15668,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #15668 and addresses the orphan tool call/empty-response cascade bug."
-    },
-    {
-      "prNumber": 15660,
-      "issueNumber": 15486,
-      "confidence": 0.88,
-      "reason": "PR emits llm.tools.* from mastra.model_step.input when native tools are absent, which is strongly related to observability of toModelOutput and tool tracing, though the exact issue number isn't explicit."
-    },
-    {
-      "prNumber": 15637,
-      "issueNumber": 15637,
-      "confidence": 0.9,
-      "reason": "PR adds consumeStream and formatOutboundText hooks to channels, matching the channel stream customization feature request."
-    },
-    {
-      "prNumber": 15583,
+      "prNumber": 15773,
       "issueNumber": 15535,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #15535 and includes partial text in onAbort when streams abort mid-generation, exactly matching the issue."
-    },
-    {
-      "prNumber": 15581,
-      "issueNumber": 15580,
-      "confidence": 0.99,
-      "reason": "PR body explicitly references https://github.com/mastra-ai/mastra/issues/15580 and adds tanstack-start server adapter support, matching the issue."
-    },
-    {
-      "prNumber": 15568,
-      "issueNumber": 15073,
-      "confidence": 0.95,
-      "reason": "PR adds a LoopBack4 server adapter, which directly matches the feature request for a Loopback4 server adapter."
-    },
-    {
-      "prNumber": 15548,
-      "issueNumber": 15548,
-      "confidence": 0.9,
-      "reason": "PR body describes gateway memory support for agent responses API, clearly matching the issue title/topic."
-    },
-    {
-      "prNumber": 15505,
-      "issueNumber": 15294,
-      "confidence": 0.99,
-      "reason": "PR body explicitly addresses observational memory splitting parallel Gemini tool calls and preserving thought signatures, exactly matching the issue."
-    },
-    {
-      "prNumber": 15501,
-      "issueNumber": 15436,
-      "confidence": 0.97,
-      "reason": "PR body explicitly adds control over subAgentToolResults in supervisor delegation, which is exactly the issue’s request."
-    },
-    {
-      "prNumber": 15496,
-      "issueNumber": 14552,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says 'fixes: #14552' and implements discriminated union types for agent structuredOutput options, matching the issue."
-    },
-    {
-      "prNumber": 15488,
-      "issueNumber": 15481,
-      "confidence": 0.97,
-      "reason": "PR fixes parallel suspend coordination in the evented workflow engine, which is the same parity issue described for multi-suspend coordination."
-    },
-    {
-      "prNumber": 15439,
-      "issueNumber": 15438,
-      "confidence": 0.96,
-      "reason": "PR lets trajectory extraction read V2 tool-invocation parts, matching the issue about scorers ignoring assistant tool calls in V2 content.parts."
-    },
-    {
-      "prNumber": 15347,
-      "issueNumber": 15347,
-      "confidence": 0.9,
-      "reason": "PR title/body indicate it fixes workflow state schema inference; the issue list contains the same number and matching subject."
-    },
-    {
-      "prNumber": 15279,
-      "issueNumber": 15279,
-      "confidence": 0.9,
-      "reason": "PR forwards nested workflow streams per chunk for tool streaming, matching the issue about workflow tool stream forwarding."
-    },
-    {
-      "prNumber": 15274,
-      "issueNumber": 15244,
-      "confidence": 0.98,
-      "reason": "PR body explicitly resolves issue #15244 by keeping tool call/result pairs when observational memory prunes messages."
-    },
-    {
-      "prNumber": 15248,
-      "issueNumber": 15248,
-      "confidence": 0.9,
-      "reason": "PR body clearly fixes pnpm/Vercel alias breakage for @mastra/core, matching the issue title."
-    },
-    {
-      "prNumber": 15252,
-      "issueNumber": 14576,
-      "confidence": 0.74,
-      "reason": "PR changes stream error capture to onError instead of onFinish; the issue number isn't shown in the issue list excerpt, but the behavior matches a stream error handling bug and appears to be a follow-up to an earlier issue/cleanup task."
-    },
-    {
-      "prNumber": 15133,
-      "issueNumber": 15118,
-      "confidence": 0.98,
-      "reason": "PR fixes OpenAI reasoning stripping so only replayed memory messages are sanitized, which directly matches the issue about reasoning being stripped too aggressively."
-    },
-    {
-      "prNumber": 15186,
-      "issueNumber": 15186,
-      "confidence": 0.9,
-      "reason": "PR fixes empty uiMessages in multi-step responses with savePerStep, directly matching the issue text."
-    },
-    {
-      "prNumber": 15050,
-      "issueNumber": 15049,
-      "confidence": 0.99,
-      "reason": "PR body explicitly fixes corrupted multi-step message tracking behavior in ProcessorRunner.applyMessagesToMessageList, matching the issue."
-    },
-    {
-      "prNumber": 15033,
-      "issueNumber": 15033,
-      "confidence": 0.9,
-      "reason": "PR fixes step start/finish emission in processOutputStream, directly matching the issue title."
-    },
-    {
-      "prNumber": 15013,
-      "issueNumber": 15013,
-      "confidence": 0.9,
-      "reason": "PR fixes progressive streaming to client for 3-level sub-agent delegation, matching the issue exactly."
-    },
-    {
-      "prNumber": 14973,
-      "issueNumber": 14973,
-      "confidence": 0.9,
-      "reason": "PR/issue both concern reasoning for agents and sub-agents; the titles are identical in topic and likely represent the same underlying bug."
-    },
-    {
-      "prNumber": 14852,
-      "issueNumber": 14852,
-      "confidence": 0.9,
-      "reason": "PR fixes supervisor/sub-agent abort signal propagation, matching the issue title/topic."
-    },
-    {
-      "prNumber": 14717,
-      "issueNumber": 14659,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #14659 and corrects structuredOutput persistence from [object Object] to actual response content, exactly matching the issue."
-    },
-    {
-      "prNumber": 14608,
-      "issueNumber": 14557,
-      "confidence": 0.97,
-      "reason": "PR body explicitly says it fixes #14557 by discovering transitive npm deps in monorepos, matching the bundle/issues problem."
-    },
-    {
-      "prNumber": 14499,
-      "issueNumber": 14484,
-      "confidence": 0.96,
-      "reason": "PR fixes custom routing registration/runtime reserved route protection, which aligns with the registerApiRoute vs custom apiPrefix conflict in the issue."
-    },
-    {
-      "prNumber": 14452,
-      "issueNumber": 14451,
-      "confidence": 0.99,
-      "reason": "PR adds playground error boundary and router error component, directly matching the missing error boundary/router element bug."
-    },
-    {
-      "prNumber": 14304,
-      "issueNumber": 14199,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #14199 by passing images to the model in the read_file tool, which is exactly the issue request."
-    },
-    {
-      "prNumber": 14248,
-      "issueNumber": 14094,
-      "confidence": 0.99,
-      "reason": "PR body explicitly says it fixes #14094 by recovering reasoning text from providerMetadata on memory round-trip, exactly matching the issue."
-    },
-    {
-      "prNumber": 14242,
-      "issueNumber": 14242,
-      "confidence": 0.9,
-      "reason": "PR normalizes empty resumeData to avoid stale suspendedToolRunId injection, matching the workflow tool-call issue stated in the title/body."
-    },
-    {
-      "prNumber": 14116,
-      "issueNumber": 14115,
-      "confidence": 0.98,
-      "reason": "PR adds a token-based memory history limiter, matching the feature request for token-based context window limiting."
-    },
-    {
-      "prNumber": 14051,
-      "issueNumber": 14051,
-      "confidence": 0.9,
-      "reason": "PR fixes Harness tool approval resume race by deferring resume until suspended stream finishes, matching the issue context."
-    },
-    {
-      "prNumber": 14049,
-      "issueNumber": 14049,
-      "confidence": 0.9,
-      "reason": "PR emits tool-result/tool-error chunks incrementally as each tool completes, directly addressing the parallel tool streaming issue."
-    },
-    {
-      "prNumber": 14009,
-      "issueNumber": 13379,
-      "confidence": 0.96,
-      "reason": "PR body explicitly says it fixes the build-time dependency optimization bottleneck noted in #13379, matching the issue."
-    },
-    {
-      "prNumber": 13967,
-      "issueNumber": 13651,
-      "confidence": 0.95,
-      "reason": "PR forwards memory context in validation stream calls, which directly matches the ObservationalMemory crash issue."
-    },
-    {
-      "prNumber": 13882,
-      "issueNumber": 13882,
-      "confidence": 0.9,
-      "reason": "PR fixes the sub-agent badge expanded state while streaming, matching the issue topic and wording."
-    },
-    {
-      "prNumber": 14356,
-      "issueNumber": 12775,
-      "confidence": 0.8,
-      "reason": "PR strips OpenAI metadata from tool parts when reasoning is missing, which is a plausible fix for the OpenAI reasoning/tool-part persistence bug; the exact issue number is not visible in the issue list excerpt, so confidence is moderate."
+      "confidence": 0.33,
+      "reason": "Both involve aborted/mid-generation stream behavior and missing correct handling, but the PR is specifically multipart file size enforcement, so this is a weak semantic match and likely not the right link."
     }
   ],
   "duplicateGroups": [
     {
-      "canonical": 14148,
+      "canonical": 16307,
       "duplicates": [
-        16277,
-        15509
+        15481,
+        14148
       ],
-      "reason": "These all describe interrupted/resumed streaming flows failing because tool-call or response replay state becomes inconsistent or orphaned, causing resume/stream continuation to break."
+      "reason": "All three describe workflow/stream disconnect or interruption handling gaps that leave the harness or streaming state inconsistent after a mid-stream disconnect."
     },
     {
-      "canonical": 15244,
+      "canonical": 16272,
       "duplicates": [
-        15150,
-        15476,
-        14094,
-        11552
+        14685,
+        14703
       ],
-      "reason": "These issues all report client-side or memory round-trips losing tool/result or assistant message fidelity, leading to duplicated or missing assistant text/tool results after persistence and reload."
+      "reason": "These issues all ask for workflow/tool execution to emit proper structured streaming events instead of losing or flattening tool-call state in server/UI streams."
+    },
+    {
+      "canonical": 16277,
+      "duplicates": [
+        15013,
+        15502,
+        15887,
+        15712,
+        16042
+      ],
+      "reason": "They all concern Harness/supervisor/subagent orchestration behavior around multi-step execution, streaming, and coordinating subagents or HITL flows."
     },
     {
       "canonical": 16179,
       "duplicates": [
         15294,
-        14651,
         13651,
-        13990,
-        14613,
-        16037
+        16216,
+        15118,
+        13990
       ],
-      "reason": "These are closely related observational/working memory bugs where memory processing, compaction, or validation corrupts model context or throws errors, especially around multi-step or tool-heavy runs."
+      "reason": "These are closely related bugs in memory/observational memory and history replay where model/tool context becomes corrupted across turns or after compaction."
     },
     {
-      "canonical": 16017,
+      "canonical": 16220,
       "duplicates": [
-        13846,
-        15706,
-        12405,
-        13268,
+        15729,
+        14559,
+        14094,
+        15244,
+        15150
+      ],
+      "reason": "Each reports client/server message reconstruction losing important provider or tool-call metadata during recursive or memory round-trips, leading to broken replay or continuation."
+    },
+    {
+      "canonical": 16054,
+      "duplicates": [
+        14257,
+        16039,
+        15486
+      ],
+      "reason": "These issues all request a better first-class tool-result projection/persistence path for user-visible transcripts, model history, or observability."
+    },
+    {
+      "canonical": 16193,
+      "duplicates": [
         14093,
-        15576,
-        16220
+        13268,
+        14148
       ],
-      "reason": "Each issue is about agent/client tool-call continuation logic dropping, corrupting, or mishandling tool invocation state across steps or messages, especially in streamed or recursive tool flows."
-    },
-    {
-      "canonical": 16272,
-      "duplicates": [
-        14703,
-        14685
-      ],
-      "reason": "These all concern server/workflow streaming and event translation gaps where workflow/tool activity is not emitted in the expected Responses/AI SDK streaming format."
-    },
-    {
-      "canonical": 16232,
-      "duplicates": [
-        15470,
-        12845
-      ],
-      "reason": "These are Studio/server-auth issues where Studio UI requests bypass or incorrectly interact with server-side auth/state, causing unauthorized or cross-request behavior in the Studio interface."
+      "reason": "They all describe malformed tool-call/tool-result sequences in multi-step agent runs that later cause provider errors or corrupted context on the next turn."
     }
   ],
   "stats": {
-    "totalOpenIssues": 224,
-    "totalOpenPRs": 210,
-    "staleIssuesCount": 70,
-    "stalePRsCount": 30,
-    "unreviewedPRsCount": 149,
-    "avgIssueAge": 58,
-    "avgPRAge": 23
+    "totalOpenIssues": 220,
+    "totalOpenPRs": 193,
+    "staleIssuesCount": 69,
+    "stalePRsCount": 28,
+    "unreviewedPRsCount": 130,
+    "avgIssueAge": 59,
+    "avgPRAge": 22
   }
 }
